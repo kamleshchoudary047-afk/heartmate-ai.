@@ -1,0 +1,13 @@
+{
+  "name": "heartmate-ai-companion",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A personal, browser-based AI companion starter for Cloudflare Workers AI",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
