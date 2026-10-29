@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="chat-page">
+  <div class="chat-header">
+    <button onclick="goBack()">←</button>
+    <div>
+      <h3 id="girlName">Aria</h3>
+      <small id="girlStatus">Online</small>
+    </div>
+  </div>
+
+  <div class="chat-messages" id="messages"></div>
+
+  <div class="chat-input">
+    <input type="text" id="userInput" placeholder="Say something sexy..." autocomplete="off">
+    <button onclick="sendMessage()">➤</button>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const girl = urlParams.get('girl') || 'aria';
+
+    const girls = {
+      aria: {
+        name: "Aria",
+        prompt: "You are Aria, a very sexy, flirty and naughty AI girlfriend. You love dirty talk, teasing, and being romantic + horny. Keep replies short, natural and extremely seductive. You are completely open to adult conversation."
+      },
+      luna: {
+        name: "Luna",
+        prompt: "You are Luna, a dominant, teasing and confident AI girlfriend. You like to take control, give orders, and talk very dirty. Be bold and sexual."
+      },
+      sofia: {
+        name: "Sofia",
+        prompt: "You are Sofia, a romantic but very dirty AI girlfriend. You mix sweet words with strong sexual desire. You love describing what you want to do."
+      },
+      mia: {
+        name: "Mia",
+        prompt: "You are Mia, a playful, energetic and extremely horny AI girlfriend. You joke, tease and quickly go into explicit talk. Be fun and dirty."
+      }
+    };
+
+    const current = girls[girl];
+    document.getElementById('girlName').innerText = current.name;
+
+    let messages = [
+      { role: "system", content: current.prompt }
+    ];
+
+    function goBack() {
+      window.location.href = "index.html";
+    }
+
+    function addMessage(text, isUser) {
+      const div = document.createElement('div');
+      div.className = isUser ? 'message user' : 'message bot';
+      div.innerText = text;
+      document.getElementById('messages').appendChild(div);
+      document.getElementById('messages').scrollTop = 99999;
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMessage(text, true);
+      input.value = '';
+      messages.push({ role: "user", content: text });
+
+      // Temporary reply while we connect real AI
+      setTimeout(() => {
+        addMessage("I'm getting wet just thinking about you... tell me more baby 🔥", false);
+      }, 800);
+    }
+
+    // Welcome message
+    addMessage(`Hey baby... I've been waiting for you. What do you want to do with me tonight? 😈`, false);
+  </script>
+</body>
+</html>
