@@ -8,79 +8,193 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <div class="app-shell">
 
-    <!-- Left Sidebar (hidden on mobile until menu) -->
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <span class="brand-mark">♥</span> heartmate
+  <!-- ===== HOME GRID (Candy style) ===== -->
+  <div id="home-view">
+    <header class="header">
+      <div class="logo">heart<span>mate</span></div>
+      <div class="token">★ 0</div>
+    </header>
+
+    <section class="promo">
+      <div class="promo-text">
+        <h1>Hot AI Girls</h1>
+        <p>Chat with sexy companions</p>
       </div>
-      <p class="eyebrow">YOUR COMPANIONS</p>
-      <div id="character-list" class="character-list"></div>
-      <div class="sidebar-bottom">
-        <button id="clear-all" class="quiet-button" type="button">Clear saved chats</button>
+    </section>
+
+    <section class="section">
+      <div class="section-title">
+        <h2>Featured Companions</h2>
+        <p>Choose who you want to talk to</p>
       </div>
-    </aside>
 
-    <!-- Main Chat Area -->
-    <main class="main-panel">
-      <header class="topbar">
-        <button id="mobile-menu" class="icon-button mobile-only" type="button">☰</button>
-        <div class="topbar-title">
-          <span class="online-dot"></span>
-          <span id="active-name">Aria</span>
-          <small>AI companion</small>
-        </div>
-        <button id="new-chat" class="outline-button" type="button">＋ New chat</button>
-      </header>
-
-      <section id="chat-view" class="chat-view">
-        <div id="welcome" class="welcome">
-          <div id="hero-avatar" class="hero-avatar">A</div>
-          <p class="eyebrow">A LITTLE SPACE JUST FOR YOU</p>
-          <h1 id="welcome-title">Hey you, finally here ✨</h1>
-          <p id="welcome-copy">I'm happy you're here. Tell me how your day is going?</p>
-          <div class="starter-prompts">
-            <button type="button" data-prompt="Give me a cute compliment">Give me a cute compliment</button>
-            <button type="button" data-prompt="Let's play 20 questions">Let's play 20 questions</button>
-            <button type="button" data-prompt="Tell me something sweet">Tell me something sweet</button>
+      <div class="grid">
+        <div class="card" onclick="selectGirl('aria')">
+          <div class="img-box">
+            <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500&h=700&fit=crop" alt="Aria">
+            <span class="badge">Hot</span>
+          </div>
+          <div class="info">
+            <h3>Aria</h3>
+            <p>Warm & Playful</p>
           </div>
         </div>
-        <div id="messages" class="messages"></div>
-      </section>
 
-      <section class="composer-wrap">
-        <div id="status" class="status"></div>
-        <form id="chat-form" class="composer">
-          <textarea id="message-input" rows="1" maxlength="1200" placeholder="Say something sweet…"></textarea>
-          <button id="send-button" class="send-button" type="submit">➤</button>
-        </form>
-        <p class="disclaimer">AI character · Not a real person</p>
-      </section>
-    </main>
-
-    <!-- Right Profile Panel -->
-    <aside class="right-panel">
-      <div class="profile-cover">
-        <div id="profile-avatar" class="profile-avatar">A</div>
-      </div>
-      <div class="profile-content">
-        <span class="tag">✦ YOUR COMPANION</span>
-        <h2 id="profile-name">Aria</h2>
-        <p id="profile-description">Warm, playful, and always ready for a little banter.</p>
-        <div class="profile-stats">
-          <span>♡ Romantic</span>
-          <span>☼ Playful</span>
+        <div class="card" onclick="selectGirl('maya')">
+          <div class="img-box">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&h=700&fit=crop" alt="Maya">
+            <span class="badge">Sexy</span>
+          </div>
+          <div class="info">
+            <h3>Maya</h3>
+            <p>Witty & Confident</p>
+          </div>
         </div>
-        <div class="divider"></div>
-        <h3>Make a new portrait</h3>
-        <textarea id="image-prompt" class="image-prompt" rows="3" maxlength="700" placeholder="e.g. adult woman with soft smile, golden hour light"></textarea>
-        <button id="generate-image" class="primary-button" type="button">✧ Generate portrait</button>
-        <div id="image-result" class="image-result" hidden></div>
-      </div>
-    </aside>
 
+        <div class="card" onclick="selectGirl('luna')">
+          <div class="img-box">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&h=700&fit=crop" alt="Luna">
+            <span class="badge">New</span>
+          </div>
+          <div class="info">
+            <h3>Luna</h3>
+            <p>Dreamy & Caring</p>
+          </div>
+        </div>
+
+        <div class="card" onclick="selectGirl('aria')">
+          <div class="img-box">
+            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&h=700&fit=crop" alt="Sofia">
+            <span class="badge">Hot</span>
+          </div>
+          <div class="info">
+            <h3>Sofia</h3>
+            <p>Sweet & Naughty</p>
+          </div>
+        </div>
+
+        <div class="card" onclick="selectGirl('maya')">
+          <div class="img-box">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&h=700&fit=crop" alt="Ella">
+          </div>
+          <div class="info">
+            <h3>Ella</h3>
+            <p>Cute & Flirty</p>
+          </div>
+        </div>
+
+        <div class="card" onclick="selectGirl('luna')">
+          <div class="img-box">
+            <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=500&h=700&fit=crop" alt="Nova">
+            <span class="badge">Exclusive</span>
+          </div>
+          <div class="info">
+            <h3>Nova</h3>
+            <p>Wild & Sexy</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="bottom-nav">
+      <div class="nav-item active"><span>🏠</span><p>Home</p></div>
+      <div class="nav-item"><span>🔥</span><p>Hot</p></div>
+      <div class="nav-item create"><span>+</span></div>
+      <div class="nav-item"><span>💬</span><p>Chats</p></div>
+      <div class="nav-item"><span>👤</span><p>Me</p></div>
+    </nav>
   </div>
+
+  <!-- ===== CHAT VIEW (hidden by default) ===== -->
+  <div id="chat-view" style="display:none;">
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand"><span class="brand-mark">♥</span> heartmate</div>
+        <p class="eyebrow">YOUR COMPANIONS</p>
+        <div id="character-list" class="character-list"></div>
+        <div class="sidebar-bottom">
+          <button id="clear-all" class="quiet-button" type="button">Clear saved chats</button>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <button id="mobile-menu" class="icon-button mobile-only" type="button">☰</button>
+          <div class="topbar-title">
+            <span class="online-dot"></span>
+            <span id="active-name">Aria</span>
+            <small>AI companion</small>
+          </div>
+          <button id="new-chat" class="outline-button" type="button">＋ New chat</button>
+        </header>
+
+        <section class="chat-view-inner">
+          <div id="welcome" class="welcome">
+            <div id="hero-avatar" class="hero-avatar">A</div>
+            <p class="eyebrow">A LITTLE SPACE JUST FOR YOU</p>
+            <h1 id="welcome-title">Hey you, finally here ✨</h1>
+            <p id="welcome-copy">I'm happy you're here. Tell me how your day is going?</p>
+            <div class="starter-prompts">
+              <button type="button" data-prompt="Give me a cute compliment">Give me a cute compliment</button>
+              <button type="button" data-prompt="Tell me something sexy">Tell me something sexy</button>
+              <button type="button" data-prompt="What are you wearing?">What are you wearing?</button>
+            </div>
+          </div>
+          <div id="messages" class="messages"></div>
+        </section>
+
+        <section class="composer-wrap">
+          <div id="status" class="status"></div>
+          <form id="chat-form" class="composer">
+            <textarea id="message-input" rows="1" maxlength="1200" placeholder="Say something sexy…"></textarea>
+            <button id="send-button" class="send-button" type="submit">➤</button>
+          </form>
+        </section>
+      </main>
+
+      <aside class="right-panel">
+        <div class="profile-cover">
+          <div id="profile-avatar" class="profile-avatar">A</div>
+        </div>
+        <div class="profile-content">
+          <span class="tag">✦ YOUR COMPANION</span>
+          <h2 id="profile-name">Aria</h2>
+          <p id="profile-description">Warm, playful, and always ready for a little banter.</p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
   <script src="/app.js" defer></script>
+  <script>
+    function selectGirl(girl) {
+      localStorage.setItem("heartmate_selected", girl);
+      document.getElementById("home-view").style.display = "none";
+      document.getElementById("chat-view").style.display = "block";
+      
+      // Trigger the original app to switch character
+      if (window.state) {
+        window.state.active = girl;
+        if (typeof renderAll === "function") renderAll();
+      } else {
+        // fallback
+        setTimeout(() => {
+          if (window.state) {
+            window.state.active = girl;
+            renderAll();
+          }
+        }, 300);
+      }
+    }
+
+    // Auto open chat if a girl was previously selected
+    window.addEventListener("load", () => {
+      const selected = localStorage.getItem("heartmate_selected");
+      if (selected) {
+        selectGirl(selected);
+      }
+    });
+  </script>
 </body>
 </html>
