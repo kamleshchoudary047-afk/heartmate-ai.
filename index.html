@@ -1,140 +1,78 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Candy Chat</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100d18">
+  <meta name="description" content="A personal, fictional AI companion chat.">
+  <title>Heartmate — Your AI Companion</title>
+  <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-
-  <!-- Header -->
-  <header class="header">
-    <div class="logo">candy<span>.ai</span></div>
-    <div class="header-right">
-      <div class="token-box">★ 0</div>
-    </div>
-  </header>
-
-  <!-- Promo Banner -->
-  <section class="promo-banner">
-    <div class="promo-content">
-      <h1>Halloween Sale</h1>
-      <p>Up to 65% more tokens</p>
-      <button class="promo-btn">Shop Now</button>
-    </div>
-  </section>
-
-  <!-- Featured Characters -->
-  <section class="featured">
-    <div class="section-header">
-      <h2>Explore Featured Characters</h2>
-      <p>Chat, call and create with any AI girlfriend</p>
-    </div>
-
-    <div class="characters-grid">
-
-      <!-- Card 1 -->
-      <div class="character-card" onclick="startChat('aria')">
-        <div class="card-image">
-          <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400&h=500&fit=crop" alt="Aria">
-          <span class="badge new">NEW</span>
-        </div>
-        <div class="card-info">
-          <h3>Aria</h3>
-          <p>Playful & Flirty</p>
-        </div>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#" aria-label="Heartmate home">
+        <span class="brand-mark">♥</span><span>heartmate</span>
+      </a>
+      <p class="eyebrow">YOUR COMPANIONS</p>
+      <div id="character-list" class="character-list"></div>
+      <div class="sidebar-bottom">
+        <div class="privacy-note"><span>●</span> Personal mode <small>Chats stay in this browser</small></div>
+        <button id="clear-all" class="quiet-button" type="button">Clear saved chats</button>
       </div>
+    </aside>
 
-      <!-- Card 2 -->
-      <div class="character-card exclusive" onclick="startChat('luna')">
-        <div class="card-image">
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=500&fit=crop" alt="Luna">
-          <span class="badge exclusive">Exclusive</span>
+    <main class="main-panel">
+      <header class="topbar">
+        <button id="mobile-menu" class="icon-button mobile-only" type="button" aria-label="Show characters">☰</button>
+        <div class="topbar-title"><span class="online-dot"></span><span id="active-name">Aria</span><small>AI companion · fictional adult</small></div>
+        <button id="new-chat" class="outline-button" type="button">＋ New chat</button>
+      </header>
+
+      <section id="chat-view" class="chat-view" aria-live="polite">
+        <div id="welcome" class="welcome">
+          <div id="hero-avatar" class="hero-avatar">A</div>
+          <p class="eyebrow">A LITTLE SPACE JUST FOR YOU</p>
+          <h1 id="welcome-title">Hey you, finally here ✨</h1>
+          <p id="welcome-copy">I'm happy you're here. Tell me how your day is going?</p>
+          <div class="starter-prompts">
+            <button type="button" data-prompt="Give me a cute compliment">Give me a cute compliment</button>
+            <button type="button" data-prompt="Let's play 20 questions">Let's play 20 questions</button>
+            <button type="button" data-prompt="Tell me something sweet">Tell me something sweet</button>
+          </div>
         </div>
-        <div class="card-info">
-          <h3>Luna</h3>
-          <p>Seductive & Mysterious</p>
-        </div>
+        <div id="messages" class="messages"></div>
+      </section>
+
+      <section class="composer-wrap">
+        <div id="status" class="status" role="status"></div>
+        <form id="chat-form" class="composer">
+          <textarea id="message-input" rows="1" maxlength="1200" placeholder="Say something sweet…" aria-label="Your message"></textarea>
+          <button id="send-button" class="send-button" type="submit" aria-label="Send message">➤</button>
+        </form>
+        <p class="disclaimer">AI character, not a real person. Be kind to yourself and each other.</p>
+      </section>
+    </main>
+
+    <aside class="right-panel">
+      <div class="profile-cover" id="profile-cover">
+        <div id="profile-avatar" class="profile-avatar">A</div>
       </div>
-
-      <!-- Card 3 -->
-      <div class="character-card" onclick="startChat('sofia')">
-        <div class="card-image">
-          <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=500&fit=crop" alt="Sofia">
-          <span class="badge new">NEW</span>
-        </div>
-        <div class="card-info">
-          <h3>Sofia</h3>
-          <p>Sweet & Caring</p>
-        </div>
+      <div class="profile-content">
+        <span class="tag">✦ YOUR COMPANION</span>
+        <h2 id="profile-name">Aria</h2>
+        <p id="profile-description">Warm, playful, and always ready for a little banter.</p>
+        <div class="profile-stats"><span>♡ Romantic</span><span>☼ Playful</span></div>
+        <div class="divider"></div>
+        <h3>Make a new portrait</h3>
+        <p class="muted">Create a new, non-explicit fictional character image. Image generation depends on free model availability.</p>
+        <textarea id="image-prompt" class="image-prompt" rows="3" maxlength="700" placeholder="e.g. adult woman with curly dark hair, cozy sweater, golden-hour portrait"></textarea>
+        <button id="generate-image" class="primary-button" type="button">✧ Generate portrait</button>
+        <div id="image-result" class="image-result" hidden></div>
+        <p class="tiny muted">Generated images may be subject to provider limits and content rules.</p>
       </div>
-
-      <!-- Card 4 -->
-      <div class="character-card" onclick="startChat('maya')">
-        <div class="card-image">
-          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=500&fit=crop" alt="Maya">
-        </div>
-        <div class="card-info">
-          <h3>Maya</h3>
-          <p>Bold & Confident</p>
-        </div>
-      </div>
-
-      <!-- Card 5 -->
-      <div class="character-card" onclick="startChat('ella')">
-        <div class="card-image">
-          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop" alt="Ella">
-          <span class="badge new">NEW</span>
-        </div>
-        <div class="card-info">
-          <h3>Ella</h3>
-          <p>Cute & Innocent</p>
-        </div>
-      </div>
-
-      <!-- Card 6 -->
-      <div class="character-card" onclick="startChat('nova')">
-        <div class="card-image">
-          <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=500&fit=crop" alt="Nova">
-        </div>
-        <div class="card-info">
-          <h3>Nova</h3>
-          <p>Wild & Adventurous</p>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <div class="nav-item active">
-      <span>🏠</span>
-      <p>Home</p>
-    </div>
-    <div class="nav-item">
-      <span>🔥</span>
-      <p>Discover</p>
-    </div>
-    <div class="nav-item create">
-      <span>＋</span>
-    </div>
-    <div class="nav-item">
-      <span>🔍</span>
-      <p>Search</p>
-    </div>
-    <div class="nav-item">
-      <span>💬</span>
-      <p>Chat</p>
-    </div>
-  </nav>
-
-  <script>
-    function startChat(girl) {
-      window.location.href = `chat.html?girl=${girl}`;
-    }
-  </script>
-
+    </aside>
+  </div>
+  <script src="/app.js" defer></script>
 </body>
 </html>
