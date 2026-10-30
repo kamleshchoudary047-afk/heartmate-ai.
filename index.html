@@ -1,69 +1,50 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="theme-color" content="#0a0a0f">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Heartmate</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 
-  <!-- HOME VIEW -->
-  <div id="home-view">
+  <!-- ==================== HOME PAGE ==================== -->
+  <div id="home">
     <header class="header">
       <div class="logo">heart<span>mate</span></div>
-      <div class="header-right">
-        <div class="token">★ 0</div>
-      </div>
+      <div class="token">★ 0</div>
     </header>
 
-    <section class="promo">
-      <div class="promo-content">
-        <h1>Hot AI Girls</h1>
-        <p>Chat with sexy companions anytime</p>
-      </div>
-    </section>
+    <div class="promo">
+      <h1>Hot AI Girls</h1>
+      <p>Chat with sexy companions</p>
+    </div>
 
-    <section class="section">
-      <div class="section-header">
-        <h2>Featured Companions</h2>
-        <p>Choose your AI girlfriend</p>
-      </div>
+    <div class="section">
+      <h2>Featured Companions</h2>
+      <p class="subtitle">Choose who you want to talk to</p>
 
-      <div class="grid" id="character-grid">
-        <!-- Cards injected by JS -->
-      </div>
-    </section>
+      <div class="grid" id="grid"></div>
+    </div>
 
     <nav class="bottom-nav">
-      <div class="nav-item active" onclick="showSection('home')">
-        <span>🏠</span><p>Home</p>
-      </div>
-      <div class="nav-item" onclick="showSection('hot')">
-        <span>🔥</span><p>Hot</p>
-      </div>
-      <div class="nav-item create">
-        <span>+</span>
-      </div>
-      <div class="nav-item" onclick="showSection('chats')">
-        <span>💬</span><p>Chats</p>
-      </div>
-      <div class="nav-item" onclick="showSection('me')">
-        <span>👤</span><p>Me</p>
-      </div>
+      <div class="nav-item active"><span>🏠</span><p>Home</p></div>
+      <div class="nav-item"><span>🔥</span><p>Hot</p></div>
+      <div class="nav-item create"><span>+</span></div>
+      <div class="nav-item"><span>💬</span><p>Chats</p></div>
+      <div class="nav-item"><span>👤</span><p>Me</p></div>
     </nav>
   </div>
 
-  <!-- CHAT VIEW -->
-  <div id="chat-view" class="chat-view">
+  <!-- ==================== CHAT PAGE ==================== -->
+  <div id="chat" style="display:none;">
     <header class="chat-header">
-      <button class="back-btn" onclick="goHome()">←</button>
-      <div class="chat-user">
-        <div class="chat-avatar" id="chat-avatar">A</div>
+      <button onclick="goHome()" class="back">←</button>
+      <div class="chat-info">
+        <div class="avatar" id="chat-avatar">A</div>
         <div>
-          <div class="chat-name" id="chat-name">Aria</div>
-          <div class="chat-status">Online</div>
+          <div class="name" id="chat-name">Aria</div>
+          <div class="status">Online</div>
         </div>
       </div>
       <div></div>
@@ -71,51 +52,52 @@
 
     <div class="messages" id="messages"></div>
 
-    <div class="composer-area">
-      <div class="status" id="status"></div>
-      <form id="chat-form" class="composer">
-        <textarea id="message-input" placeholder="Say something sexy..." rows="1"></textarea>
-        <button type="submit" class="send-btn">➤</button>
+    <div class="input-area">
+      <div id="typing" class="typing"></div>
+      <form id="form" class="composer">
+        <textarea id="input" placeholder="Say something sexy..." rows="1"></textarea>
+        <button type="submit">➤</button>
       </form>
     </div>
   </div>
 
   <script>
     const girls = [
-      { id: "aria", name: "Aria", tag: "Warm & Playful", img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&h=800&fit=crop", badge: "HOT" },
-      { id: "maya", name: "Maya", tag: "Confident & Sexy", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=800&fit=crop", badge: "SEXY" },
-      { id: "luna", name: "Luna", tag: "Soft & Naughty", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&h=800&fit=crop", badge: "NEW" },
-      { id: "sofia", name: "Sofia", tag: "Sweet Temptation", img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=800&fit=crop", badge: "HOT" },
-      { id: "ella", name: "Ella", tag: "Cute & Flirty", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=800&fit=crop", badge: "" },
-      { id: "nova", name: "Nova", tag: "Wild Energy", img: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=600&h=800&fit=crop", badge: "EXCLUSIVE" },
-      { id: "zara", name: "Zara", tag: "Exotic Beauty", img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&h=800&fit=crop&sat=-30", badge: "HOT" },
-      { id: "ivy", name: "Ivy", tag: "Mysterious", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=800&fit=crop&sat=-40", badge: "SEXY" },
-      { id: "ruby", name: "Ruby", tag: "Passionate", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&h=800&fit=crop&sat=-50", badge: "NEW" },
-      { id: "chloe", name: "Chloe", tag: "Playful Tease", img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=800&fit=crop&sat=-20", badge: "HOT" },
-      { id: "nina", name: "Nina", tag: "Seductive", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=800&fit=crop&sat=-60", badge: "" },
-      { id: "lila", name: "Lila", tag: "Soft Domme", img: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=600&h=800&fit=crop&sat=-70", badge: "EXCLUSIVE" },
-      { id: "amber", name: "Amber", tag: "Sun Kissed", img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&h=800&fit=crop", badge: "HOT" },
-      { id: "violet", name: "Violet", tag: "Dark Desire", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=800&fit=crop", badge: "SEXY" },
-      { id: "scarlett", name: "Scarlett", tag: "Fiery", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&h=800&fit=crop", badge: "NEW" },
-      { id: "jade", name: "Jade", tag: "Exotic", img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=800&fit=crop", badge: "HOT" },
-      { id: "rose", name: "Rose", tag: "Romantic", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=800&fit=crop", badge: "" },
-      { id: "stella", name: "Stella", tag: "Glamorous", img: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=600&h=800&fit=crop", badge: "EXCLUSIVE" },
-      { id: "kira", name: "Kira", tag: "Bold", img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=600&h=800&fit=crop", badge: "HOT" },
-      { id: "diana", name: "Diana", tag: "Elegant", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&h=800&fit=crop", badge: "SEXY" },
-      { id: "freya", name: "Freya", tag: "Nordic", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=600&h=800&fit=crop", badge: "NEW" },
-      { id: "sienna", name: "Sienna", tag: "Curvy & Warm", img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=800&fit=crop", badge: "HOT" },
-      { id: "valentina", name: "Valentina", tag: "Latina Fire", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=800&fit=crop", badge: "EXCLUSIVE" },
-      { id: "aurora", name: "Aurora", tag: "Dream Girl", img: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=600&h=800&fit=crop", badge: "HOT" }
+      { id: "aria", name: "Aria", tag: "Warm & Playful", img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500&h=700&fit=crop", badge: "HOT" },
+      { id: "maya", name: "Maya", tag: "Confident & Sexy", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&h=700&fit=crop", badge: "SEXY" },
+      { id: "luna", name: "Luna", tag: "Soft & Naughty", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&h=700&fit=crop", badge: "NEW" },
+      { id: "sofia", name: "Sofia", tag: "Sweet Temptation", img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&h=700&fit=crop", badge: "HOT" },
+      { id: "ella", name: "Ella", tag: "Cute & Flirty", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&h=700&fit=crop", badge: "" },
+      { id: "nova", name: "Nova", tag: "Wild Energy", img: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=500&h=700&fit=crop", badge: "EXCLUSIVE" },
+      { id: "zara", name: "Zara", tag: "Exotic Beauty", img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500&h=700&fit=crop&sat=-30", badge: "HOT" },
+      { id: "ivy", name: "Ivy", tag: "Mysterious", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&h=700&fit=crop&sat=-40", badge: "SEXY" },
+      { id: "ruby", name: "Ruby", tag: "Passionate", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&h=700&fit=crop&sat=-50", badge: "NEW" },
+      { id: "chloe", name: "Chloe", tag: "Playful Tease", img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&h=700&fit=crop&sat=-20", badge: "HOT" },
+      { id: "nina", name: "Nina", tag: "Seductive", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&h=700&fit=crop&sat=-60", badge: "" },
+      { id: "lila", name: "Lila", tag: "Soft Domme", img: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=500&h=700&fit=crop&sat=-70", badge: "EXCLUSIVE" },
+      { id: "amber", name: "Amber", tag: "Sun Kissed", img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500&h=700&fit=crop", badge: "HOT" },
+      { id: "violet", name: "Violet", tag: "Dark Desire", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&h=700&fit=crop", badge: "SEXY" },
+      { id: "scarlett", name: "Scarlett", tag: "Fiery", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&h=700&fit=crop", badge: "NEW" },
+      { id: "jade", name: "Jade", tag: "Exotic", img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&h=700&fit=crop", badge: "HOT" },
+      { id: "rose", name: "Rose", tag: "Romantic", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&h=700&fit=crop", badge: "" },
+      { id: "stella", name: "Stella", tag: "Glamorous", img: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=500&h=700&fit=crop", badge: "EXCLUSIVE" },
+      { id: "kira", name: "Kira", tag: "Bold", img: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=500&h=700&fit=crop", badge: "HOT" },
+      { id: "diana", name: "Diana", tag: "Elegant", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&h=700&fit=crop", badge: "SEXY" },
+      { id: "freya", name: "Freya", tag: "Nordic", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&h=700&fit=crop", badge: "NEW" },
+      { id: "sienna", name: "Sienna", tag: "Curvy & Warm", img: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=500&h=700&fit=crop", badge: "HOT" },
+      { id: "valentina", name: "Valentina", tag: "Latina Fire", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&h=700&fit=crop", badge: "EXCLUSIVE" },
+      { id: "aurora", name: "Aurora", tag: "Dream Girl", img: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=500&h=700&fit=crop", badge: "HOT" }
     ];
 
-    let currentGirl = null;
-    let chatHistory = {};
+    let current = null;
+    let history = {};
 
-    function renderGrid(list = girls) {
-      const grid = document.getElementById("character-grid");
-      grid.innerHTML = list.map(g => `
+    // Render girls
+    function render() {
+      const grid = document.getElementById("grid");
+      grid.innerHTML = girls.map(g => `
         <div class="card" onclick="openChat('${g.id}')">
-          <div class="img-box">
+          <div class="img">
             <img src="${g.img}" alt="${g.name}" loading="lazy">
             ${g.badge ? `<span class="badge">${g.badge}</span>` : ""}
           </div>
@@ -128,99 +110,91 @@
     }
 
     function openChat(id) {
-      const girl = girls.find(g => g.id === id);
-      if (!girl) return;
+      current = girls.find(g => g.id === id);
+      if (!current) return;
 
-      currentGirl = girl;
-      document.getElementById("home-view").style.display = "none";
-      document.getElementById("chat-view").style.display = "flex";
+      document.getElementById("home").style.display = "none";
+      document.getElementById("chat").style.display = "flex";
 
-      document.getElementById("chat-name").textContent = girl.name;
-      document.getElementById("chat-avatar").textContent = girl.name[0];
-      document.getElementById("messages").innerHTML = `
-        <div class="welcome-msg">
-          <div class="big-avatar">${girl.name[0]}</div>
+      document.getElementById("chat-name").textContent = current.name;
+      document.getElementById("chat-avatar").textContent = current.name[0];
+
+      const box = document.getElementById("messages");
+      box.innerHTML = `
+        <div class="welcome">
+          <div class="big-avatar">${current.name[0]}</div>
           <h3>Hey baby...</h3>
           <p>I've been waiting for you. What do you want to do with me tonight?</p>
         </div>
       `;
 
-      // Load previous messages if any
-      if (chatHistory[id]) {
-        chatHistory[id].forEach(m => appendMessage(m.role, m.content, false));
+      if (history[id]) {
+        history[id].forEach(m => addMessage(m.role, m.content, false));
       }
     }
 
     function goHome() {
-      document.getElementById("chat-view").style.display = "none";
-      document.getElementById("home-view").style.display = "block";
+      document.getElementById("chat").style.display = "none";
+      document.getElementById("home").style.display = "block";
     }
 
-    function showSection(section) {
-      document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-      event.currentTarget.classList.add("active");
-
-      if (section === "home") renderGrid(girls);
-      if (section === "hot") renderGrid(girls.filter(g => ["HOT","SEXY","EXCLUSIVE"].includes(g.badge)));
-      if (section === "chats") alert("Your chat history will appear here");
-      if (section === "me") alert("Profile section coming soon");
-    }
-
-    function appendMessage(role, content, save = true) {
-      const messages = document.getElementById("messages");
+    function addMessage(role, text, save = true) {
+      const box = document.getElementById("messages");
       const div = document.createElement("div");
-      div.className = `message ${role}`;
-      div.innerHTML = `<div class="bubble">${content}</div>`;
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
+      div.className = `msg ${role}`;
+      div.innerHTML = `<div class="bubble">${text}</div>`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
 
-      if (save && currentGirl) {
-        if (!chatHistory[currentGirl.id]) chatHistory[currentGirl.id] = [];
-        chatHistory[currentGirl.id].push({ role, content });
+      if (save && current) {
+        if (!history[current.id]) history[current.id] = [];
+        history[current.id].push({ role, content: text });
       }
     }
 
-    document.getElementById("chat-form").addEventListener("submit", async (e) => {
+    document.getElementById("form").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const input = document.getElementById("message-input");
+      const input = document.getElementById("input");
       const text = input.value.trim();
-      if (!text || !currentGirl) return;
+      if (!text || !current) return;
 
-      appendMessage("user", text);
+      addMessage("user", text);
       input.value = "";
-      document.getElementById("status").textContent = `${currentGirl.name} is typing...`;
+      document.getElementById("typing").textContent = `${current.name} is typing...`;
 
       try {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            character: currentGirl.id,
+            character: current.id,
             message: text,
-            history: chatHistory[currentGirl.id] || []
+            history: history[current.id] || []
           })
         });
+
         const data = await res.json();
-        document.getElementById("status").textContent = "";
+        document.getElementById("typing").textContent = "";
+
         if (data.reply) {
-          appendMessage("assistant", data.reply);
+          addMessage("assistant", data.reply);
         } else {
-          appendMessage("assistant", "Mmm I'm a bit busy right now baby... try again?");
+          addMessage("assistant", "Mmm... I'm a little distracted right now baby. Try again?");
         }
       } catch (err) {
-        document.getElementById("status").textContent = "";
-        appendMessage("assistant", "I couldn't connect right now. Please try again.");
+        document.getElementById("typing").textContent = "";
+        addMessage("assistant", "I couldn't connect right now. Please try again later.");
       }
     });
 
-    // Auto resize textarea
-    document.getElementById("message-input").addEventListener("input", function() {
+    // Auto-resize textarea
+    document.getElementById("input").addEventListener("input", function() {
       this.style.height = "auto";
-      this.style.height = Math.min(this.scrollHeight, 120) + "px";
+      this.style.height = Math.min(this.scrollHeight, 110) + "px";
     });
 
-    // Init
-    renderGrid();
+    // Start
+    render();
   </script>
 </body>
 </html>
