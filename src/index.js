@@ -290,7 +290,8 @@ Conversation instructions:
       }
     }
 
-    // CHARACTER IMAGE GENERATION API.
+    
+    // ARIA PERSONALIZED IMAGE GENERATION API.
     if (
       url.pathname === "/api/image" &&
       request.method === "POST"
@@ -301,62 +302,79 @@ Conversation instructions:
         }
 
         const body = await request.json();
-        const prompt = cleanText(body.prompt, 500);
 
-        if (!prompt) {
+        const characterId = cleanText(
+          body.character,
+          40
+        ).toLowerCase();
+
+        if (characterId !== "aria") {
           return json({
-            error: "Please describe the image."
+            error: "This image feature is currently being tested with Aria only."
+          }, 400);
+        }
+
+        const scene = cleanText(
+          body.scene || body.prompt,
+          400
+        );
+
+        if (!scene) {
+          return json({
+            error: "Please describe the picture you want Aria to create."
           }, 400);
         }
 
         const safePrompt =
-          "Create a tasteful, non-explicit portrait of a fictional adult woman aged 25 or older. " +
-          "Fully clothed, elegant styling, cinematic lighting, " +
-          "no nudity, no sexual activity. " +
-          prompt;
+          "Create a tasteful, photorealistic image of Aria, " +
+          "a fictional adult woman aged 25 or older. " +
+          "She has a warm, friendly, playful appearance. " +
+          "Scene requested: " + scene + ". " +
+          "Keep her appearance consistent within this image. " +
+          "She must be fully clothed or appropriately covered " +
+          "with a towel or robe in bathroom scenes. " +
+          "Romantic atmosphere, natural pose, cinematic lighting. " +
+          "No nudity, no exposed intimate areas, no sexual activity. " +
+          "No text, captions, or watermarks.";
 
         const result = await env.AI.run(
           "@cf/black-forest-labs/flux-1-schnell",
           {
-            prompt: safePrompt,
-            width: 768,
-            height: 1024
+            prompt: safePrompt.slice(0, 2000),
+            steps: 4
           }
         );
 
-        if (
-          result instanceof ReadableStream ||
-          result instanceof ArrayBuffer ||
-          ArrayBuffer.isView(result)
-        ) {
-          return new Response(result, {
-            status: 200,
-            headers: {
-              "content-type": "image/png",
-              "cache-control": "no-store",
-              "x-content-type-options": "nosniff"
-            }
-          });
+        if (!result || typeof result.image !== "string") {
+          throw new Error("Image model returned no image.");
         }
 
-        return json({
-          error: "The image service returned an unsupported format."
-        }, 502);
+        const binary = Uint8Array.from(
+          atob(result.image),
+          character => character.charCodeAt(0)
+        );
+
+        return new Response(binary, {
+          status: 200,
+          headers: {
+            "content-type": "image/jpeg",
+            "cache-control": "no-store",
+            "x-content-type-options": "nosniff"
+          }
+        });
 
       } catch (error) {
         console.error(
-          "Image API error:",
-          error?.message || String(error),
-          error?.stack || ""
+          "Aria image API error:",
+          error?.message || String(error)
         );
 
         return json({
-          error: "Image generation is temporarily unavailable."
+          error: "Aria's image could not be generated. Please try again."
         }, 502);
       }
     }
 
-    // Unknown API endpoint.
     if (url.pathname.startsWith("/api/")) {
       return json({
         error: "API endpoint not found."
