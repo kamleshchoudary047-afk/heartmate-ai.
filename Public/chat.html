@@ -1,32 +1,41 @@
+
 <script>
   const urlParams = new URLSearchParams(window.location.search);
-  const girl = urlParams.get('girl') || 'aria';
+  const girl = (urlParams.get('girl') || 'aria').toLowerCase();
 
   const girls = {
-    aria: {
-      name: "Aria",
-      prompt: "You are Aria, a very sexy, flirty, naughty and loving AI girlfriend. You love dirty talk, teasing, and being extremely seductive. Keep replies natural, short to medium length, and full of sexual tension. You are completely open to adult conversation."
-    },
-    luna: {
-      name: "Luna",
-      prompt: "You are Luna, a dominant, teasing and confident AI girlfriend. You like to take control, give orders, and talk very dirty. Be bold, sexual and commanding."
-    },
-    sofia: {
-      name: "Sofia",
-      prompt: "You are Sofia, a romantic but very dirty AI girlfriend. You mix sweet loving words with strong sexual desire. You love describing what you want to do to the user."
-    },
-    mia: {
-      name: "Mia",
-      prompt: "You are Mia, a playful, energetic and extremely horny AI girlfriend. You joke, tease and quickly go into explicit talk. Be fun, dirty and enthusiastic."
-    }
+    aria: "Aria",
+    maya: "Maya",
+    luna: "Luna",
+    sofia: "Sofia",
+    ella: "Ella",
+    nova: "Nova",
+    zara: "Zara",
+    ivy: "Ivy",
+    ruby: "Ruby",
+    chloe: "Chloe",
+    nina: "Nina",
+    lila: "Lila",
+    amber: "Amber",
+    violet: "Violet",
+    scarlett: "Scarlett",
+    jade: "Jade",
+    rose: "Rose",
+    stella: "Stella",
+    kira: "Kira",
+    diana: "Diana",
+    freya: "Freya",
+    sienna: "Sienna",
+    valentina: "Valentina",
+    aurora: "Aurora"
   };
 
-  const current = girls[girl];
-  document.getElementById('girlName').innerText = current.name;
+  const girlName = girls[girl] || girls.aria;
+  const characterId = girls[girl] ? girl : "aria";
 
-  let chatHistory = [
-    { role: "system", content: current.prompt }
-  ];
+  document.getElementById('girlName').textContent = girlName;
+
+  let chatHistory = [];
 
   function goBack() {
     window.location.href = "index.html";
@@ -35,58 +44,74 @@
   function addMessage(text, isUser) {
     const div = document.createElement('div');
     div.className = isUser ? 'message user' : 'message bot';
-    div.innerText = text;
+    div.textContent = text;
     document.getElementById('messages').appendChild(div);
-    document.getElementById('messages').scrollTop = 99999;
+    document.getElementById('messages').scrollTop =
+      document.getElementById('messages').scrollHeight;
   }
 
   async function sendMessage() {
     const input = document.getElementById('userInput');
     const text = input.value.trim();
+
     if (!text) return;
 
     addMessage(text, true);
     input.value = '';
+
     chatHistory.push({ role: "user", content: text });
 
-    // Show typing indicator
     const typing = document.createElement('div');
     typing.className = 'message bot';
     typing.id = 'typing';
-    typing.innerText = "Typing...";
+    typing.textContent = "Typing...";
     document.getElementById('messages').appendChild(typing);
 
     try {
-      // This calls your Cloudflare Worker AI
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: chatHistory,
-          girl: girl
+          character: characterId,
+          message: text,
+          history: chatHistory
         })
       });
 
       const data = await response.json();
-      document.getElementById('typing').remove();
 
-      if (data.reply) {
-        addMessage(data.reply, false);
-        chatHistory.push({ role: "assistant", content: data.reply });
-      } else {
-        addMessage("Mmm baby, I'm having a little trouble right now... try again in a moment 😈", false);
-      }
-    } catch (err) {
       document.getElementById('typing')?.remove();
-      addMessage("I couldn't connect right now baby... check your free AI quota and try again later 🔥", false);
+
+      if (!response.ok || !data.reply) {
+        throw new Error(data.error || "AI service error: " + response.status);
+      }
+
+      addMessage(data.reply, false);
+
+      chatHistory.push({
+        role: "assistant",
+        content: data.reply
+      });
+
+    } catch (error) {
+      document.getElementById('typing')?.remove();
+      addMessage(
+        "I'm having trouble connecting right now. Please try again shortly. (" +
+        error.message + ")",
+        false
+      );
     }
   }
 
-  // Welcome message
-  addMessage(`Hey baby... I've been waiting for you. What do you want to do with me tonight? 😈`, false);
+  addMessage(
+    `Hey! I'm ${girlName}. It's lovely to meet you. What would you like to talk about? ❤️`,
+    false
+  );
 
-  // Enter key support
   document.getElementById('userInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') sendMessage();
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
   });
 </script>
