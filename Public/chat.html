@@ -7,9 +7,7 @@
 <title>Heartmate AI - Chat</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -43,16 +41,11 @@ header {
   font-size: 22px;
 }
 
-.profile h3 {
-  margin: 0 0 5px;
-}
-
-.profile small {
-  color: #a8e6b0;
-}
+.profile h3 { margin: 0 0 5px; }
+.profile small { color: #a8e6b0; }
 
 #messages {
-  height: calc(100dvh - 145px);
+  height: calc(100dvh - 235px);
   overflow-y: auto;
   padding: 18px;
   display: flex;
@@ -61,7 +54,7 @@ header {
 }
 
 .message {
-  max-width: 82%;
+  max-width: 85%;
   padding: 13px 16px;
   border-radius: 18px;
   line-height: 1.5;
@@ -81,6 +74,21 @@ header {
   border-bottom-right-radius: 5px;
 }
 
+.image-message {
+  max-width: 88%;
+  padding: 10px;
+  background: #35243e;
+  border-radius: 16px;
+  align-self: flex-start;
+}
+
+.image-message img {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  border-radius: 12px;
+}
+
 #typing {
   color: #c5a9cb;
   padding: 0 18px 8px;
@@ -88,41 +96,66 @@ header {
   display: none;
 }
 
-form {
+.footer {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 12px;
+  padding: 10px;
   background: #24172d;
-  display: flex;
-  gap: 9px;
+  border-top: 1px solid #49334f;
 }
+
+#photoForm, #chatForm {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+#chatForm { margin-bottom: 0; }
 
 input {
   flex: 1;
   min-width: 0;
-  padding: 14px;
+  padding: 13px;
   border: 1px solid #65466d;
   border-radius: 25px;
   background: #35243e;
   color: white;
-  font-size: 16px;
+  font-size: 15px;
   outline: none;
 }
 
 button {
   border: 0;
   border-radius: 25px;
-  padding: 0 20px;
+  padding: 0 16px;
   background: #e34e9a;
   color: white;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#photoButton {
+  background: #8052a3;
 }
 
 button:disabled {
   opacity: 0.5;
+  cursor: wait;
+}
+
+#photoStatus {
+  color: #d9bde3;
+  font-size: 12px;
+  padding: 0 8px 7px;
+  display: none;
+}
+
+@media (max-width: 380px) {
+  button { padding: 0 11px; }
+  input { font-size: 14px; }
 }
 </style>
 </head>
@@ -139,23 +172,39 @@ button:disabled {
 </header>
 
 <main id="messages">
-  <div class="message bot" id="welcome">
+  <div class="message bot">
     Hey there! 💕 I'm happy you're here. How is your day going?
   </div>
 </main>
 
-<div id="typing">Your heartmate is typing...</div>
+<div class="footer">
 
-<form id="chatForm">
-  <input
-    id="messageInput"
-    type="text"
-    placeholder="Write a message..."
-    autocomplete="off"
-    required
-  >
-  <button id="sendButton" type="submit">Send</button>
-</form>
+  <div id="photoStatus">Creating your picture... Please wait.</div>
+
+  <form id="photoForm">
+    <input
+      id="sceneInput"
+      type="text"
+      placeholder="Describe Aria's photo scene..."
+      autocomplete="off"
+    >
+    <button id="photoButton" type="submit">
+      📸 Create
+    </button>
+  </form>
+
+  <form id="chatForm">
+    <input
+      id="messageInput"
+      type="text"
+      placeholder="Write a message..."
+      autocomplete="off"
+      required
+    >
+    <button id="sendButton" type="submit">Send</button>
+  </form>
+
+</div>
 
 <script>
 const params = new URLSearchParams(window.location.search);
@@ -189,24 +238,53 @@ const names = {
 };
 
 const girlName = names[character] || "Aria";
+
 document.getElementById("girlName").textContent = girlName;
 
 const messages = document.getElementById("messages");
 const form = document.getElementById("chatForm");
 const input = document.getElementById("messageInput");
 const button = document.getElementById("sendButton");
-const typing = document.getElementById("typing");
+
+const photoForm = document.getElementById("photoForm");
+const sceneInput = document.getElementById("sceneInput");
+const photoButton = document.getElementById("photoButton");
+const photoStatus = document.getElementById("photoStatus");
 
 const history = [];
+
+function scrollToBottom() {
+  messages.scrollTop = messages.scrollHeight;
+}
 
 function addMessage(text, sender) {
   const div = document.createElement("div");
   div.className = "message " + sender;
   div.textContent = text;
   messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
+  scrollToBottom();
 }
 
+function addImage(imageUrl, description) {
+  const box = document.createElement("div");
+  box.className = "image-message";
+
+  const caption = document.createElement("div");
+  caption.textContent = "💕 " + description;
+
+  const image = document.createElement("img");
+  image.src = imageUrl;
+  image.alt = girlName + " generated picture";
+  image.loading = "lazy";
+
+  box.appendChild(caption);
+  box.appendChild(image);
+  messages.appendChild(box);
+
+  scrollToBottom();
+}
+
+// Normal AI chat.
 form.addEventListener("submit", async function(event) {
   event.preventDefault();
 
@@ -218,7 +296,6 @@ form.addEventListener("submit", async function(event) {
 
   input.value = "";
   button.disabled = true;
-  typing.style.display = "block";
 
   try {
     const response = await fetch("/api/chat", {
@@ -236,7 +313,7 @@ form.addEventListener("submit", async function(event) {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || "The chat service is unavailable.");
+      throw new Error(data.error || "Chat service unavailable.");
     }
 
     const reply = data.reply;
@@ -250,14 +327,82 @@ form.addEventListener("submit", async function(event) {
 
   } catch (error) {
     addMessage(
-      "Sorry, I'm having trouble connecting right now. Please try again. (" +
-      error.message + ")",
+      "Sorry, I'm having trouble connecting. " + error.message,
       "bot"
     );
   } finally {
-    typing.style.display = "none";
     button.disabled = false;
     input.focus();
+  }
+});
+
+// New scene-specific image generation.
+photoForm.addEventListener("submit", async function(event) {
+  event.preventDefault();
+
+  const scene = sceneInput.value.trim();
+
+  if (!scene || photoButton.disabled) return;
+
+  if (character !== "aria") {
+    addMessage(
+      "New photo generation is currently being tested with Aria only. 💗",
+      "bot"
+    );
+    return;
+  }
+
+  addMessage("Create a new picture: " + scene, "user");
+
+  photoButton.disabled = true;
+  sceneInput.disabled = true;
+  photoStatus.style.display = "block";
+
+  try {
+    const response = await fetch("/api/image", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        character: "aria",
+        scene: scene
+      })
+    });
+
+    if (!response.ok) {
+      let errorMessage = "Image generation failed.";
+
+      try {
+        const data = await response.json();
+        errorMessage = data.error || errorMessage;
+      } catch (_) {}
+
+      throw new Error(errorMessage);
+    }
+
+    const imageBlob = await response.blob();
+
+    if (!imageBlob.type.startsWith("image/")) {
+      throw new Error("The server did not return a valid image.");
+    }
+
+    const imageUrl = URL.createObjectURL(imageBlob);
+
+    addImage(imageUrl, "A new picture of Aria");
+
+    sceneInput.value = "";
+
+  } catch (error) {
+    addMessage(
+      "I couldn't create that picture. " + error.message,
+      "bot"
+    );
+  } finally {
+    photoButton.disabled = false;
+    sceneInput.disabled = false;
+    photoStatus.style.display = "none";
+    sceneInput.focus();
   }
 });
 </script>
