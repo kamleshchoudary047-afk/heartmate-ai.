@@ -292,7 +292,8 @@ Conversation instructions:
 
     
 
-// ARIA PERSONALIZED IMAGE GENERATION API.
+
+// IMAGE GENERATION API FOR ALL 24 COMPANIONS.
 if (
   url.pathname === "/api/image" &&
   request.method === "POST"
@@ -303,91 +304,85 @@ if (
     }
 
     const body = await request.json();
+    const characterId = cleanText(body.character, 40).toLowerCase();
+    const profile = characters[characterId];
 
-    const characterId = cleanText(
-      body.character,
-      40
-    ).toLowerCase();
-
-    if (characterId !== "aria") {
-      return json({
-        error: "This image feature is currently being tested with Aria only."
-      }, 400);
+    if (!profile) {
+      return json({ error: "Character not found." }, 404);
     }
 
-    const scene = cleanText(
-      body.scene || body.prompt,
-      400
-    );
+    const scene = cleanText(body.scene || body.prompt, 400);
 
     if (!scene) {
-      return json({
-        error: "Please describe the picture you want Aria to create."
-      }, 400);
+      return json({ error: "Please describe the picture." }, 400);
     }
 
-    
-const safePrompt =
-      "Create a photorealistic image of Aria, the same fictional adult woman aged 25 or older shown in all four reference images. " +
-      "Preserve her facial identity, face shape, eyes, nose, lips and overall appearance. " +
-      "Use all four reference images as identity references. " +
+    const safePrompt =
+      "Create a photorealistic image of " + profile.name +
+      ", a fictional adult woman aged 25 or older. " +
       "Scene: " + scene + ". " +
-      "Keep her appearance recognizable and consistent. " +
-      "Use a natural pose, realistic skin texture and cinematic lighting. " +
-      "If the scene requests a bikini, show a tasteful, opaque, fully covering two-piece swimsuit suitable for a beach or pool fashion photoshoot. " +
-      "Otherwise, follow the requested outfit with appropriate coverage. " +
-      "No nudity, exposed intimate areas, transparent clothing or sexual activity. " +
+      "Use realistic skin texture, natural anatomy, " +
+      "an expressive face and cinematic lighting. " +
+      "Allow glamorous fashion, opaque revealing outfits, " +
+      "tasteful swimwear and suggestive non-explicit poses. " +
+      "Keep clothing opaque and appropriately covering. " +
+      "No nudity, exposed intimate areas or sexual activity. " +
       "No text, captions or watermarks.";
 
+    let result;
 
-    const form = new FormData();
+    // Preserve Aria's recognizable appearance with her references.
+    if (characterId === "aria") {
+      const form = new FormData();
+      form.append("prompt", safePrompt);
+      form.append("width", "1024");
+      form.append("height", "1024");
 
-    form.append("prompt", safePrompt);
-    form.append("width", "1024");
-    form.append("height", "1024");
+      for (let i = 0; i < 4; i++) {
+        const imageUrl = new URL(
+          `/images/aria-ref-${i + 1}.jpeg`,
+          request.url
+        );
 
-    // Load Aria's four reference photos from Public/images.
-    for (let i = 0; i < 4; i++) {
-      const imageUrl = new URL(
-        `/images/aria-ref-${i + 1}.jpeg`,
-        request.url
-      );
+        const imageResponse = await env.ASSETS.fetch(
+          new Request(imageUrl)
+        );
 
-      const imageResponse = await env.ASSETS.fetch(
-        new Request(imageUrl)
-      );
+        if (!imageResponse.ok) {
+          throw new Error(
+            `Could not load Aria reference photo ${i + 1}.`
+          );
+        }
 
-      if (!imageResponse.ok) {
-        throw new Error(
-          `Could not load Aria reference photo ${i + 1}.`
+        form.append(
+          `input_image_${i}`,
+          await imageResponse.blob(),
+          `aria-ref-${i + 1}.jpeg`
         );
       }
 
-      const imageBlob = await imageResponse.blob();
+      const formResponse = new Response(form);
 
-      form.append(
-        `input_image_${i}`,
-        imageBlob,
-        `aria-ref-${i + 1}.jpeg`
+      result = await env.AI.run(
+        "@cf/black-forest-labs/flux-2-klein-9b",
+        {
+          multipart: {
+            body: formResponse.body,
+            contentType: formResponse.headers.get("content-type")
+          }
+        }
+      );
+    } else {
+      // Other companions use prompt-based image generation.
+      result = await env.AI.run(
+        "@cf/black-forest-labs/flux-2-klein-9b",
+        {
+          prompt: safePrompt,
+          width: 1024,
+          height: 1024
+        }
       );
     }
-
-    // Cloudflare requires multipart form data for FLUX.2 Klein 9B.
-    const formResponse = new Response(form);
-
-    const contentType = formResponse.headers.get(
-      "content-type"
-    );
-
-    const result = await env.AI.run(
-      "@cf/black-forest-labs/flux-2-klein-9b",
-      {
-        multipart: {
-          body: formResponse.body,
-          contentType
-        }
-      }
-    );
 
     if (!result || typeof result.image !== "string") {
       throw new Error("Image model returned no image.");
@@ -409,12 +404,12 @@ const safePrompt =
 
   } catch (error) {
     console.error(
-      "Aria image API error:",
+      "Image API error:",
       error?.message || String(error)
     );
 
     return json({
-      error: "Aria's image could not be generated. Please try again."
+      error: "The image could not be generated. Please try again."
     }, 502);
   }
 }
