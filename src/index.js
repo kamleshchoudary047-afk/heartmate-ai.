@@ -326,16 +326,19 @@ if (
       }, 400);
     }
 
-    const safePrompt =
+    
+const safePrompt =
       "Create a photorealistic image of Aria, the same fictional adult woman aged 25 or older shown in all four reference images. " +
       "Preserve her facial identity, face shape, eyes, nose, lips and overall appearance. " +
       "Use all four reference images as identity references. " +
       "Scene: " + scene + ". " +
       "Keep her appearance recognizable and consistent. " +
       "Use a natural pose, realistic skin texture and cinematic lighting. " +
-      "Keep clothing and coverage appropriate. " +
-      "No nudity, exposed intimate areas or sexual activity. " +
+      "If the scene requests a bikini, show a tasteful, opaque, fully covering two-piece swimsuit suitable for a beach or pool fashion photoshoot. " +
+      "Otherwise, follow the requested outfit with appropriate coverage. " +
+      "No nudity, exposed intimate areas, transparent clothing or sexual activity. " +
       "No text, captions or watermarks.";
+
 
     const form = new FormData();
 
