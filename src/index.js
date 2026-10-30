@@ -357,7 +357,7 @@ Conversation instructions:
         return new Response(binary, {
           status: 200,
           headers: {
-            "content-type": "image/jpeg",
+            "content-type": "image/png",
             "cache-control": "no-store",
             "x-content-type-options": "nosniff"
           }
