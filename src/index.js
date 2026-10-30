@@ -293,6 +293,7 @@ Conversation instructions:
     
 
 
+
 // IMAGE GENERATION API FOR ALL 24 COMPANIONS.
 if (
   url.pathname === "/api/image" &&
@@ -329,15 +330,15 @@ if (
       "No nudity, exposed intimate areas or sexual activity. " +
       "No text, captions or watermarks.";
 
-    let result;
+    // FLUX.2 Klein 9B requires multipart input for every request.
+    const form = new FormData();
 
-    // Preserve Aria's recognizable appearance with her references.
+    form.append("prompt", safePrompt);
+    form.append("width", "1024");
+    form.append("height", "1024");
+
+    // Add Aria's reference photos only when generating Aria.
     if (characterId === "aria") {
-      const form = new FormData();
-      form.append("prompt", safePrompt);
-      form.append("width", "1024");
-      form.append("height", "1024");
-
       for (let i = 0; i < 4; i++) {
         const imageUrl = new URL(
           `/images/aria-ref-${i + 1}.jpeg`,
@@ -360,29 +361,20 @@ if (
           `aria-ref-${i + 1}.jpeg`
         );
       }
-
-      const formResponse = new Response(form);
-
-      result = await env.AI.run(
-        "@cf/black-forest-labs/flux-2-klein-9b",
-        {
-          multipart: {
-            body: formResponse.body,
-            contentType: formResponse.headers.get("content-type")
-          }
-        }
-      );
-    } else {
-      // Other companions use prompt-based image generation.
-      result = await env.AI.run(
-        "@cf/black-forest-labs/flux-2-klein-9b",
-        {
-          prompt: safePrompt,
-          width: 1024,
-          height: 1024
-        }
-      );
     }
+
+    // Serialize FormData so Cloudflare receives the correct boundary.
+    const formResponse = new Response(form);
+
+    const result = await env.AI.run(
+      "@cf/black-forest-labs/flux-2-klein-9b",
+      {
+        multipart: {
+          body: formResponse.body,
+          contentType: formResponse.headers.get("content-type")
+        }
+      }
+    );
 
     if (!result || typeof result.image !== "string") {
       throw new Error("Image model returned no image.");
@@ -405,16 +397,15 @@ if (
   } catch (error) {
     console.error(
       "Image API error:",
-      error?.message || String(error)
+      error?.stack || error?.message || String(error)
     );
 
     return json({
-      error: "The image could not be generated. Please try again."
+      error: error?.message || "Image generation failed."
     }, 502);
   }
 }
 
-  
 
 // KLING 3.0 TURBO VIDEO GENERATION API.
 if (
