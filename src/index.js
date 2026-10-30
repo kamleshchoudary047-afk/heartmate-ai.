@@ -418,6 +418,146 @@ if (
 
   
 
+// KLING VIDEO GENERATION API.
+if (
+  url.pathname === "/api/video" &&
+  request.method === "POST"
+) {
+  try {
+    if (!env.KLING_API_KEY) {
+      return json({ error: "Kling API key is missing." }, 500);
+    }
+
+    const body = await request.json();
+    const character = cleanText(body.character || "aria", 40).toLowerCase();
+    const scene = cleanText(body.scene, 1500);
+
+    if (character !== "aria") {
+      return json({ error: "Video generation is currently available for Aria only." }, 400);
+    }
+
+    if (!scene) {
+      return json({ error: "Please describe the video scene." }, 400);
+    }
+
+    const prompt =
+      "Animate the fictional adult woman in the provided first frame. " +
+      scene +
+      ". Preserve her recognizable appearance, natural movement and realistic expressions. " +
+      "Keep clothing appropriate. No nudity, sexual activity or explicit content.";
+
+    const firstFrame = new URL(
+      "/images/aria-ref-1.jpeg",
+      request.url
+    ).href;
+
+    const response = await fetch(
+      "https://api-singapore.klingai.com/image-to-video/kling-3.0",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${env.KLING_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          contents: [
+            { type: "prompt", text: prompt },
+            { type: "first_frame", url: firstFrame }
+          ],
+          settings: {
+            resolution: "720p",
+            duration: 5,
+            audio: "off",
+            multi_shot: false
+          }
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || result.code !== 0 || !result.data?.id) {
+      console.error("Kling create task error:", result);
+      return json({
+        error: result.message || "Kling could not start the video task."
+      }, 502);
+    }
+
+    return json({
+      taskId: result.data.id,
+      status: result.data.status
+    });
+
+  } catch (error) {
+    console.error("Kling video API error:", error?.message || String(error));
+    return json({ error: "Video generation could not be started." }, 502);
+  }
+}
+
+// CHECK KLING VIDEO STATUS.
+if (
+  url.pathname === "/api/video/status" &&
+  request.method === "GET"
+) {
+  try {
+    if (!env.KLING_API_KEY) {
+      return json({ error: "Kling API key is missing." }, 500);
+    }
+
+    const taskId = cleanText(
+      url.searchParams.get("taskId"),
+      100
+    );
+
+    if (!/^[0-9]+$/.test(taskId)) {
+      return json({ error: "Invalid video task ID." }, 400);
+    }
+
+    const response = await fetch(
+      "https://api-singapore.klingai.com/tasks?task_ids=" +
+        encodeURIComponent(taskId),
+      {
+        headers: {
+          "Authorization": `Bearer ${env.KLING_API_KEY}`
+        }
+      }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || result.code !== 0) {
+      console.error("Kling status error:", result);
+      return json({
+        error: result.message || "Could not check video status."
+      }, 502);
+    }
+
+    const task = Array.isArray(result.data)
+      ? result.data[0]
+      : null;
+
+    if (!task) {
+      return json({ error: "Video task was not found." }, 404);
+    }
+
+    const video = task.outputs?.find(
+      item => item.type === "video"
+    );
+
+    return json({
+      status: task.status,
+      videoUrl: task.status === "succeeded"
+        ? video?.url || null
+        : null,
+      message: task.message || ""
+    });
+
+  } catch (error) {
+    console.error("Kling status API error:", error?.message || String(error));
+    return json({ error: "Could not check video status." }, 502);
+  }
+}
+
     if (url.pathname.startsWith("/api/")) {
       return json({
         error: "API endpoint not found."
