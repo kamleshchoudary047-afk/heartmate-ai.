@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,7 +65,7 @@ button:disabled{opacity:.48;cursor:wait}
   <div class="welcome">A little space for good conversations, sweet moments and creativity ✨</div>
   <div class="message bot">Hey there! 💕 I'm happy you're here. How is your day going?</div>
 </main>
-<div id="typing">Aria is typing… 💗</div>
+<div id="typing">Your Heartmate is typing… 💗</div>
 
 <div class="footer">
   <div class="status" id="photoStatus">Creating your picture… Please wait.</div>
@@ -86,8 +87,8 @@ button:disabled{opacity:.48;cursor:wait}
 <div class="modal-backdrop" id="mediaModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal">
     <h3 id="modalTitle">Create something lovely ✨</h3>
-    <p id="modalDescription">Describe the scene you'd like Aria to create.</p>
-    <textarea class="scene-input" id="sceneInput" placeholder="A beautiful sunset, soft silk robe, warm cinematic lighting…"></textarea>
+    <p id="modalDescription">Describe the scene you'd like your companion to create.</p>
+    <textarea class="scene-input" id="sceneInput" placeholder="A beautiful sunset, elegant outfit, warm cinematic lighting…"></textarea>
     <div class="modal-actions">
       <button class="cancel" id="cancelModal" type="button">Cancel</button>
       <button id="confirmMedia" type="button">Create image</button>
@@ -101,30 +102,286 @@ const character=(params.get("girl")||"aria").toLowerCase();
 const names={aria:"Aria",maya:"Maya",luna:"Luna",sofia:"Sofia",ella:"Ella",nova:"Nova",zara:"Zara",ivy:"Ivy",ruby:"Ruby",chloe:"Chloe",nina:"Nina",lila:"Lila",amber:"Amber",violet:"Violet",scarlett:"Scarlett",jade:"Jade",rose:"Rose",stella:"Stella",kira:"Kira",diana:"Diana",freya:"Freya",sienna:"Sienna",valentina:"Valentina",aurora:"Aurora"};
 const girlName=names[character]||"Aria";
 document.getElementById("girlName").textContent=girlName;
-const messages=document.getElementById("messages"),input=document.getElementById("messageInput"),sendButton=document.getElementById("sendButton"),typing=document.getElementById("typing");
-const photoStatus=document.getElementById("photoStatus"),videoStatus=document.getElementById("videoStatus");
-const createButton=document.getElementById("createButton"),createMenu=document.getElementById("createMenu");
-const modal=document.getElementById("mediaModal"),sceneInput=document.getElementById("sceneInput"),modalTitle=document.getElementById("modalTitle"),modalDescription=document.getElementById("modalDescription"),confirmMedia=document.getElementById("confirmMedia");
-const history=[];let busy=false,mediaChoice="image";
-function scrollToBottom(){messages.scrollTop=messages.scrollHeight}
-function addMessage(text,sender){const div=document.createElement("div");div.className="message "+sender;div.textContent=text;messages.appendChild(div);scrollToBottom()}
-function addImage(url,description){const box=document.createElement("div");box.className="image-message";const caption=document.createElement("div");caption.className="media-caption";caption.textContent="💕 "+description;const image=document.createElement("img");image.src=url;image.alt=girlName+" generated picture";image.loading="lazy";box.append(caption,image);messages.appendChild(box);scrollToBottom()}
-function addVideo(url,description){const box=document.createElement("div");box.className="image-message";const caption=document.createElement("div");caption.className="media-caption";caption.textContent="💕 "+description;const video=document.createElement("video");video.src=url;video.controls=true;video.playsInline=true;video.preload="metadata";box.append(caption,video);messages.appendChild(box);scrollToBottom()}
-function detectMediaRequest(message){const text=message.toLowerCase();const videoWords=/\b(video|clip|movie|animation)\b/.test(text);const imageWords=/\b(photo|picture|image|selfie|portrait)\b/.test(text);const requestWords=/\b(send|show|make|create|generate|give|share|want|need|draw)\b/.test(text);if(videoWords&&requestWords)return"video";if(imageWords&&requestWords)return"image";return""}
-function openMediaModal(type,prompt=""){mediaChoice=type;createMenu.classList.remove("open");modalTitle.textContent=type==="video"?"Create a video 🎬":"Create an image 📸";modalDescription.textContent=type==="video"?"Describe the video scene. Video generation may use paid Kling credits.":"Describe the picture you'd like Aria to create.";confirmMedia.textContent=type==="video"?"Continue to video":"Create image";sceneInput.value=prompt;modal.classList.add("open");setTimeout(()=>sceneInput.focus(),100)}
-function closeMediaModal(){modal.classList.remove("open")}
-createButton.addEventListener("click",()=>createMenu.classList.toggle("open"));
-document.getElementById("openImage").addEventListener("click",()=>openMediaModal("image"));
-document.getElementById("openVideo").addEventListener("click",()=>openMediaModal("video"));
+
+const messages=document.getElementById("messages");
+const input=document.getElementById("messageInput");
+const sendButton=document.getElementById("sendButton");
+const typing=document.getElementById("typing");
+const photoStatus=document.getElementById("photoStatus");
+const videoStatus=document.getElementById("videoStatus");
+const createButton=document.getElementById("createButton");
+const createMenu=document.getElementById("createMenu");
+const modal=document.getElementById("mediaModal");
+const sceneInput=document.getElementById("sceneInput");
+const modalTitle=document.getElementById("modalTitle");
+const modalDescription=document.getElementById("modalDescription");
+const confirmMedia=document.getElementById("confirmMedia");
+
+const history=[];
+let busy=false;
+let mediaChoice="image";
+
+function scrollToBottom(){
+ messages.scrollTop=messages.scrollHeight;
+}
+
+function addMessage(text,sender){
+ const div=document.createElement("div");
+ div.className="message "+sender;
+ div.textContent=text;
+ messages.appendChild(div);
+ scrollToBottom();
+}
+
+function addImage(url,description){
+ const box=document.createElement("div");
+ box.className="image-message";
+ const caption=document.createElement("div");
+ caption.className="media-caption";
+ caption.textContent="💕 "+description;
+ const image=document.createElement("img");
+ image.src=url;
+ image.alt=girlName+" generated picture";
+ image.loading="lazy";
+ box.append(caption,image);
+ messages.appendChild(box);
+ scrollToBottom();
+}
+
+function addVideo(url,description){
+ const box=document.createElement("div");
+ box.className="image-message";
+ const caption=document.createElement("div");
+ caption.className="media-caption";
+ caption.textContent="💕 "+description;
+ const video=document.createElement("video");
+ video.src=url;
+ video.controls=true;
+ video.playsInline=true;
+ video.preload="metadata";
+ box.append(caption,video);
+ messages.appendChild(box);
+ scrollToBottom();
+}
+
+function detectMediaRequest(message){
+ const text=message.toLowerCase();
+ const videoWords=/\b(video|clip|movie|animation)\b/.test(text);
+ const imageWords=/\b(photo|picture|image|selfie|portrait)\b/.test(text);
+ const requestWords=/\b(send|show|make|create|generate|give|share|want|need|draw)\b/.test(text);
+ if(videoWords&&requestWords)return "video";
+ if(imageWords&&requestWords)return "image";
+ return "";
+}
+
+function openMediaModal(type,prompt=""){
+ mediaChoice=type;
+ createMenu.classList.remove("open");
+ modalTitle.textContent=type==="video"?"Create a video 🎬":"Create an image 📸";
+ modalDescription.textContent=type==="video"
+  ?"Describe the video scene. Video generation may use paid Kling credits."
+  :"Describe the picture you'd like "+girlName+" to create.";
+ confirmMedia.textContent=type==="video"?"Continue to video":"Create image";
+ sceneInput.value=prompt;
+ modal.classList.add("open");
+ setTimeout(()=>sceneInput.focus(),100);
+}
+
+function closeMediaModal(){
+ modal.classList.remove("open");
+}
+
+createButton.addEventListener("click",()=>{
+ createMenu.classList.toggle("open");
+});
+
+document.getElementById("openImage").addEventListener("click",()=>{
+ openMediaModal("image");
+});
+
+document.getElementById("openVideo").addEventListener("click",()=>{
+ openMediaModal("video");
+});
+
 document.getElementById("cancelModal").addEventListener("click",closeMediaModal);
-modal.addEventListener("click",e=>{if(e.target===modal)closeMediaModal()});
-confirmMedia.addEventListener("click",async()=>{const scene=sceneInput.value.trim();if(!scene||busy)return;if(character!=="aria"){addMessage("Media creation is currently available with Aria only. 💗","bot");closeMediaModal();return}if(mediaChoice==="video"&&!confirm("Video generation may use paid Kling credits. Continue?"))return;closeMediaModal();addMessage((mediaChoice==="video"?"Create a video: ":"Create a picture: ")+scene,"user");if(mediaChoice==="video")await generateVideo(scene);else await generateImage(scene)});
-async function sendChat(message){if(!message||busy)return;const mediaType=detectMediaRequest(message);if(mediaType){openMediaModal(mediaType,message);return}addMessage(message,"user");history.push({role:"user",content:message});input.value="";busy=true;sendButton.disabled=true;typing.style.display="block";try{const response=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({character,message,history})});const data=await response.json();if(!response.ok)throw new Error(data.error||"Chat unavailable.");const reply=data.reply;if(!reply)throw new Error("Empty AI response.");addMessage(reply,"bot");history.push({role:"assistant",content:reply})}catch(error){addMessage("Sorry, I'm having trouble connecting. "+error.message,"bot")}finally{busy=false;sendButton.disabled=false;typing.style.display="none";input.focus()}}
-document.getElementById("chatForm").addEventListener("submit",e=>{e.preventDefault();sendChat(input.value.trim())});
-sendButton.addEventListener("click",e=>{e.preventDefault();sendChat(input.value.trim())});
-input.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();sendChat(input.value.trim())}});
-async function generateImage(scene){if(character!=="aria"){addMessage("Picture generation is currently being tested with Aria only. 💗","bot");return}if(busy)return;busy=true;sendButton.disabled=true;createButton.disabled=true;photoStatus.style.display="block";try{const response=await fetch("/api/image",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({character:"aria",scene})});if(!response.ok){const data=await response.json();throw new Error(data.error||"Image generation failed.")}const blob=await response.blob();if(!blob.type.startsWith("image/"))throw new Error("Invalid image returned.");addImage(URL.createObjectURL(blob),"A new picture of Aria")}catch(error){addMessage("I couldn't create that picture. "+error.message,"bot")}finally{busy=false;sendButton.disabled=false;createButton.disabled=false;photoStatus.style.display="none"}}
-async function generateVideo(scene){if(character!=="aria"){addMessage("Video generation is currently available for Aria only. 💗","bot");return}if(busy)return;busy=true;sendButton.disabled=true;createButton.disabled=true;videoStatus.style.display="block";try{addMessage("🎬 Aria is preparing your video. Please wait…","bot");const response=await fetch("/api/video",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({character:"aria",scene})});const data=await response.json();if(!response.ok||!data.taskId)throw new Error(data.error||"Kling could not start the video.");addMessage("Your video is being generated. This can take a few minutes. 💗","bot");let completed=false;for(let attempt=0;attempt<60;attempt++){await new Promise(resolve=>setTimeout(resolve,5000));const statusResponse=await fetch("/api/video/status?taskId="+encodeURIComponent(data.taskId));const statusData=await statusResponse.json();if(!statusResponse.ok)throw new Error(statusData.error||"Could not check video progress.");if(statusData.status==="succeeded"&&statusData.videoUrl){addVideo(statusData.videoUrl,"Your new video of Aria");completed=true;break}if(statusData.status==="failed")throw new Error(statusData.message||"Kling could not complete the video.")}if(!completed)addMessage("The video is taking longer than expected. Your task may still be processing. Please try again later.","bot")}catch(error){addMessage("I couldn't create the video. "+error.message,"bot")}finally{busy=false;sendButton.disabled=false;createButton.disabled=false;videoStatus.style.display="none"}}
+
+modal.addEventListener("click",e=>{
+ if(e.target===modal)closeMediaModal();
+});
+
+confirmMedia.addEventListener("click",async()=>{
+ const scene=sceneInput.value.trim();
+ if(!scene||busy)return;
+
+ if(mediaChoice==="video"&&character!=="aria"){
+  addMessage("Video generation is currently available for Aria only. 💗","bot");
+  closeMediaModal();
+  return;
+ }
+
+ if(mediaChoice==="video"&&!confirm("Video generation may use paid Kling credits. Continue?"))return;
+
+ closeMediaModal();
+ addMessage((mediaChoice==="video"?"Create a video: ":"Create a picture: ")+scene,"user");
+
+ if(mediaChoice==="video")await generateVideo(scene);
+ else await generateImage(scene);
+});
+
+async function sendChat(message){
+ if(!message||busy)return;
+
+ const mediaType=detectMediaRequest(message);
+ if(mediaType){
+  openMediaModal(mediaType,message);
+  return;
+ }
+
+ addMessage(message,"user");
+ history.push({role:"user",content:message});
+ input.value="";
+ busy=true;
+ sendButton.disabled=true;
+ typing.textContent=girlName+" is typing… 💗";
+ typing.style.display="block";
+
+ try{
+  const response=await fetch("/api/chat",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({character,message,history})
+  });
+
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"Chat unavailable.");
+
+  const reply=data.reply;
+  if(!reply)throw new Error("Empty AI response.");
+
+  addMessage(reply,"bot");
+  history.push({role:"assistant",content:reply});
+ }catch(error){
+  addMessage("Sorry, I'm having trouble connecting. "+error.message,"bot");
+ }finally{
+  busy=false;
+  sendButton.disabled=false;
+  typing.style.display="none";
+  input.focus();
+ }
+}
+
+document.getElementById("chatForm").addEventListener("submit",e=>{
+ e.preventDefault();
+ sendChat(input.value.trim());
+});
+
+sendButton.addEventListener("click",e=>{
+ e.preventDefault();
+ sendChat(input.value.trim());
+});
+
+input.addEventListener("keydown",e=>{
+ if(e.key==="Enter"){
+  e.preventDefault();
+  sendChat(input.value.trim());
+ }
+});
+
+async function generateImage(scene){
+ if(busy)return;
+
+ busy=true;
+ sendButton.disabled=true;
+ createButton.disabled=true;
+ photoStatus.textContent="Creating "+girlName+"'s picture… Please wait.";
+ photoStatus.style.display="block";
+
+ try{
+  const response=await fetch("/api/image",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({character,scene})
+  });
+
+  if(!response.ok){
+   const data=await response.json();
+   throw new Error(data.error||"Image generation failed.");
+  }
+
+  const blob=await response.blob();
+  if(!blob.type.startsWith("image/"))throw new Error("Invalid image returned.");
+
+  addImage(URL.createObjectURL(blob),"A new picture of "+girlName);
+ }catch(error){
+  addMessage("I couldn't create that picture. "+error.message,"bot");
+ }finally{
+  busy=false;
+  sendButton.disabled=false;
+  createButton.disabled=false;
+  photoStatus.style.display="none";
+ }
+}
+
+async function generateVideo(scene){
+ if(character!=="aria"){
+  addMessage("Video generation is currently available for Aria only. 💗","bot");
+  return;
+ }
+
+ if(busy)return;
+
+ busy=true;
+ sendButton.disabled=true;
+ createButton.disabled=true;
+ videoStatus.style.display="block";
+
+ try{
+  addMessage("🎬 Aria is preparing your video. Please wait…","bot");
+
+  const response=await fetch("/api/video",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({character:"aria",scene})
+  });
+
+  const data=await response.json();
+  if(!response.ok||!data.taskId)throw new Error(data.error||"Kling could not start the video.");
+
+  addMessage("Your video is being generated. This can take a few minutes. 💗","bot");
+
+  let completed=false;
+
+  for(let attempt=0;attempt<60;attempt++){
+   await new Promise(resolve=>setTimeout(resolve,5000));
+
+   const statusResponse=await fetch("/api/video/status?taskId="+encodeURIComponent(data.taskId));
+   const statusData=await statusResponse.json();
+
+   if(!statusResponse.ok)throw new Error(statusData.error||"Could not check video progress.");
+
+   if(statusData.status==="succeeded"&&statusData.videoUrl){
+    addVideo(statusData.videoUrl,"Your new video of Aria");
+    completed=true;
+    break;
+   }
+
+   if(statusData.status==="failed"){
+    throw new Error(statusData.message||"Kling could not complete the video.");
+   }
+  }
+
+  if(!completed){
+   addMessage("The video is taking longer than expected. Your task may still be processing. Please try again later.","bot");
+  }
+ }catch(error){
+  addMessage("I couldn't create the video. "+error.message,"bot");
+ }finally{
+  busy=false;
+  sendButton.disabled=false;
+  createButton.disabled=false;
+  videoStatus.style.display="none";
+ }
+}
 </script>
 </body>
 </html>
