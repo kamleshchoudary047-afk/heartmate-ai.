@@ -291,89 +291,132 @@ Conversation instructions:
     }
 
     
-    // ARIA PERSONALIZED IMAGE GENERATION API.
-    if (
-      url.pathname === "/api/image" &&
-      request.method === "POST"
-    ) {
-      try {
-        if (!env.AI) {
-          throw new Error("Cloudflare AI binding is missing.");
-        }
 
-        const body = await request.json();
-
-        const characterId = cleanText(
-          body.character,
-          40
-        ).toLowerCase();
-
-        if (characterId !== "aria") {
-          return json({
-            error: "This image feature is currently being tested with Aria only."
-          }, 400);
-        }
-
-        const scene = cleanText(
-          body.scene || body.prompt,
-          400
-        );
-
-        if (!scene) {
-          return json({
-            error: "Please describe the picture you want Aria to create."
-          }, 400);
-        }
-
-        const safePrompt =
-          "Create a tasteful, photorealistic image of Aria, " +
-          "a fictional adult woman aged 25 or older. " +
-          "She has a warm, friendly, playful appearance. " +
-          "Scene requested: " + scene + ". " +
-          "Keep her appearance consistent within this image. " +
-          "She must be fully clothed or appropriately covered " +
-          "with a towel or robe in bathroom scenes. " +
-          "Romantic atmosphere, natural pose, cinematic lighting. " +
-          "No nudity, no exposed intimate areas, no sexual activity. " +
-          "No text, captions, or watermarks.";
-
-        const result = await env.AI.run(
-          "@cf/black-forest-labs/flux-1-schnell",
-          {
-            prompt: safePrompt.slice(0, 2000),
-            steps: 4
-          }
-        );
-
-        if (!result || typeof result.image !== "string") {
-          throw new Error("Image model returned no image.");
-        }
-
-        const binary = Uint8Array.from(
-          atob(result.image),
-          character => character.charCodeAt(0)
-        );
-
-        return new Response(binary, {
-          status: 200,
-          headers: {
-            "content-type": "image/png",
-            "cache-control": "no-store",
-            "x-content-type-options": "nosniff"
-          }
-        });
-
-      } catch (error) {
-        console.error(
-          "Aria image API error:",
-          error?.message || String(error)
-        );
-
-        return json({
-          error: "Aria's image could not be generated. Please try again."
-        }, 502);
-      }
+// ARIA PERSONALIZED IMAGE GENERATION API.
+if (
+  url.pathname === "/api/image" &&
+  request.method === "POST"
+) {
+  try {
+    if (!env.AI || !env.ASSETS) {
+      throw new Error("Cloudflare AI or ASSETS binding is missing.");
     }
+
+    const body = await request.json();
+
+    const characterId = cleanText(
+      body.character,
+      40
+    ).toLowerCase();
+
+    if (characterId !== "aria") {
+      return json({
+        error: "This image feature is currently being tested with Aria only."
+      }, 400);
+    }
+
+    const scene = cleanText(
+      body.scene || body.prompt,
+      400
+    );
+
+    if (!scene) {
+      return json({
+        error: "Please describe the picture you want Aria to create."
+      }, 400);
+    }
+
+    const safePrompt =
+      "Create a photorealistic image of Aria, the same fictional adult woman aged 25 or older shown in all four reference images. " +
+      "Preserve her facial identity, face shape, eyes, nose, lips and overall appearance. " +
+      "Use all four reference images as identity references. " +
+      "Scene: " + scene + ". " +
+      "Keep her appearance recognizable and consistent. " +
+      "Use a natural pose, realistic skin texture and cinematic lighting. " +
+      "Keep clothing and coverage appropriate. " +
+      "No nudity, exposed intimate areas or sexual activity. " +
+      "No text, captions or watermarks.";
+
+    const form = new FormData();
+
+    form.append("prompt", safePrompt);
+    form.append("width", "1024");
+    form.append("height", "1024");
+
+    // Load Aria's four reference photos from Public/images.
+    for (let i = 0; i < 4; i++) {
+      const imageUrl = new URL(
+        `/images/aria-ref-${i + 1}.jpeg`,
+        request.url
+      );
+
+      const imageResponse = await env.ASSETS.fetch(
+        new Request(imageUrl)
+      );
+
+      if (!imageResponse.ok) {
+        throw new Error(
+          `Could not load Aria reference photo ${i + 1}.`
+        );
+      }
+
+      const imageBlob = await imageResponse.blob();
+
+      form.append(
+        `input_image_${i}`,
+        imageBlob,
+        `aria-ref-${i + 1}.jpeg`
+      );
+    }
+
+    // Cloudflare requires multipart form data for FLUX.2 Klein 9B.
+    const formResponse = new Response(form);
+
+    const contentType = formResponse.headers.get(
+      "content-type"
+    );
+
+    const result = await env.AI.run(
+      "@cf/black-forest-labs/flux-2-klein-9b",
+      {
+        multipart: {
+          body: formResponse.body,
+          contentType
+        }
+      }
+    );
+
+    if (!result || typeof result.image !== "string") {
+      throw new Error("Image model returned no image.");
+    }
+
+    const binary = Uint8Array.from(
+      atob(result.image),
+      character => character.charCodeAt(0)
+    );
+
+    return new Response(binary, {
+      status: 200,
+      headers: {
+        "content-type": "image/png",
+        "cache-control": "no-store",
+        "x-content-type-options": "nosniff"
+      }
+    });
+
+  } catch (error) {
+    console.error(
+      "Aria image API error:",
+      error?.message || String(error)
+    );
+
+    return json({
+      error: "Aria's image could not be generated. Please try again."
+    }, 502);
+  }
+}
+
+  
 
     if (url.pathname.startsWith("/api/")) {
       return json({
