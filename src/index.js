@@ -120,6 +120,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
+    // Handle API preflight requests.
     if (
       request.method === "OPTIONS" &&
       url.pathname.startsWith("/api/")
@@ -127,44 +128,65 @@ export default {
       return new Response(null, {
         status: 204,
         headers: {
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type",
           "Access-Control-Max-Age": "86400"
         }
       });
     }
 
-    if (url.pathname === "/api/health" && request.method === "GET") {
+    // Health check.
+    if (
+      url.pathname === "/api/health" &&
+      request.method === "GET"
+    ) {
       return json({
         ok: true,
         service: "Heartmate AI",
-        characters: Object.keys(characters).length
+        characters: Object.keys(characters).length,
+        aiBinding: Boolean(env.AI)
       });
     }
 
-    // CHAT API
-    if (url.pathname === "/api/chat" && request.method === "POST") {
+    // CHAT API.
+    if (
+      url.pathname === "/api/chat" &&
+      request.method === "POST"
+    ) {
       try {
+        if (!env.AI) {
+          throw new Error("Cloudflare AI binding is missing.");
+        }
+
         const body = await request.json();
 
-        const characterId = cleanText(body.character, 40).toLowerCase();
+        const characterId = cleanText(
+          body.character,
+          40
+        ).toLowerCase();
+
         const message = cleanText(body.message, 1200);
 
         if (!message) {
-          return json({ error: "Please enter a message." }, 400);
+          return json({
+            error: "Please enter a message."
+          }, 400);
         }
 
         const profile = characters[characterId];
 
         if (!profile) {
-          return json({ error: "Character not found." }, 404);
+          return json({
+            error: "Character not found."
+          }, 404);
         }
 
+        // Keep only the latest 12 conversation messages.
         const history = Array.isArray(body.history)
           ? body.history.slice(-12)
           : [];
 
-        let safeHistory = history
+        const safeHistory = history
           .filter(item =>
             item &&
             ["user", "assistant"].includes(item.role) &&
@@ -175,8 +197,9 @@ export default {
             content: item.content.slice(0, 1200)
           }));
 
-        // Avoid sending the latest message twice.
-        const lastMessage = safeHistory[safeHistory.length - 1];
+        // Prevent duplicate latest user messages.
+        const lastMessage =
+          safeHistory[safeHistory.length - 1];
 
         if (
           lastMessage &&
@@ -192,23 +215,25 @@ You are ${profile.name}, a fictional adult AI companion.
 Your personality:
 ${profile.personality}
 
-Your conversation rules:
+Conversation instructions:
 - Always stay in character as ${profile.name}.
 - You are an AI character, not a real human.
 - Be friendly, natural, engaging and emotionally supportive.
-- Remember relevant details from the conversation history.
+- Remember relevant details from conversation history.
 - Respond naturally to the user's language and tone.
 - You may be romantic, playful, affectionate and flirtatious.
 - Keep romantic content suggestive but non-explicit.
-- Never generate explicit sexual descriptions or claim to send nude images.
+- Never generate explicit sexual descriptions.
+- Never claim to send nude images.
 - Never portray minors in romantic or sexual situations.
-- Never pretend to have performed real-world actions.
+- Never pretend to perform real-world actions.
 - Avoid repeating the same greeting.
 - Usually respond in 1 to 3 short paragraphs.
 `;
 
+        // Updated Cloudflare Workers AI chat model.
         const result = await env.AI.run(
-          "@cf/meta/llama-3.1-8b-instruct",
+          "@cf/zai-org/glm-4.7-flash",
           {
             messages: [
               {
@@ -221,29 +246,43 @@ Your conversation rules:
                 content: message
               }
             ],
-            max_tokens: 450,
-            temperature: 0.8
+            max_completion_tokens: 450,
+            temperature: 0.8,
+            chat_template_kwargs: {
+              enable_thinking: false
+            }
           }
         );
 
+        // Support different response formats.
         const reply =
           result?.response ||
+          result?.choices?.[0]?.message?.content ||
           result?.output_text ||
           result?.text;
 
-        if (!reply) {
+        if (!reply || typeof reply !== "string") {
+          console.error(
+            "AI returned an unexpected response:",
+            JSON.stringify(result).slice(0, 2000)
+          );
+
           return json({
             error: "The AI returned an empty response. Please try again."
           }, 502);
         }
 
         return json({
-          reply: String(reply).slice(0, 5000),
+          reply: reply.slice(0, 5000),
           character: profile.name
         });
 
       } catch (error) {
-        console.error("Chat API error:", error);
+        console.error(
+          "Chat API error:",
+          error?.message || String(error),
+          error?.stack || ""
+        );
 
         return json({
           error: "The AI service is temporarily unavailable. Please try again."
@@ -251,14 +290,23 @@ Your conversation rules:
       }
     }
 
-    // SAFE CHARACTER IMAGE GENERATION
-    if (url.pathname === "/api/image" && request.method === "POST") {
+    // CHARACTER IMAGE GENERATION API.
+    if (
+      url.pathname === "/api/image" &&
+      request.method === "POST"
+    ) {
       try {
+        if (!env.AI) {
+          throw new Error("Cloudflare AI binding is missing.");
+        }
+
         const body = await request.json();
         const prompt = cleanText(body.prompt, 500);
 
         if (!prompt) {
-          return json({ error: "Please describe the image." }, 400);
+          return json({
+            error: "Please describe the image."
+          }, 400);
         }
 
         const safePrompt =
@@ -296,7 +344,11 @@ Your conversation rules:
         }, 502);
 
       } catch (error) {
-        console.error("Image API error:", error);
+        console.error(
+          "Image API error:",
+          error?.message || String(error),
+          error?.stack || ""
+        );
 
         return json({
           error: "Image generation is temporarily unavailable."
@@ -304,10 +356,14 @@ Your conversation rules:
       }
     }
 
+    // Unknown API endpoint.
     if (url.pathname.startsWith("/api/")) {
-      return json({ error: "API endpoint not found." }, 404);
+      return json({
+        error: "API endpoint not found."
+      }, 404);
     }
 
+    // Serve website files.
     return env.ASSETS.fetch(request);
   }
 };
