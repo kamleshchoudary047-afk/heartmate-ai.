@@ -1,120 +1,607 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Candy AI</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#100b1d">
+  <title>Heartmate AI | Your AI Companion</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #100b1d;
+      --surface: #1b142b;
+      --surface-light: #261c39;
+      --pink: #ff70b7;
+      --purple: #a78bfa;
+      --text: #fff8ff;
+      --muted: #b9adc9;
+      --border: rgba(255,255,255,0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 85% 5%, rgba(151,88,205,0.17), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      padding-bottom: 90px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .container {
+      width: min(1120px, 92%);
+      margin: auto;
+    }
+
+    /* HEADER */
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(16,11,29,0.88);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .navbar {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+    }
+
+    .logo span {
+      color: var(--pink);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav-links a:hover {
+      color: white;
+    }
+
+    .nav-button {
+      border: 0;
+      border-radius: 30px;
+      padding: 11px 19px;
+      color: white;
+      font-weight: 700;
+      background: linear-gradient(100deg, #ed5da9, #9b72ef);
+    }
+
+    /* HERO */
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 470px;
+      margin-top: 30px;
+      border-radius: 28px;
+      border: 1px solid var(--border);
+      background:
+        linear-gradient(90deg, rgba(16,11,29,0.98) 0%, rgba(16,11,29,0.85) 45%, rgba(16,11,29,0.05) 100%),
+        url('/images/aria-1.jpeg') center 35% / cover no-repeat;
+      display: flex;
+      align-items: center;
+      padding: 55px;
+    }
+
+    .hero-content {
+      max-width: 510px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      color: #ffc0df;
+      background: rgba(255,112,183,0.13);
+      border: 1px solid rgba(255,112,183,0.3);
+      border-radius: 30px;
+      padding: 8px 13px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(38px, 6vw, 62px);
+      line-height: 1.08;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 span {
+      color: var(--pink);
+    }
+
+    .hero p {
+      color: #e0d5e9;
+      font-size: 16px;
+      line-height: 1.8;
+      max-width: 420px;
+      margin-bottom: 28px;
+    }
+
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 30px;
+      padding: 14px 24px;
+      color: white;
+      font-weight: 800;
+      background: linear-gradient(100deg, #f05da9, #986cf0);
+      box-shadow: 0 8px 30px rgba(224,83,165,0.25);
+      transition: transform 0.2s;
+    }
+
+    .primary-button:hover {
+      transform: translateY(-2px);
+    }
+
+    /* SECTION HEADINGS */
+
+    .section {
+      padding-top: 58px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+
+    .section-heading h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+    }
+
+    .section-heading p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 7px;
+    }
+
+    .section-heading a {
+      color: var(--pink);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    /* FEATURE CARDS */
+
+    .featured-card {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      overflow: hidden;
+      border-radius: 23px;
+      background: linear-gradient(120deg, #251a39, #1a1428);
+      border: 1px solid var(--border);
+    }
+
+    .featured-image {
+      min-height: 310px;
+      background: url('/images/aria-1.jpeg') center 35% / cover no-repeat;
+    }
+
+    .featured-info {
+      padding: 35px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .online {
+      color: #80e5ad;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .featured-info h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 34px;
+      margin-bottom: 12px;
+    }
+
+    .featured-info p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+      margin-bottom: 23px;
+    }
+
+    /* COMPANION CARDS */
+
+    .companions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 17px;
+    }
+
+    .companion-card {
+      overflow: hidden;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .companion-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255,112,183,0.5);
+    }
+
+    .avatar {
+      height: 150px;
+      display: grid;
+      place-items: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+      background: linear-gradient(135deg, #56315d, #272047);
+    }
+
+    .avatar.luna {
+      background: linear-gradient(135deg, #293c68, #593c78);
+    }
+
+    .avatar.sofia {
+      background: linear-gradient(135deg, #713f52, #3d284f);
+    }
+
+    .avatar.maya {
+      background: linear-gradient(135deg, #77502f, #422d4d);
+    }
+
+    .avatar.ella {
+      background: linear-gradient(135deg, #375c60, #292b54);
+    }
+
+    .companion-info {
+      padding: 16px;
+    }
+
+    .companion-info h3 {
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .companion-info p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      min-height: 38px;
+    }
+
+    .chat-link {
+      display: block;
+      text-align: center;
+      margin-top: 14px;
+      padding: 10px;
+      border-radius: 20px;
+      color: #ffc0df;
+      background: rgba(255,112,183,0.1);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* BOTTOM CALL TO ACTION */
+
+    .closing {
+      margin-top: 60px;
+      padding: 40px 25px;
+      text-align: center;
+      border-radius: 24px;
+      background: linear-gradient(120deg, #382044, #242044);
+      border: 1px solid var(--border);
+    }
+
+    .closing h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      margin-bottom: 12px;
+    }
+
+    .closing p {
+      color: var(--muted);
+      margin-bottom: 22px;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      color: #8f829f;
+      font-size: 12px;
+      padding: 35px 10px 10px;
+    }
+
+    /* MOBILE NAVIGATION */
+
+    .bottom-nav {
+      display: none;
+    }
+
+    @media (max-width: 760px) {
+      .nav-links {
+        display: none;
+      }
+
+      .navbar {
+        min-height: 64px;
+      }
+
+      .hero {
+        min-height: 510px;
+        padding: 30px 24px;
+        align-items: end;
+        background:
+          linear-gradient(0deg, rgba(16,11,29,0.98) 0%, rgba(16,11,29,0.76) 48%, rgba(16,11,29,0.08) 100%),
+          url('/images/aria-1.jpeg') center 25% / cover no-repeat;
+      }
+
+      .hero-content {
+        padding-bottom: 12px;
+      }
+
+      .hero h1 {
+        font-size: 43px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      .section {
+        padding-top: 42px;
+      }
+
+      .featured-card {
+        grid-template-columns: 1fr;
+      }
+
+      .featured-image {
+        min-height: 280px;
+      }
+
+      .featured-info {
+        padding: 25px;
+      }
+
+      .companions {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .avatar {
+        height: 125px;
+      }
+
+      .section-heading h2 {
+        font-size: 25px;
+      }
+
+      .bottom-nav {
+        display: flex;
+        position: fixed;
+        z-index: 30;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        justify-content: space-around;
+        padding: 13px 5px calc(13px + env(safe-area-inset-bottom));
+        background: rgba(20,14,34,0.96);
+        border-top: 1px solid var(--border);
+        backdrop-filter: blur(18px);
+      }
+
+      .bottom-nav a {
+        color: var(--muted);
+        font-size: 11px;
+        text-align: center;
+      }
+
+      .bottom-nav a span {
+        display: block;
+        font-size: 19px;
+        margin-bottom: 4px;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .hero h1 {
+        font-size: 37px;
+      }
+
+      .companions {
+        gap: 9px;
+      }
+
+      .companion-info {
+        padding: 12px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-  <!-- Header -->
-  <header class="header">
-    <div class="logo">candy<span>.ai</span></div>
-    <div class="header-right">
-      <div class="token">★ 0</div>
+  <header>
+    <div class="container navbar">
+      <a href="/" class="logo">Heartmate<span> AI</span></a>
+
+      <nav class="nav-links">
+        <a href="/">Home</a>
+        <a href="#companions">Discover</a>
+        <a href="#featured">Featured</a>
+      </nav>
+
+      <a class="nav-button" href="chat.html?girl=Aria">Start Chatting</a>
     </div>
   </header>
 
-  <!-- Promo Banner -->
-  <div class="promo">
-    <div class="promo-text">
-      <h1>Halloween Sale</h1>
-      <p>Up to 65% more tokens</p>
-      <button>Shop Now</button>
-    </div>
-  </div>
+  <main class="container">
 
-  <!-- Featured Section -->
-  <section class="section">
-    <div class="section-title">
-      <h2>Explore Featured Characters</h2>
-      <p>Chat, call and create with any AI girlfriend</p>
-    </div>
+    <section class="hero">
+      <div class="hero-content">
+        <div class="eyebrow">Your world, your companion</div>
 
-    <div class="grid">
+        <h1>Someone special<br>is waiting <span>for you.</span></h1>
 
-      <div class="card" onclick="window.location.href='aria.html'">
-        <div class="img-box">
-          <img src="/images/aria-1.jpeg" alt="Aria">
-          <span class="badge new">NEW</span>
-        </div>
-        <div class="info">
-          <h3>Aria</h3>
-          <p>Playful & Flirty</p>
+        <p>
+          Meet your AI companion. Enjoy meaningful conversations,
+          share your thoughts and create memorable moments together.
+        </p>
+
+        <a href="chat.html?girl=Aria" class="primary-button">
+          Meet Aria &nbsp; →
+        </a>
+      </div>
+    </section>
+
+    <section class="section" id="featured">
+      <div class="section-heading">
+        <div>
+          <h2>Today's Featured Companion</h2>
+          <p>Get to know someone new.</p>
         </div>
       </div>
 
-      <div class="card exclusive" onclick="startChat('luna')">
-        <div class="img-box">
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=500&fit=crop" alt="Luna">
-          <span class="badge exclusive">Exclusive</span>
-        </div>
-        <div class="info">
-          <h3>Luna</h3>
-          <p>Seductive & Mysterious</p>
+      <div class="featured-card">
+        <div class="featured-image"></div>
+
+        <div class="featured-info">
+          <div class="online">● AVAILABLE NOW</div>
+          <h3>Meet Aria</h3>
+
+          <p>
+            Warm, charming and always ready for a conversation.
+            Start chatting and discover her personality.
+          </p>
+
+          <a href="aria.html" class="primary-button">
+            Explore Aria →
+          </a>
         </div>
       </div>
+    </section>
 
-      <div class="card" onclick="startChat('sofia')">
-        <div class="img-box">
-          <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=500&fit=crop" alt="Sofia">
-          <span class="badge new">NEW</span>
+    <section class="section" id="companions">
+      <div class="section-heading">
+        <div>
+          <h2>Discover Companions</h2>
+          <p>Find a personality you'll love talking to.</p>
         </div>
-        <div class="info">
-          <h3>Sofia</h3>
-          <p>Sweet & Caring</p>
-        </div>
+        <a href="#companions">Explore all</a>
       </div>
 
-      <div class="card" onclick="startChat('maya')">
-        <div class="img-box">
-          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&h=500&fit=crop" alt="Maya">
-        </div>
-        <div class="info">
-          <h3>Maya</h3>
-          <p>Bold & Confident</p>
-        </div>
+      <div class="companions">
+
+        <article class="companion-card">
+          <div class="avatar luna">L</div>
+          <div class="companion-info">
+            <h3>Luna</h3>
+            <p>Creative, playful and full of surprises.</p>
+            <a class="chat-link" href="chat.html?girl=Luna">Start Chat →</a>
+          </div>
+        </article>
+
+        <article class="companion-card">
+          <div class="avatar sofia">S</div>
+          <div class="companion-info">
+            <h3>Sofia</h3>
+            <p>Kind-hearted, thoughtful and friendly.</p>
+            <a class="chat-link" href="chat.html?girl=Sofia">Start Chat →</a>
+          </div>
+        </article>
+
+        <article class="companion-card">
+          <div class="avatar maya">M</div>
+          <div class="companion-info">
+            <h3>Maya</h3>
+            <p>Confident, adventurous and fun-loving.</p>
+            <a class="chat-link" href="chat.html?girl=Maya">Start Chat →</a>
+          </div>
+        </article>
+
+        <article class="companion-card">
+          <div class="avatar ella">E</div>
+          <div class="companion-info">
+            <h3>Ella</h3>
+            <p>Gentle, curious and easy to talk to.</p>
+            <a class="chat-link" href="chat.html?girl=Ella">Start Chat →</a>
+          </div>
+        </article>
+
       </div>
+    </section>
 
-      <div class="card" onclick="startChat('ella')">
-        <div class="img-box">
-          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop" alt="Ella">
-          <span class="badge new">NEW</span>
-        </div>
-        <div class="info">
-          <h3>Ella</h3>
-          <p>Cute & Innocent</p>
-        </div>
-      </div>
+    <section class="closing">
+      <h2>Your next conversation starts here.</h2>
+      <p>Choose a companion and start getting to know them.</p>
+      <a href="chat.html?girl=Aria" class="primary-button">
+        Start Your Journey →
+      </a>
+    </section>
 
-      <div class="card" onclick="startChat('nova')">
-        <div class="img-box">
-          <img src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=500&fit=crop" alt="Nova">
-        </div>
-        <div class="info">
-          <h3>Nova</h3>
-          <p>Wild & Adventurous</p>
-        </div>
-      </div>
+  </main>
 
-    </div>
-  </section>
+  <footer>
+    <p>© 2026 Heartmate AI. All rights reserved.</p>
+    <p style="margin-top:8px;">AI-generated fictional adult characters.</p>
+  </footer>
 
-  <!-- Bottom Nav -->
   <nav class="bottom-nav">
-    <div class="nav-item active"><span>🏠</span><p>Home</p></div>
-    <div class="nav-item"><span>🔥</span><p>Discover</p></div>
-    <div class="nav-item create"><span>+</span></div>
-    <div class="nav-item"><span>🔍</span><p>Search</p></div>
-    <div class="nav-item"><span>💬</span><p>Chat</p></div>
+    <a href="/"><span>⌂</span>Home</a>
+    <a href="#companions"><span>♡</span>Discover</a>
+    <a href="aria.html"><span>✧</span>Aria</a>
+    <a href="chat.html?girl=Aria"><span>▢</span>Chat</a>
   </nav>
-
-  <script>
-    function startChat(girl) {
-      window.location.href = `chat.html?girl=${girl}`;
-    }
-  </script>
 
 </body>
 </html>
