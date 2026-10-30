@@ -418,7 +418,7 @@ if (
 
   
 
-// KLING VIDEO GENERATION API.
+// KLING 3.0 TURBO VIDEO GENERATION API.
 if (
   url.pathname === "/api/video" &&
   request.method === "POST"
@@ -452,7 +452,7 @@ if (
     ).href;
 
     const response = await fetch(
-      "https://api-singapore.klingai.com/image-to-video/kling-3.0",
+      "https://api-singapore.klingai.com/image-to-video/kling-3.0-turbo",
       {
         method: "POST",
         headers: {
@@ -466,9 +466,12 @@ if (
           ],
           settings: {
             resolution: "720p",
-            duration: 5,
-            audio: "off",
-            multi_shot: false
+            duration: 5
+          },
+          options: {
+            watermark_info: {
+              enabled: false
+            }
           }
         })
       }
@@ -493,7 +496,6 @@ if (
     return json({ error: "Video generation could not be started." }, 502);
   }
 }
-
 // CHECK KLING VIDEO STATUS.
 if (
   url.pathname === "/api/video/status" &&
