@@ -144,7 +144,9 @@ export default {
         ok: true,
         service: "Heartmate AI",
         characters: Object.keys(characters).length,
-        aiBinding: Boolean(env.AI)
+        aiBinding: Boolean(env.AI),
+        assetsBinding: Boolean(env.ASSETS),
+        klingConfigured: Boolean(env.KLING_API_KEY)
       });
     }
 
@@ -231,7 +233,6 @@ Conversation instructions:
 - Usually respond in 1 to 3 short paragraphs.
 `;
 
-        // Updated Cloudflare Workers AI chat model.
         const result = await env.AI.run(
           "@cf/zai-org/glm-4.7-flash",
           {
@@ -254,7 +255,6 @@ Conversation instructions:
           }
         );
 
-        // Support different response formats.
         const reply =
           result?.response ||
           result?.choices?.[0]?.message?.content ||
@@ -290,265 +290,327 @@ Conversation instructions:
       }
     }
 
-    
+    // IMAGE GENERATION API FOR ALL 24 COMPANIONS.
+    if (
+      url.pathname === "/api/image" &&
+      request.method === "POST"
+    ) {
+      try {
+        if (!env.AI || !env.ASSETS) {
+          throw new Error("Cloudflare AI or ASSETS binding is missing.");
+        }
 
+        const body = await request.json();
+        const characterId = cleanText(body.character, 40).toLowerCase();
+        const profile = characters[characterId];
 
+        if (!profile) {
+          return json({ error: "Character not found." }, 404);
+        }
 
-// IMAGE GENERATION API FOR ALL 24 COMPANIONS.
-if (
-  url.pathname === "/api/image" &&
-  request.method === "POST"
-) {
-  try {
-    if (!env.AI || !env.ASSETS) {
-      throw new Error("Cloudflare AI or ASSETS binding is missing.");
-    }
+        const scene = cleanText(body.scene || body.prompt, 400);
 
-    const body = await request.json();
-    const characterId = cleanText(body.character, 40).toLowerCase();
-    const profile = characters[characterId];
+        if (!scene) {
+          return json({ error: "Please describe the picture." }, 400);
+        }
 
-    if (!profile) {
-      return json({ error: "Character not found." }, 404);
-    }
+        const safePrompt =
+          "Create a photorealistic image of " + profile.name +
+          ", a fictional adult woman aged 25 or older. " +
+          "Scene: " + scene + ". " +
+          "Use realistic skin texture, natural anatomy, " +
+          "an expressive face and cinematic lighting. " +
+          "Allow glamorous fashion, opaque revealing outfits, " +
+          "tasteful swimwear and suggestive non-explicit poses. " +
+          "Keep clothing opaque and appropriately covering. " +
+          "No nudity, exposed intimate areas or sexual activity. " +
+          "No text, captions or watermarks.";
 
-    const scene = cleanText(body.scene || body.prompt, 400);
+        const form = new FormData();
 
-    if (!scene) {
-      return json({ error: "Please describe the picture." }, 400);
-    }
+        form.append("prompt", safePrompt);
+        form.append("width", "1024");
+        form.append("height", "1024");
 
-    const safePrompt =
-      "Create a photorealistic image of " + profile.name +
-      ", a fictional adult woman aged 25 or older. " +
-      "Scene: " + scene + ". " +
-      "Use realistic skin texture, natural anatomy, " +
-      "an expressive face and cinematic lighting. " +
-      "Allow glamorous fashion, opaque revealing outfits, " +
-      "tasteful swimwear and suggestive non-explicit poses. " +
-      "Keep clothing opaque and appropriately covering. " +
-      "No nudity, exposed intimate areas or sexual activity. " +
-      "No text, captions or watermarks.";
+        // Add Aria's reference photos only when generating Aria.
+        if (characterId === "aria") {
+          for (let i = 0; i < 4; i++) {
+            const imageUrl = new URL(
+              `/images/aria-ref-${i + 1}.jpeg`,
+              request.url
+            );
 
-    // FLUX.2 Klein 9B requires multipart input for every request.
-    const form = new FormData();
+            const imageResponse = await env.ASSETS.fetch(
+              new Request(imageUrl)
+            );
 
-    form.append("prompt", safePrompt);
-    form.append("width", "1024");
-    form.append("height", "1024");
+            if (!imageResponse.ok) {
+              throw new Error(
+                `Could not load Aria reference photo ${i + 1}.`
+              );
+            }
 
-    // Add Aria's reference photos only when generating Aria.
-    if (characterId === "aria") {
-      for (let i = 0; i < 4; i++) {
-        const imageUrl = new URL(
-          `/images/aria-ref-${i + 1}.jpeg`,
-          request.url
+            form.append(
+              `input_image_${i}`,
+              await imageResponse.blob(),
+              `aria-ref-${i + 1}.jpeg`
+            );
+          }
+        }
+
+        const formResponse = new Response(form);
+
+        const result = await env.AI.run(
+          "@cf/black-forest-labs/flux-2-klein-9b",
+          {
+            multipart: {
+              body: formResponse.body,
+              contentType: formResponse.headers.get("content-type")
+            }
+          }
         );
 
+        if (!result || typeof result.image !== "string") {
+          throw new Error("Image model returned no image.");
+        }
+
+        const binary = Uint8Array.from(
+          atob(result.image),
+          character => character.charCodeAt(0)
+        );
+
+        return new Response(binary, {
+          status: 200,
+          headers: {
+            "content-type": "image/png",
+            "cache-control": "no-store",
+            "x-content-type-options": "nosniff"
+          }
+        });
+
+      } catch (error) {
+        console.error(
+          "Image API error:",
+          error?.stack || error?.message || String(error)
+        );
+
+        return json({
+          error: error?.message || "Image generation failed."
+        }, 502);
+      }
+    }
+
+    // KLING 3.0 TURBO VIDEO GENERATION API FOR ALL 24 COMPANIONS.
+    if (
+      url.pathname === "/api/video" &&
+      request.method === "POST"
+    ) {
+      try {
+        if (!env.KLING_API_KEY) {
+          return json({
+            error: "Kling API key is missing."
+          }, 500);
+        }
+
+        if (!env.ASSETS) {
+          return json({
+            error: "Website assets are unavailable."
+          }, 500);
+        }
+
+        const body = await request.json();
+
+        const characterId = cleanText(
+          body.character,
+          40
+        ).toLowerCase();
+
+        const scene = cleanText(body.scene, 1500);
+
+        const profile = characters[characterId];
+
+        if (!profile) {
+          return json({
+            error: "Character not found."
+          }, 404);
+        }
+
+        if (!scene) {
+          return json({
+            error: "Please describe the video scene."
+          }, 400);
+        }
+
+        const prompt =
+          "Create a video featuring " + profile.name +
+          ", a fictional adult woman aged 25 or older. " +
+          scene +
+          ". Preserve her recognizable appearance, natural movement " +
+          "and realistic expressions. Keep clothing appropriate and opaque. " +
+          "No nudity, sexual activity or explicit content.";
+
+        // Each companion uses her own first uploaded photograph.
+        const firstFramePath = characterId === "aria"
+          ? "/images/aria-ref-1.jpeg"
+          : `/images/${characterId}/${characterId}-1.jpeg`;
+
+        // Check that the photo exists before submitting the video task.
         const imageResponse = await env.ASSETS.fetch(
-          new Request(imageUrl)
+          new Request(new URL(firstFramePath, request.url))
         );
 
         if (!imageResponse.ok) {
-          throw new Error(
-            `Could not load Aria reference photo ${i + 1}.`
-          );
+          return json({
+            error:
+              `The first photo for ${profile.name} could not be found. ` +
+              `Please check ${firstFramePath}.`
+          }, 404);
         }
 
-        form.append(
-          `input_image_${i}`,
-          await imageResponse.blob(),
-          `aria-ref-${i + 1}.jpeg`
+        const firstFrame = new URL(
+          firstFramePath,
+          request.url
+        ).href;
+
+        const response = await fetch(
+          "https://api-singapore.klingai.com/image-to-video/kling-3.0-turbo",
+          {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${env.KLING_API_KEY}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              contents: [
+                {
+                  type: "prompt",
+                  text: prompt
+                },
+                {
+                  type: "first_frame",
+                  url: firstFrame
+                }
+              ],
+              settings: {
+                resolution: "720p",
+                duration: 5
+              },
+              options: {
+                watermark_info: {
+                  enabled: false
+                }
+              }
+            })
+          }
         );
-      }
-    }
 
-    // Serialize FormData so Cloudflare receives the correct boundary.
-    const formResponse = new Response(form);
+        const result = await response.json();
 
-    const result = await env.AI.run(
-      "@cf/black-forest-labs/flux-2-klein-9b",
-      {
-        multipart: {
-          body: formResponse.body,
-          contentType: formResponse.headers.get("content-type")
+        if (!response.ok || result.code !== 0 || !result.data?.id) {
+          console.error("Kling create task error:", result);
+
+          return json({
+            error: result.message || "Kling could not start the video task."
+          }, 502);
         }
+
+        return json({
+          taskId: result.data.id,
+          status: result.data.status,
+          character: profile.name
+        });
+
+      } catch (error) {
+        console.error(
+          "Kling video API error:",
+          error?.message || String(error),
+          error?.stack || ""
+        );
+
+        return json({
+          error: "Video generation could not be started."
+        }, 502);
       }
-    );
-
-    if (!result || typeof result.image !== "string") {
-      throw new Error("Image model returned no image.");
     }
 
-    const binary = Uint8Array.from(
-      atob(result.image),
-      character => character.charCodeAt(0)
-    );
+    // CHECK KLING VIDEO STATUS.
+    if (
+      url.pathname === "/api/video/status" &&
+      request.method === "GET"
+    ) {
+      try {
+        if (!env.KLING_API_KEY) {
+          return json({
+            error: "Kling API key is missing."
+          }, 500);
+        }
 
-    return new Response(binary, {
-      status: 200,
-      headers: {
-        "content-type": "image/png",
-        "cache-control": "no-store",
-        "x-content-type-options": "nosniff"
-      }
-    });
+        const taskId = cleanText(
+          url.searchParams.get("taskId"),
+          100
+        );
 
-  } catch (error) {
-    console.error(
-      "Image API error:",
-      error?.stack || error?.message || String(error)
-    );
+        if (!/^[0-9]+$/.test(taskId)) {
+          return json({
+            error: "Invalid video task ID."
+          }, 400);
+        }
 
-    return json({
-      error: error?.message || "Image generation failed."
-    }, 502);
-  }
-}
-
-
-// KLING 3.0 TURBO VIDEO GENERATION API.
-if (
-  url.pathname === "/api/video" &&
-  request.method === "POST"
-) {
-  try {
-    if (!env.KLING_API_KEY) {
-      return json({ error: "Kling API key is missing." }, 500);
-    }
-
-    const body = await request.json();
-    const character = cleanText(body.character || "aria", 40).toLowerCase();
-    const scene = cleanText(body.scene, 1500);
-
-    if (character !== "aria") {
-      return json({ error: "Video generation is currently available for Aria only." }, 400);
-    }
-
-    if (!scene) {
-      return json({ error: "Please describe the video scene." }, 400);
-    }
-
-    const prompt =
-      "Animate the fictional adult woman in the provided first frame. " +
-      scene +
-      ". Preserve her recognizable appearance, natural movement and realistic expressions. " +
-      "Keep clothing appropriate. No nudity, sexual activity or explicit content.";
-
-    const firstFrame = new URL(
-      "/images/aria-ref-1.jpeg",
-      request.url
-    ).href;
-
-    const response = await fetch(
-      "https://api-singapore.klingai.com/image-to-video/kling-3.0-turbo",
-      {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${env.KLING_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          contents: [
-            { type: "prompt", text: prompt },
-            { type: "first_frame", url: firstFrame }
-          ],
-          settings: {
-            resolution: "720p",
-            duration: 5
-          },
-          options: {
-            watermark_info: {
-              enabled: false
+        const response = await fetch(
+          "https://api-singapore.klingai.com/tasks?task_ids=" +
+            encodeURIComponent(taskId),
+          {
+            headers: {
+              "Authorization": `Bearer ${env.KLING_API_KEY}`
             }
           }
-        })
-      }
-    );
+        );
 
-    const result = await response.json();
+        const result = await response.json();
 
-    if (!response.ok || result.code !== 0 || !result.data?.id) {
-      console.error("Kling create task error:", result);
-      return json({
-        error: result.message || "Kling could not start the video task."
-      }, 502);
-    }
+        if (!response.ok || result.code !== 0) {
+          console.error("Kling status error:", result);
 
-    return json({
-      taskId: result.data.id,
-      status: result.data.status
-    });
-
-  } catch (error) {
-    console.error("Kling video API error:", error?.message || String(error));
-    return json({ error: "Video generation could not be started." }, 502);
-  }
-}
-// CHECK KLING VIDEO STATUS.
-if (
-  url.pathname === "/api/video/status" &&
-  request.method === "GET"
-) {
-  try {
-    if (!env.KLING_API_KEY) {
-      return json({ error: "Kling API key is missing." }, 500);
-    }
-
-    const taskId = cleanText(
-      url.searchParams.get("taskId"),
-      100
-    );
-
-    if (!/^[0-9]+$/.test(taskId)) {
-      return json({ error: "Invalid video task ID." }, 400);
-    }
-
-    const response = await fetch(
-      "https://api-singapore.klingai.com/tasks?task_ids=" +
-        encodeURIComponent(taskId),
-      {
-        headers: {
-          "Authorization": `Bearer ${env.KLING_API_KEY}`
+          return json({
+            error: result.message || "Could not check video status."
+          }, 502);
         }
+
+        const task = Array.isArray(result.data)
+          ? result.data[0]
+          : null;
+
+        if (!task) {
+          return json({
+            error: "Video task was not found."
+          }, 404);
+        }
+
+        const video = task.outputs?.find(
+          item => item.type === "video"
+        );
+
+        return json({
+          status: task.status,
+          videoUrl: task.status === "succeeded"
+            ? video?.url || null
+            : null,
+          message: task.message || ""
+        });
+
+      } catch (error) {
+        console.error(
+          "Kling status API error:",
+          error?.message || String(error)
+        );
+
+        return json({
+          error: "Could not check video status."
+        }, 502);
       }
-    );
-
-    const result = await response.json();
-
-    if (!response.ok || result.code !== 0) {
-      console.error("Kling status error:", result);
-      return json({
-        error: result.message || "Could not check video status."
-      }, 502);
     }
 
-    const task = Array.isArray(result.data)
-      ? result.data[0]
-      : null;
-
-    if (!task) {
-      return json({ error: "Video task was not found." }, 404);
-    }
-
-    const video = task.outputs?.find(
-      item => item.type === "video"
-    );
-
-    return json({
-      status: task.status,
-      videoUrl: task.status === "succeeded"
-        ? video?.url || null
-        : null,
-      message: task.message || ""
-    });
-
-  } catch (error) {
-    console.error("Kling status API error:", error?.message || String(error));
-    return json({ error: "Could not check video status." }, 502);
-  }
-}
-
+    // Unknown API endpoint.
     if (url.pathname.startsWith("/api/")) {
       return json({
         error: "API endpoint not found."
