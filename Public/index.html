@@ -113,6 +113,32 @@
 
     .primary-button:hover { transform: translateY(-2px); }
 
+    /* GOOGLE ACCOUNT */
+
+    .account-area {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    #accountStatus {
+      color: var(--muted);
+      font-size: 12px;
+      max-width: 190px;
+      overflow-wrap: anywhere;
+    }
+
+    .nav-button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .nav-button[hidden] {
+      display: none;
+    }
+
     /* HERO */
 
     .hero {
@@ -344,7 +370,27 @@
 
     @media (max-width: 760px) {
       .nav-links { display: none; }
-      .navbar { min-height: 64px; }
+
+      .navbar {
+        min-height: 64px;
+        flex-wrap: wrap;
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+
+      .account-area {
+        margin-left: auto;
+      }
+
+      .nav-button {
+        padding: 9px 13px;
+        font-size: 12px;
+      }
+
+      #accountStatus {
+        width: 100%;
+        text-align: right;
+      }
 
       .hero {
         min-height: 510px;
@@ -424,7 +470,17 @@
         <a href="#featured">Featured</a>
       </nav>
 
-      <a class="nav-button" href="chat.html?girl=Aria">Start Chatting</a>
+      <div class="account-area">
+        <button class="nav-button" id="googleSignIn" type="button">
+          Sign in with Google
+        </button>
+
+        <button class="nav-button" id="googleSignOut" type="button" hidden>
+          Sign out
+        </button>
+
+        <span id="accountStatus" aria-live="polite"></span>
+      </div>
     </div>
   </header>
 
@@ -516,6 +572,8 @@
     <a href="chat.html?girl=Aria"><span>▢</span>Chat</a>
   </nav>
 
+  <!-- COMPANION CARDS -->
+
   <script>
     const companions = [
       ["Aria","Warm, charming and affectionate."],
@@ -557,10 +615,8 @@
       image.alt = `${name} portrait`;
       image.loading = "lazy";
 
-      // Aria's photos are in the main images folder.
-      // All other companions have their own image folder.
       image.src = slug === "aria"
-        ? `/images/aria-1.jpeg`
+        ? "/images/aria-1.jpeg"
         : `/images/${slug}/${slug}-1.jpeg`;
 
       image.onerror = function() {
@@ -595,6 +651,84 @@
       card.appendChild(info);
 
       grid.appendChild(card);
+    });
+  </script>
+
+  <!-- FIREBASE GOOGLE AUTHENTICATION -->
+
+  <script type="module">
+    import { initializeApp } from
+      "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signOut,
+      onAuthStateChanged
+    } from
+      "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",
+      authDomain: "heartmate-ai-bd441.firebaseapp.com",
+      projectId: "heartmate-ai-bd441",
+      storageBucket: "heartmate-ai-bd441.firebasestorage.app",
+      messagingSenderId: "929844208432",
+      appId: "1:929844208432:web:0afdab16bd82f11240def5",
+      measurementId: "G-L0Z6XE8R8B"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const signInButton = document.getElementById("googleSignIn");
+    const signOutButton = document.getElementById("googleSignOut");
+    const accountStatus = document.getElementById("accountStatus");
+
+    signInButton.addEventListener("click", async () => {
+      signInButton.disabled = true;
+      accountStatus.textContent = "Opening Google sign-in...";
+
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error("Google sign-in error:", error);
+        accountStatus.textContent =
+          error.code === "auth/popup-closed-by-user"
+            ? "Sign-in was cancelled."
+            : "Sign-in failed: " + error.message;
+      } finally {
+        signInButton.disabled = false;
+      }
+    });
+
+    signOutButton.addEventListener("click", async () => {
+      signOutButton.disabled = true;
+
+      try {
+        await signOut(auth);
+      } catch (error) {
+        console.error("Sign-out error:", error);
+        accountStatus.textContent = "Sign-out failed. Please try again.";
+      } finally {
+        signOutButton.disabled = false;
+      }
+    });
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        signInButton.hidden = true;
+        signOutButton.hidden = false;
+
+        accountStatus.textContent =
+          "Signed in as " + (user.displayName || user.email || "Google user");
+      } else {
+        signInButton.hidden = false;
+        signOutButton.hidden = true;
+        accountStatus.textContent = "";
+      }
     });
   </script>
 
