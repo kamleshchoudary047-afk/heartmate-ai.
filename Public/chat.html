@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#100d1b">
 <title>Heartmate AI — Chat</title>
+
 <style>
 :root {
   --bg:#100d1b; --panel:#191426; --panel2:#211a30; --line:rgba(255,255,255,.09);
@@ -14,12 +15,18 @@
 *{box-sizing:border-box}
 body{margin:0;min-height:100dvh;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--white);
 background:radial-gradient(ellipse at 12% 0%,rgba(151,83,190,.22),transparent 38%),radial-gradient(ellipse at 95% 35%,rgba(226,76,148,.13),transparent 34%),var(--bg)}
-header{height:78px;padding:12px 17px;display:flex;align-items:center;gap:13px;position:sticky;top:0;z-index:5;background:rgba(20,15,31,.86);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
-.back{width:38px;height:38px;border:1px solid var(--line);border-radius:14px;display:grid;place-items:center;color:white;text-decoration:none;font-size:25px;background:rgba(255,255,255,.04)}
-.avatar{width:48px;height:48px;border-radius:17px;display:grid;place-items:center;font-size:24px;background:linear-gradient(145deg,#ff8abb,#9a70f3);box-shadow:0 6px 22px rgba(218,79,157,.28)}
+header{min-height:78px;padding:12px 17px;display:flex;align-items:center;gap:13px;position:sticky;top:0;z-index:5;background:rgba(20,15,31,.86);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.back{width:38px;height:38px;border:1px solid var(--line);border-radius:14px;display:grid;place-items:center;color:white;text-decoration:none;font-size:25px;background:rgba(255,255,255,.04);flex-shrink:0}
+.avatar{width:48px;height:48px;border-radius:17px;display:grid;place-items:center;font-size:24px;background:linear-gradient(145deg,#ff8abb,#9a70f3);box-shadow:0 6px 22px rgba(218,79,157,.28);flex-shrink:0}
 .profile{min-width:0}.profile h3{margin:0 0 4px;font-size:16px;letter-spacing:.2px}.profile small{color:#a8e6c0;font-size:12px}.profile small:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#68e5a0;margin-right:6px;box-shadow:0 0 9px #68e5a0}
-.header-tag{margin-left:auto;color:#d9c8f8;font-size:11px;border:1px solid rgba(184,145,255,.25);border-radius:20px;padding:7px 10px;background:rgba(168,139,255,.08)}
-.gallery-btn{border:1px solid rgba(255,255,255,.15);border-radius:13px;padding:9px 11px;background:rgba(255,255,255,.07);color:white;font-size:12px;white-space:nowrap;cursor:pointer}
+.gallery-btn{border:1px solid rgba(255,255,255,.15);border-radius:13px;padding:9px 11px;background:rgba(255,255,255,.07);color:white;font-size:12px;white-space:nowrap;cursor:pointer;flex-shrink:0}
+
+.account-controls{margin-left:auto;display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;min-width:0}
+.account-controls button{border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:8px 10px;background:linear-gradient(135deg,#e967aa,#9863d7);color:white;font-size:11px;font-weight:700;cursor:pointer}
+.account-controls button:disabled{opacity:.5;cursor:wait}
+.account-controls button[hidden]{display:none}
+#chatAccountStatus{color:var(--muted);font-size:10px;max-width:125px;overflow-wrap:anywhere;text-align:right}
+
 #messages{height:calc(100dvh - 174px);min-height:300px;overflow-y:auto;padding:22px 16px 26px;display:flex;flex-direction:column;gap:13px;scroll-behavior:smooth}
 .welcome{align-self:center;text-align:center;max-width:300px;margin:5px auto 12px;color:var(--muted);font-size:12px;line-height:1.5}
 .message{max-width:min(84%,440px);padding:12px 15px;border-radius:19px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;box-shadow:0 5px 18px rgba(0,0,0,.12)}
@@ -63,27 +70,54 @@ button:disabled{opacity:.48;cursor:wait}
 .photo-viewer.open{display:flex}
 .photo-viewer img{max-width:100%;max-height:85dvh;object-fit:contain;border-radius:10px}
 .viewer-close{position:absolute;top:18px;right:18px;width:44px;height:44px;border:0;border-radius:50%;background:#292139;color:white;font-size:25px}
-@media(min-width:700px){#messages{padding-left:max(22px,calc((100vw - 720px)/2));padding-right:max(22px,calc((100vw - 720px)/2))}.footer{padding-left:22px;padding-right:22px}.gallery-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+@media(min-width:700px){
+ #messages{padding-left:max(22px,calc((100vw - 720px)/2));padding-right:max(22px,calc((100vw - 720px)/2))}
+ .footer{padding-left:22px;padding-right:22px}
+ .gallery-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:480px){
+ header{gap:8px;padding:10px}
+ .avatar{width:40px;height:40px;border-radius:14px}
+ .profile h3{font-size:14px}
+ .gallery-btn{padding:8px;font-size:11px}
+ .account-controls{max-width:125px}
+ .account-controls button{padding:7px 8px;font-size:10px}
+ #chatAccountStatus{font-size:9px;max-width:120px}
+}
 </style>
 </head>
+
 <body>
+
 <header>
   <a class="back" href="index.html" aria-label="Back">‹</a>
   <div class="avatar">💗</div>
-  <div class="profile"><h3 id="girlName">Your Heartmate</h3><small>Here with you</small></div>
+  <div class="profile">
+    <h3 id="girlName">Your Heartmate</h3>
+    <small>Here with you</small>
+  </div>
+
   <button class="gallery-btn" type="button" onclick="openGallery()">📸 Photos</button>
-  <div class="header-tag">♥ HEARTMATE</div>
+
+  <div class="account-controls">
+    <button id="chatSignIn" type="button">Google sign in</button>
+    <button id="chatSignOut" type="button" hidden>Sign out</button>
+    <span id="chatAccountStatus" aria-live="polite">Checking account…</span>
+  </div>
 </header>
 
 <main id="messages">
   <div class="welcome">A little space for good conversations, sweet moments and creativity ✨</div>
   <div class="message bot">Hey there! 💕 I'm happy you're here. How is your day going?</div>
 </main>
+
 <div id="typing">Your Heartmate is typing… 💗</div>
 
 <div class="footer">
   <div class="status" id="photoStatus">Creating your picture… Please wait.</div>
   <div class="status" id="videoStatus">Creating your video… This may take a few minutes.</div>
+
   <div class="composer">
     <div class="create-wrap">
       <button class="icon-button" id="createButton" type="button" aria-label="Create image or video">＋</button>
@@ -92,9 +126,11 @@ button:disabled{opacity:.48;cursor:wait}
         <button class="create-option" id="openVideo" type="button"><span>🎬</span>Create video</button>
       </div>
     </div>
+
     <input id="messageInput" type="text" placeholder="Write something sweet…" autocomplete="off">
     <button class="send-button" id="sendButton" type="submit" form="chatForm">Send</button>
   </div>
+
   <form id="chatForm" hidden></form>
 </div>
 
@@ -124,6 +160,8 @@ button:disabled{opacity:.48;cursor:wait}
   <img id="viewerImage" src="" alt="Full-size photo" onclick="event.stopPropagation()">
 </div>
 
+<!-- COMPANION CHAT, PHOTO AND VIDEO FEATURES -->
+
 <script>
 const params=new URLSearchParams(location.search);
 const names={
@@ -134,6 +172,7 @@ const names={
  kira:"Kira",diana:"Diana",freya:"Freya",sienna:"Sienna",
  valentina:"Valentina",aurora:"Aurora"
 };
+
 const requestedCharacter=(params.get("girl")||"aria").toLowerCase();
 const character=names[requestedCharacter]?requestedCharacter:"aria";
 const girlName=names[character];
@@ -208,6 +247,7 @@ function openGallery(){
   grid.appendChild(image);
   image.src=src;
  }
+
  if(count===0)empty.style.display="block";
 }
 
@@ -341,6 +381,7 @@ confirmMedia.addEventListener("click",async()=>{
  }
 
  closeMediaModal();
+
  addMessage(
   (mediaChoice==="video"?"Create a video of "+girlName+": ":"Create a picture of "+girlName+": ")+scene,
   "user"
@@ -513,5 +554,85 @@ async function generateVideo(scene){
  }
 }
 </script>
+
+<!-- FIREBASE GOOGLE AUTHENTICATION -->
+
+<script type="module">
+import { initializeApp, getApps }
+  from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",
+  authDomain: "heartmate-ai-bd441.firebaseapp.com",
+  projectId: "heartmate-ai-bd441",
+  storageBucket: "heartmate-ai-bd441.firebasestorage.app",
+  messagingSenderId: "929844208432",
+  appId: "1:929844208432:web:0afdab16bd82f11240def5",
+  measurementId: "G-L0Z6XE8R8B"
+};
+
+const app = getApps().length
+  ? getApps()[0]
+  : initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+const login = document.getElementById("chatSignIn");
+const logout = document.getElementById("chatSignOut");
+const accountStatus = document.getElementById("chatAccountStatus");
+
+login.addEventListener("click", async () => {
+  login.disabled = true;
+  accountStatus.textContent = "Opening Google…";
+
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (error) {
+    console.error("Google sign-in error:", error);
+    accountStatus.textContent =
+      error.code === "auth/popup-closed-by-user"
+        ? "Sign-in cancelled."
+        : "Sign-in failed. Please try again.";
+  } finally {
+    login.disabled = false;
+  }
+});
+
+logout.addEventListener("click", async () => {
+  logout.disabled = true;
+
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error("Google sign-out error:", error);
+    accountStatus.textContent = "Sign-out failed.";
+  } finally {
+    logout.disabled = false;
+  }
+});
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    login.hidden = true;
+    logout.hidden = false;
+    accountStatus.textContent =
+      user.displayName || user.email || "Signed in";
+  } else {
+    login.hidden = false;
+    logout.hidden = true;
+    accountStatus.textContent = "Not signed in";
+  }
+});
+</script>
+
 </body>
 </html>
