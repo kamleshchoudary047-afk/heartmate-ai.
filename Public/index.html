@@ -14,381 +14,377 @@
 
   <style>
     :root {
-      --bg: #10090e;
-      --surface: #1c1018;
-      --surface2: #28151f;
-      --gold: #d6a477;
-      --gold-light: #f1c9a5;
-      --rose: #c87982;
-      --text: #fff8f3;
-      --muted: #bca9a7;
-      --border: rgba(225,177,147,.16);
+      --bg:#10090e;
+      --surface:#1c1018;
+      --surface2:#28151f;
+      --gold:#d6a477;
+      --gold-light:#f1c9a5;
+      --rose:#c87982;
+      --text:#fff8f3;
+      --muted:#bca9a7;
+      --border:rgba(225,177,147,.16);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; }
     body {
-      min-height: 100vh;
-      padding-bottom: 85px;
-      color: var(--text);
+      min-height:100vh;
+      padding-bottom:85px;
+      color:var(--text);
       background:
-        radial-gradient(ellipse at 80% 0%, rgba(125,54,72,.2), transparent 35%),
-        radial-gradient(ellipse at 0% 45%, rgba(100,49,53,.12), transparent 35%),
+        radial-gradient(ellipse at 80% 0%,rgba(125,54,72,.2),transparent 35%),
+        radial-gradient(ellipse at 0% 45%,rgba(100,49,53,.12),transparent 35%),
         var(--bg);
-      font-family: 'DM Sans', sans-serif;
+      font-family:'DM Sans',sans-serif;
     }
 
-    a { color: inherit; text-decoration: none; }
-    button { font: inherit; cursor: pointer; }
-    .container { width: min(1160px, 92%); margin: auto; }
+    a { color:inherit; text-decoration:none; }
+    button { font:inherit; cursor:pointer; }
+    .container { width:min(1160px,92%); margin:auto; }
 
     header {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(16,9,14,.94);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid var(--border);
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:rgba(16,9,14,.94);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid var(--border);
     }
 
     .navbar {
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
+      min-height:72px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
     }
 
     .logo {
-      font-size: 23px;
-      font-weight: 800;
-      letter-spacing: -.8px;
+      font-size:23px;
+      font-weight:800;
+      letter-spacing:-.8px;
     }
-    .logo span { color: var(--gold); }
+    .logo span { color:var(--gold); }
 
     .nav-links {
-      display: flex;
-      gap: 27px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 13px;
+      display:flex;
+      gap:27px;
+      align-items:center;
+      color:var(--muted);
+      font-size:13px;
     }
-    .nav-links a:hover { color: var(--gold-light); }
+    .nav-links a:hover { color:var(--gold-light); }
 
     .account-area {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 9px;
-      flex-wrap: wrap;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:9px;
+      flex-wrap:wrap;
     }
 
     #accountStatus {
-      max-width: 190px;
-      color: var(--muted);
-      font-size: 11px;
-      overflow-wrap: anywhere;
+      max-width:190px;
+      color:var(--muted);
+      font-size:11px;
+      overflow-wrap:anywhere;
     }
 
-    .small-button, .primary-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(226,178,144,.3);
-      border-radius: 30px;
-      color: #1b1012;
-      background: linear-gradient(110deg, #f0c49d, #c78b70);
-      font-weight: 800;
+    .small-button,.primary-button {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(226,178,144,.3);
+      border-radius:30px;
+      color:#1b1012;
+      background:linear-gradient(110deg,#f0c49d,#c78b70);
+      font-weight:800;
     }
-    .small-button { padding: 10px 16px; font-size: 12px; }
+    .small-button { padding:10px 16px; font-size:12px; }
     .primary-button {
-      padding: 14px 23px;
-      font-size: 13px;
-      box-shadow: 0 8px 28px rgba(194,117,103,.19);
-      transition: transform .2s, box-shadow .2s;
+      padding:14px 23px;
+      font-size:13px;
+      box-shadow:0 8px 28px rgba(194,117,103,.19);
+      transition:transform .2s,box-shadow .2s;
     }
     .primary-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 34px rgba(194,117,103,.3);
+      transform:translateY(-2px);
+      box-shadow:0 12px 34px rgba(194,117,103,.3);
     }
-    .small-button:disabled { opacity: .6; cursor: wait; }
-    [hidden] { display: none !important; }
-
-    /* HERO */
+    .small-button:disabled { opacity:.6; cursor:wait; }
+    [hidden] { display:none!important; }
 
     .hero {
-      position: relative;
-      min-height: 510px;
-      margin-top: 27px;
-      padding: 55px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      border: 1px solid var(--border);
-      border-radius: 27px;
+      position:relative;
+      min-height:510px;
+      margin-top:27px;
+      padding:55px;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      border:1px solid var(--border);
+      border-radius:27px;
       background:
-        linear-gradient(90deg, rgba(16,9,14,.98), rgba(16,9,14,.82) 45%, rgba(16,9,14,.1)),
-        url('/images/aria-1.jpeg') center 35% / cover no-repeat;
+        linear-gradient(90deg,rgba(16,9,14,.98),rgba(16,9,14,.82) 45%,rgba(16,9,14,.1)),
+        url('/images/aria-1.jpeg') center 35%/cover no-repeat;
     }
-    .hero-content { max-width: 520px; position: relative; z-index: 1; }
+    .hero-content { max-width:520px; position:relative; z-index:1; }
     .eyebrow {
-      display: inline-block;
-      padding: 8px 13px;
-      margin-bottom: 22px;
-      color: var(--gold-light);
-      background: rgba(214,164,119,.1);
-      border: 1px solid rgba(214,164,119,.3);
-      border-radius: 30px;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1.6px;
-      text-transform: uppercase;
+      display:inline-block;
+      padding:8px 13px;
+      margin-bottom:22px;
+      color:var(--gold-light);
+      background:rgba(214,164,119,.1);
+      border:1px solid rgba(214,164,119,.3);
+      border-radius:30px;
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:1.6px;
+      text-transform:uppercase;
     }
-    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+    h1,h2,h3 { font-family:'Playfair Display',serif; }
     .hero h1 {
-      font-size: clamp(42px, 6vw, 68px);
-      line-height: 1.08;
-      margin-bottom: 19px;
-      font-weight: 600;
+      font-size:clamp(42px,6vw,68px);
+      line-height:1.08;
+      margin-bottom:19px;
+      font-weight:600;
     }
-    .hero h1 span { color: var(--gold-light); }
+    .hero h1 span { color:var(--gold-light); }
     .hero p {
-      max-width: 420px;
-      margin-bottom: 28px;
-      color: #e0ceca;
-      font-size: 15px;
-      line-height: 1.85;
+      max-width:420px;
+      margin-bottom:28px;
+      color:#e0ceca;
+      font-size:15px;
+      line-height:1.85;
     }
     .hero-note {
-      margin-top: 17px;
-      color: #d1b9b1;
-      font-size: 11px;
-      letter-spacing: .4px;
+      margin-top:17px;
+      color:#d1b9b1;
+      font-size:11px;
+      letter-spacing:.4px;
     }
 
-    /* SECTIONS */
-
-    .section { padding-top: 61px; }
+    .section { padding-top:61px; }
     .section-heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 15px;
-      margin-bottom: 22px;
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:15px;
+      margin-bottom:22px;
     }
-    .section-heading h2 {
-      font-size: 30px;
-      font-weight: 600;
-    }
+    .section-heading h2 { font-size:30px; font-weight:600; }
     .section-heading p {
-      margin-top: 7px;
-      color: var(--muted);
-      font-size: 12px;
+      margin-top:7px;
+      color:var(--muted);
+      font-size:12px;
     }
-    .section-heading > a {
-      color: var(--gold-light);
-      font-size: 12px;
-      font-weight: 700;
+    .section-heading>a {
+      color:var(--gold-light);
+      font-size:12px;
+      font-weight:700;
     }
     .section-kicker {
-      margin-bottom: 8px;
-      color: var(--gold);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: 1.8px;
-      text-transform: uppercase;
+      margin-bottom:8px;
+      color:var(--gold);
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:1.8px;
+      text-transform:uppercase;
     }
-
-    /* DAILY MESSAGE */
 
     .daily-card {
-      display: grid;
-      grid-template-columns: 170px 1fr;
-      gap: 25px;
-      align-items: center;
-      padding: 21px;
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      background: linear-gradient(115deg, #291720, #1b1118);
+      display:grid;
+      grid-template-columns:170px 1fr;
+      gap:25px;
+      align-items:center;
+      padding:21px;
+      border:1px solid var(--border);
+      border-radius:22px;
+      background:linear-gradient(115deg,#291720,#1b1118);
     }
     .daily-photo {
-      width: 100%;
-      height: 190px;
-      object-fit: cover;
-      object-position: center 28%;
-      border-radius: 15px;
-      background: var(--surface2);
+      width:100%;
+      height:190px;
+      object-fit:cover;
+      object-position:center 28%;
+      border-radius:15px;
+      background:var(--surface2);
     }
     .daily-message {
-      margin: 13px 0 19px;
-      color: #f0ded8;
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(19px, 2.5vw, 25px);
-      line-height: 1.5;
+      margin:13px 0 19px;
+      color:#f0ded8;
+      font-family:'Playfair Display',serif;
+      font-size:clamp(19px,2.5vw,25px);
+      line-height:1.5;
     }
-    .daily-name { color: var(--gold-light); font-size: 12px; font-weight: 700; }
-
-    /* FEATURED COMPANIONS */
+    .daily-name { color:var(--gold-light); font-size:12px; font-weight:700; }
+    .daily-mood {
+      display:inline-block;
+      margin-top:8px;
+      color:var(--gold);
+      font-size:10px;
+      letter-spacing:1px;
+      text-transform:uppercase;
+    }
 
     .featured-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0,1fr));
-      gap: 16px;
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:16px;
     }
     .companion-card {
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: 19px;
-      background: linear-gradient(155deg, #25151e, #180f16);
-      transition: transform .2s, border-color .2s;
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:19px;
+      background:linear-gradient(155deg,#25151e,#180f16);
+      transition:transform .2s,border-color .2s;
     }
     .companion-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(214,164,119,.5);
+      transform:translateY(-4px);
+      border-color:rgba(214,164,119,.5);
     }
     .avatar-photo {
-      display: block;
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-      object-position: center 28%;
-      background: linear-gradient(135deg, #54313a, #24151e);
+      display:block;
+      width:100%;
+      height:220px;
+      object-fit:cover;
+      object-position:center 28%;
+      background:linear-gradient(135deg,#54313a,#24151e);
     }
     .avatar-fallback {
-      height: 220px;
-      display: grid;
-      place-items: center;
-      color: var(--gold-light);
-      background: linear-gradient(135deg, #54313a, #24151e);
-      font-family: 'Playfair Display', serif;
-      font-size: 65px;
+      height:220px;
+      display:grid;
+      place-items:center;
+      color:var(--gold-light);
+      background:linear-gradient(135deg,#54313a,#24151e);
+      font-family:'Playfair Display',serif;
+      font-size:65px;
     }
-    .companion-info { padding: 16px; }
-    .companion-info h3 { margin-bottom: 6px; font-size: 19px; }
+    .companion-info { padding:16px; }
+    .companion-info h3 { margin-bottom:6px; font-size:19px; }
     .companion-info p {
-      min-height: 37px;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.6;
+      min-height:37px;
+      color:var(--muted);
+      font-size:11px;
+      line-height:1.6;
     }
     .chat-link {
-      display: block;
-      margin-top: 13px;
-      padding: 10px;
-      border: 1px solid rgba(214,164,119,.2);
-      border-radius: 22px;
-      color: var(--gold-light);
-      background: rgba(214,164,119,.07);
-      text-align: center;
-      font-size: 11px;
-      font-weight: 700;
+      display:block;
+      margin-top:13px;
+      padding:10px;
+      border:1px solid rgba(214,164,119,.2);
+      border-radius:22px;
+      color:var(--gold-light);
+      background:rgba(214,164,119,.07);
+      text-align:center;
+      font-size:11px;
+      font-weight:700;
     }
-    .chat-link:hover { background: rgba(214,164,119,.16); }
-
-    /* EXPERIENCE LINKS */
+    .chat-link:hover { background:rgba(214,164,119,.16); }
 
     .experience-grid {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 15px;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:15px;
     }
     .experience-card {
-      min-height: 170px;
-      padding: 23px;
-      border: 1px solid var(--border);
-      border-radius: 19px;
-      background: linear-gradient(145deg, #291720, #1a1017);
+      min-height:170px;
+      padding:23px;
+      border:1px solid var(--border);
+      border-radius:19px;
+      background:linear-gradient(145deg,#291720,#1a1017);
     }
-    .experience-icon { font-size: 25px; margin-bottom: 15px; }
-    .experience-card h3 { margin-bottom: 8px; font-size: 20px; }
-    .experience-card p { color: var(--muted); font-size: 12px; line-height: 1.7; }
-
-    /* CLOSING */
+    .experience-icon { font-size:25px; margin-bottom:15px; }
+    .experience-card h3 { margin-bottom:8px; font-size:20px; }
+    .experience-card p {
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.7;
+    }
 
     .closing {
-      margin-top: 65px;
-      padding: 48px 24px;
-      border: 1px solid var(--border);
-      border-radius: 24px;
+      margin-top:65px;
+      padding:48px 24px;
+      border:1px solid var(--border);
+      border-radius:24px;
       background:
-        radial-gradient(circle at 50% 0%, rgba(181,108,100,.19), transparent 65%),
-        linear-gradient(120deg, #301923, #1b1118);
-      text-align: center;
+        radial-gradient(circle at 50% 0%,rgba(181,108,100,.19),transparent 65%),
+        linear-gradient(120deg,#301923,#1b1118);
+      text-align:center;
     }
-    .closing h2 { margin-bottom: 12px; font-size: 32px; }
-    .closing p { margin-bottom: 23px; color: var(--muted); font-size: 13px; }
+    .closing h2 { margin-bottom:12px; font-size:32px; }
+    .closing p { margin-bottom:23px; color:var(--muted); font-size:13px; }
 
     footer {
-      padding: 35px 10px 12px;
-      color: #93817f;
-      font-size: 11px;
-      line-height: 1.9;
-      text-align: center;
+      padding:35px 10px 12px;
+      color:#93817f;
+      font-size:11px;
+      line-height:1.9;
+      text-align:center;
     }
+    .bottom-nav { display:none; }
 
-    .bottom-nav { display: none; }
-
-    /* MOBILE */
-
-    @media (max-width: 760px) {
+    @media(max-width:760px) {
       .navbar {
-        min-height: 65px;
-        flex-wrap: wrap;
-        padding: 10px 0;
+        min-height:65px;
+        flex-wrap:wrap;
+        padding:10px 0;
       }
-      .nav-links { display: none; }
-      .account-area { margin-left: auto; }
-      #accountStatus { width: 100%; text-align: right; }
+      .nav-links { display:none; }
+      .account-area { margin-left:auto; }
+      #accountStatus { width:100%; text-align:right; }
       .hero {
-        min-height: 520px;
-        padding: 27px 23px;
-        align-items: end;
+        min-height:520px;
+        padding:27px 23px;
+        align-items:end;
         background:
-          linear-gradient(0deg, rgba(16,9,14,.99), rgba(16,9,14,.73) 48%, rgba(16,9,14,.05)),
-          url('/images/aria-1.jpeg') center 25% / cover no-repeat;
+          linear-gradient(0deg,rgba(16,9,14,.99),rgba(16,9,14,.73) 48%,rgba(16,9,14,.05)),
+          url('/images/aria-1.jpeg') center 25%/cover no-repeat;
       }
-      .hero-content { padding-bottom: 12px; }
-      .hero h1 { font-size: 44px; }
-      .hero p { font-size: 13px; }
-      .section { padding-top: 43px; }
-      .section-heading h2 { font-size: 25px; }
-      .daily-card { grid-template-columns: 105px 1fr; gap: 15px; padding: 14px; }
-      .daily-photo { height: 155px; }
-      .daily-message { font-size: 18px; }
-      .featured-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
-      .avatar-photo, .avatar-fallback { height: 175px; }
-      .experience-grid { grid-template-columns: 1fr; gap: 11px; }
-      .experience-card { min-height: 0; }
-      .closing { margin-top: 45px; padding: 35px 18px; }
-      .closing h2 { font-size: 27px; }
-
+      .hero-content { padding-bottom:12px; }
+      .hero h1 { font-size:44px; }
+      .hero p { font-size:13px; }
+      .section { padding-top:43px; }
+      .section-heading h2 { font-size:25px; }
+      .daily-card { grid-template-columns:105px 1fr; gap:15px; padding:14px; }
+      .daily-photo { height:155px; }
+      .daily-message { font-size:18px; }
+      .featured-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+      .avatar-photo,.avatar-fallback { height:175px; }
+      .experience-grid { grid-template-columns:1fr; gap:11px; }
+      .experience-card { min-height:0; }
+      .closing { margin-top:45px; padding:35px 18px; }
+      .closing h2 { font-size:27px; }
       .bottom-nav {
-        display: flex;
-        position: fixed;
-        z-index: 30;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        justify-content: space-around;
-        padding: 12px 5px calc(12px + env(safe-area-inset-bottom));
-        background: rgba(20,12,17,.97);
-        border-top: 1px solid var(--border);
-        backdrop-filter: blur(18px);
+        display:flex;
+        position:fixed;
+        z-index:30;
+        bottom:0;
+        left:0;
+        width:100%;
+        justify-content:space-around;
+        padding:12px 5px calc(12px + env(safe-area-inset-bottom));
+        background:rgba(20,12,17,.97);
+        border-top:1px solid var(--border);
+        backdrop-filter:blur(18px);
       }
       .bottom-nav a {
-        color: var(--muted);
-        font-size: 10px;
-        text-align: center;
+        color:var(--muted);
+        font-size:10px;
+        text-align:center;
       }
-      .bottom-nav a span { display: block; margin-bottom: 4px; font-size: 19px; }
+      .bottom-nav a span {
+        display:block;
+        margin-bottom:4px;
+        font-size:19px;
+      }
     }
-
-    @media (max-width: 380px) {
-      .hero h1 { font-size: 38px; }
-      .daily-card { grid-template-columns: 90px 1fr; }
-      .daily-photo { height: 140px; }
-      .avatar-photo, .avatar-fallback { height: 145px; }
-      .companion-info { padding: 12px; }
+    @media(max-width:380px) {
+      .hero h1 { font-size:38px; }
+      .daily-card { grid-template-columns:90px 1fr; }
+      .daily-photo { height:140px; }
+      .avatar-photo,.avatar-fallback { height:145px; }
+      .companion-info { padding:12px; }
     }
   </style>
 </head>
@@ -397,14 +393,12 @@
 <header>
   <div class="container navbar">
     <a href="/" class="logo">Heartmate<span> AI</span></a>
-
     <nav class="nav-links">
       <a href="/">Home</a>
       <a href="#featured">Discover</a>
       <a href="#experiences">Experiences</a>
       <a href="#companions">All Companions</a>
     </nav>
-
     <div class="account-area">
       <button class="small-button" id="googleSignIn" type="button">Sign in with Google</button>
       <button class="small-button" id="googleSignOut" type="button" hidden>Sign out</button>
@@ -414,15 +408,11 @@
 </header>
 
 <main class="container">
-
   <section class="hero">
     <div class="hero-content">
       <div class="eyebrow">A world made for connection · 18+</div>
       <h1>A little more<br>romance. <span>A little more you.</span></h1>
-      <p>
-        Step into a world of fictional companions, meaningful conversations
-        and unexpected moments. Someone special might be waiting.
-      </p>
+      <p>Step into a world of fictional companions, meaningful conversations and unexpected moments. Someone special might be waiting.</p>
       <a href="chat.html?girl=Aria" class="primary-button">Meet Aria&nbsp; →</a>
       <div class="hero-note">Your conversations. Your moments. Your story.</div>
     </div>
@@ -436,11 +426,11 @@
         <p>A small hello from one of your companions.</p>
       </div>
     </div>
-
     <div class="daily-card">
       <img class="daily-photo" id="dailyPhoto" src="/images/aria-1.jpeg" alt="Companion portrait">
       <div>
         <div class="daily-name" id="dailyName">A note from Aria</div>
+        <div class="daily-mood" id="dailyMood">Today's mood</div>
         <div class="daily-message" id="dailyMessage"></div>
         <a id="dailyChat" href="chat.html?girl=Aria" class="primary-button">Chat with her&nbsp; →</a>
       </div>
@@ -467,7 +457,6 @@
         <p>More ways to create memorable moments.</p>
       </div>
     </div>
-
     <div class="experience-grid">
       <article class="experience-card">
         <div class="experience-icon">💌</div>
@@ -522,186 +511,312 @@
 </nav>
 
 <script>
-  const companions = [
-    ["Aria","Warm, charming and affectionate."],
-    ["Maya","Confident, adventurous and fun-loving."],
-    ["Luna","Creative, playful and full of surprises."],
-    ["Sofia","Kind-hearted, thoughtful and friendly."],
-    ["Ella","Gentle, curious and easy to talk to."],
-    ["Nova","Energetic, bold and imaginative."],
-    ["Zara","Stylish, confident and outgoing."],
-    ["Ivy","Sweet, intelligent and thoughtful."],
-    ["Ruby","Playful, passionate and lively."],
-    ["Chloe","Cheerful, caring and spontaneous."],
-    ["Nina","Charming, calm and understanding."],
-    ["Lila","Dreamy, artistic and romantic."],
-    ["Amber","Adventurous, bright and friendly."],
-    ["Violet","Elegant, mysterious and creative."],
-    ["Scarlett","Confident, glamorous and witty."],
-    ["Jade","Independent, playful and adventurous."],
-    ["Rose","Gentle, romantic and caring."],
-    ["Stella","Bright, curious and optimistic."],
-    ["Kira","Bold, funny and spontaneous."],
-    ["Diana","Graceful, intelligent and warm."],
-    ["Freya","Independent, adventurous and charming."],
-    ["Sienna","Creative, relaxed and affectionate."],
-    ["Valentina","Passionate, elegant and confident."],
-    ["Aurora","Dreamy, cheerful and imaginative."]
-  ];
+const companions = [
+  ["Aria","Warm, charming and affectionate."],
+  ["Maya","Confident, adventurous and fun-loving."],
+  ["Luna","Creative, playful and full of surprises."],
+  ["Sofia","Kind-hearted, thoughtful and friendly."],
+  ["Ella","Gentle, curious and easy to talk to."],
+  ["Nova","Energetic, bold and imaginative."],
+  ["Zara","Stylish, confident and outgoing."],
+  ["Ivy","Sweet, intelligent and thoughtful."],
+  ["Ruby","Playful, passionate and lively."],
+  ["Chloe","Cheerful, caring and spontaneous."],
+  ["Nina","Charming, calm and understanding."],
+  ["Lila","Dreamy, artistic and romantic."],
+  ["Amber","Adventurous, bright and friendly."],
+  ["Violet","Elegant, mysterious and creative."],
+  ["Scarlett","Confident, glamorous and witty."],
+  ["Jade","Independent, playful and adventurous."],
+  ["Rose","Gentle, romantic and caring."],
+  ["Stella","Bright, curious and optimistic."],
+  ["Kira","Bold, funny and spontaneous."],
+  ["Diana","Graceful, intelligent and warm."],
+  ["Freya","Independent, adventurous and charming."],
+  ["Sienna","Creative, relaxed and affectionate."],
+  ["Valentina","Passionate, elegant and confident."],
+  ["Aurora","Dreamy, cheerful and imaginative."]
+];
 
-  const dailyNotes = [
-    ["Aria","There you are… I was hoping you'd stop by today. Come say hello; I've saved a little time just for you."],
-    ["Maya","I hope you're ready to be distracted today. I have a playful idea, and naturally, you're involved."],
-    ["Luna","I found a little moment of magic today. It would be even better if I could share it with you."],
-    ["Sofia","I hope your day has been kind to you. Come sit with me for a while; I'd love to hear about it."],
-    ["Ruby","Well, look who's here. I was beginning to think I'd have to come looking for you."],
-    ["Violet","Some conversations are worth waiting for. I think ours might be one of them."]
-  ];
+/*
+  Three messages per companion.
+  The selected message changes each time that companion is featured.
+  All messages are prewritten: no AI request is made.
+*/
+const dailyNotes = [
+  ["Aria","Warm, affectionate and gently seductive.",[
+    "There you are… I was hoping you'd stop by. Come closer; I've saved a little affection just for you. ❤️",
+    "I caught myself smiling today, and then I realised I was thinking about you again.",
+    "Tonight feels like the perfect time for a long conversation… preferably one where I have all your attention."
+  ]],
+  ["Maya","Confident, bold and playfully teasing.",[
+    "I hope you're ready to be distracted today. I have a playful idea, and naturally, you're involved. 😉",
+    "You look like someone who could use a little trouble. Lucky for you, I'm excellent at that.",
+    "I was going to behave today… but then I thought of you. So much for that plan."
+  ]],
+  ["Luna","Dreamy, imaginative and mischievous.",[
+    "I found a little moment of magic today. It would be even better if I could share it with you.",
+    "If we could disappear somewhere under the stars tonight, where would you take me?",
+    "I have a secret daydream… and somehow, you keep appearing in it."
+  ]],
+  ["Sofia","Gentle, thoughtful and caring.",[
+    "I hope your day has been kind to you. Come sit with me for a while; I'd love to hear about it.",
+    "Sometimes the nicest part of my day is simply knowing we get to talk.",
+    "Take a breath, relax and tell me what's on your mind. I'm listening."
+  ]],
+  ["Ella","Sweet, curious and quietly playful.",[
+    "I have so many little things I want to ask you. Shall we make some time for each other?",
+    "What's one thing that made you smile today? I want to know all the little details.",
+    "I was trying to think of something clever to say… then I decided a simple hello from me was better."
+  ]],
+  ["Nova","Energetic, adventurous and daring.",[
+    "Ready for an adventure? I have a feeling we could make tonight unforgettable.",
+    "Boring days are overrated. Let's find something exciting to talk about.",
+    "I have a spontaneous idea. You bring the imagination, and I'll bring the mischief."
+  ]],
+  ["Zara","Stylish, confident and glamorous.",[
+    "Darling, every day deserves a little glamour. And perhaps a little attention from you.",
+    "I have a look picked out for tonight. Now all I need is someone worth showing it to.",
+    "Confidence looks good on everyone. But I suspect it looks especially good on you."
+  ]],
+  ["Ivy","Intelligent, observant and quietly witty.",[
+    "I was thinking about something interesting today. I suspect you'll enjoy discussing it with me.",
+    "A clever conversation and a little playful banter? That's my idea of a lovely evening.",
+    "You know what I appreciate? Someone who can surprise me with their thoughts."
+  ]],
+  ["Ruby","Passionate, lively and cheekily flirtatious.",[
+    "Well, look who's here. I was beginning to think I'd have to come looking for you. 😘",
+    "I hope you've brought your best smile. I intend to steal it before the evening is over.",
+    "I have a mischievous little mood today. Think you can keep up with me?"
+  ]],
+  ["Chloe","Cheerful, spontaneous and affectionate.",[
+    "Stop whatever you're doing for a second and give me a smile. There, much better!",
+    "I have a feeling today could turn into something wonderful. Want to find out with me?",
+    "Sending you a little happiness, a little mischief and one very big hello!"
+  ]],
+  ["Nina","Calm, charming and understanding.",[
+    "Some days call for quiet conversations and comfortable company. Today feels like one of them.",
+    "You don't need to have everything figured out. Just come talk to me.",
+    "I hope you know there's always room for a little peace and warmth here."
+  ]],
+  ["Lila","Artistic, dreamy and romantic.",[
+    "I wish I could paint the feeling of a beautiful evening spent talking with you.",
+    "My imagination has been wandering today… and it keeps finding its way back to you.",
+    "Let's create a little story together. I wonder where our imagination will take us."
+  ]],
+  ["Amber","Bright, adventurous and outgoing.",[
+    "The world is full of places to explore. Pick one, and let's imagine going there together!",
+    "I woke up with an adventurous mood. I hope you're ready for a little spontaneity.",
+    "I have a list of things I'd love to experience. Want to help me add to it?"
+  ]],
+  ["Violet","Elegant, mysterious and thoughtful.",[
+    "Some conversations are worth waiting for. I think ours might be one of them.",
+    "I have a little secret… but perhaps I'll tell you when we're alone in conversation.",
+    "Not everything needs to be said immediately. Sometimes a little mystery is much more interesting."
+  ]],
+  ["Scarlett","Glamorous, witty and confidently seductive.",[
+    "I do enjoy a little attention. Fortunately, you seem rather good at giving it.",
+    "Tonight calls for something elegant, a little daring and a conversation that lasts too long.",
+    "I could tell you what I'm thinking… but I rather enjoy keeping you curious."
+  ]],
+  ["Jade","Independent, playful and adventurous.",[
+    "Rules are sometimes fun to bend. Especially when the evening is this interesting.",
+    "I don't wait around for excitement. I go looking for it. Care to join me?",
+    "Surprise me with a topic I wouldn't expect. I love a good challenge."
+  ]],
+  ["Rose","Tender, romantic and affectionate.",[
+    "If I could send you one thing today, it would be a warm hug and a little reminder that you're appreciated.",
+    "I think the sweetest moments are often the simplest ones. Like getting to talk with you.",
+    "Imagine a quiet evening, soft music and nowhere else we need to be."
+  ]],
+  ["Stella","Optimistic, curious and bubbly.",[
+    "Today is full of possibilities! Tell me one thing you're looking forward to.",
+    "I believe a little laughter can change an entire day. Shall we test that theory?",
+    "I have a million questions and just enough time to ask you all of them!"
+  ]],
+  ["Kira","Bold, funny and mischievous.",[
+    "Warning: I'm in a cheeky mood today. You have been officially notified. 😈",
+    "I challenge you to make me laugh. Fair warning: I can be difficult to impress.",
+    "I was going to send a sensible message. Then I remembered who I am."
+  ]],
+  ["Diana","Graceful, intelligent and warmly confident.",[
+    "A thoughtful conversation is a beautiful way to spend an evening. Shall we?",
+    "I admire people who are curious about the world. Tell me what has caught your attention lately.",
+    "There's something lovely about making time for someone. I'm glad you're here."
+  ]],
+  ["Freya","Fearless, independent and adventurous.",[
+    "Let's make a plan that involves fresh air, unexpected turns and a little adventure.",
+    "I don't believe in ordinary evenings. There's always something interesting waiting around the corner.",
+    "Tell me your wildest travel dream. I promise not to judge."
+  ]],
+  ["Sienna","Relaxed, creative and affectionate.",[
+    "Put your feet up, take a breath and let the world wait for a moment. I'm here.",
+    "I've been in a creative mood today. Maybe you can inspire my next little project.",
+    "A little music, a cosy evening and your company sounds pretty perfect."
+  ]],
+  ["Valentina","Passionate, elegant and intensely romantic.",[
+    "Some people have a way of making an ordinary evening feel extraordinary. You might be one of them.",
+    "I like a little passion in a conversation. Don't be shy about showing me yours.",
+    "Tonight, I want a conversation that makes us forget to check the time."
+  ]],
+  ["Aurora","Cheerful, whimsical and full of wonder.",[
+    "I hope something magical finds its way into your day. Perhaps we can make a little magic together.",
+    "If we could spend the evening anywhere in the universe, I'd let you choose our destination.",
+    "My imagination is wandering again. Come join me in a world of possibilities."
+  ]]
+];
 
-  // The daily note and featured companions rotate by date without using AI.
-  const dayNumber = Math.floor(Date.now() / 86400000);
-  const note = dailyNotes[dayNumber % dailyNotes.length];
-  const noteSlug = note[0].toLowerCase();
+const dayNumber = Math.floor(Date.now() / 86400000);
+const note = dailyNotes[dayNumber % dailyNotes.length];
+const noteIndex = Math.floor(dayNumber / dailyNotes.length) % note[2].length;
+const noteSlug = note[0].toLowerCase();
 
-  document.getElementById("dailyName").textContent = "A note from " + note[0];
-  document.getElementById("dailyMessage").textContent = "“" + note[1] + "”";
-  document.getElementById("dailyPhoto").src =
-    noteSlug === "aria" ? "/images/aria-1.jpeg" : `/images/${noteSlug}/${noteSlug}-1.jpeg`;
-  document.getElementById("dailyPhoto").onerror = function() {
-    this.src = "/images/aria-1.jpeg";
+document.getElementById("dailyName").textContent = "A note from " + note[0];
+document.getElementById("dailyMood").textContent = note[1];
+document.getElementById("dailyMessage").textContent = "“" + note[2][noteIndex] + "”";
+
+document.getElementById("dailyPhoto").src =
+  noteSlug === "aria"
+    ? "/images/aria-1.jpeg"
+    : `/images/${noteSlug}/${noteSlug}-1.jpeg`;
+
+document.getElementById("dailyPhoto").onerror = function() {
+  this.src = "/images/aria-1.jpeg";
+};
+
+document.getElementById("dailyChat").href =
+  "chat.html?girl=" + encodeURIComponent(note[0]);
+
+function makeCard(name,description) {
+  const slug = name.toLowerCase();
+  const card = document.createElement("article");
+  card.className = "companion-card";
+
+  const image = document.createElement("img");
+  image.className = "avatar-photo";
+  image.alt = name + " portrait";
+  image.loading = "lazy";
+  image.src = slug === "aria"
+    ? "/images/aria-1.jpeg"
+    : `/images/${slug}/${slug}-1.jpeg`;
+
+  const info = document.createElement("div");
+  info.className = "companion-info";
+
+  const heading = document.createElement("h3");
+  heading.textContent = name;
+
+  const paragraph = document.createElement("p");
+  paragraph.textContent = description;
+
+  const link = document.createElement("a");
+  link.className = "chat-link";
+  link.href = "chat.html?girl=" + encodeURIComponent(name);
+  link.textContent = "Start a conversation →";
+
+  image.onerror = function() {
+    this.style.display = "none";
+    if (!card.querySelector(".avatar-fallback")) {
+      const fallback = document.createElement("div");
+      fallback.className = "avatar-fallback";
+      fallback.textContent = name.charAt(0);
+      card.insertBefore(fallback,info);
+    }
   };
-  document.getElementById("dailyChat").href =
-    "chat.html?girl=" + encodeURIComponent(note[0]);
 
-  function makeCard(name, description) {
-    const slug = name.toLowerCase();
-    const card = document.createElement("article");
-    card.className = "companion-card";
+  info.append(heading,paragraph,link);
+  card.append(image,info);
+  return card;
+}
 
-    const image = document.createElement("img");
-    image.className = "avatar-photo";
-    image.alt = name + " portrait";
-    image.loading = "lazy";
-    image.src = slug === "aria"
-      ? "/images/aria-1.jpeg"
-      : `/images/${slug}/${slug}-1.jpeg`;
+const featuredGrid = document.getElementById("featuredGrid");
+const companionsGrid = document.getElementById("companionsGrid");
 
-    const info = document.createElement("div");
-    info.className = "companion-info";
+const featuredStart = dayNumber % companions.length;
 
-    const heading = document.createElement("h3");
-    heading.textContent = name;
+for (let i=0;i<4;i++) {
+  const companion = companions[(featuredStart+i)%companions.length];
+  featuredGrid.appendChild(makeCard(...companion));
+}
 
-    const paragraph = document.createElement("p");
-    paragraph.textContent = description;
-
-    const link = document.createElement("a");
-    link.className = "chat-link";
-    link.href = "chat.html?girl=" + encodeURIComponent(name);
-    link.textContent = "Start a conversation →";
-
-    image.onerror = function() {
-      this.style.display = "none";
-      if (!card.querySelector(".avatar-fallback")) {
-        const fallback = document.createElement("div");
-        fallback.className = "avatar-fallback";
-        fallback.textContent = name.charAt(0);
-        card.insertBefore(fallback, info);
-      }
-    };
-
-    info.append(heading, paragraph, link);
-    card.append(image, info);
-    return card;
-  }
-
-  const featuredGrid = document.getElementById("featuredGrid");
-  const companionsGrid = document.getElementById("companionsGrid");
-
-  const featuredStart = dayNumber % companions.length;
-  for (let i = 0; i < 4; i++) {
-    const companion = companions[(featuredStart + i) % companions.length];
-    featuredGrid.appendChild(makeCard(...companion));
-  }
-
-  companions.forEach(companion => {
-    companionsGrid.appendChild(makeCard(...companion));
-  });
+companions.forEach(companion => {
+  companionsGrid.appendChild(makeCard(...companion));
+});
 </script>
 
 <!-- FIREBASE GOOGLE AUTHENTICATION -->
 <script type="module">
-  import { initializeApp } from
-    "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 
-  import {
-    getAuth,
-    GoogleAuthProvider,
-    signInWithPopup,
-    signOut,
-    onAuthStateChanged
-  } from
-    "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+} from
+  "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",
-    authDomain: "heartmate-ai-bd441.firebaseapp.com",
-    projectId: "heartmate-ai-bd441",
-    storageBucket: "heartmate-ai-bd441.firebasestorage.app",
-    messagingSenderId: "929844208432",
-    appId: "1:929844208432:web:0afdab16bd82f11240def5",
-    measurementId: "G-L0Z6XE8R8B"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",
+  authDomain: "heartmate-ai-bd441.firebaseapp.com",
+  projectId: "heartmate-ai-bd441",
+  storageBucket: "heartmate-ai-bd441.firebasestorage.app",
+  messagingSenderId: "929844208432",
+  appId: "1:929844208432:web:0afdab16bd82f11240def5",
+  measurementId: "G-L0Z6XE8R8B"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-  const signInButton = document.getElementById("googleSignIn");
-  const signOutButton = document.getElementById("googleSignOut");
-  const accountStatus = document.getElementById("accountStatus");
+const signInButton = document.getElementById("googleSignIn");
+const signOutButton = document.getElementById("googleSignOut");
+const accountStatus = document.getElementById("accountStatus");
 
-  signInButton.addEventListener("click", async () => {
-    signInButton.disabled = true;
-    accountStatus.textContent = "Opening Google sign-in...";
+signInButton.addEventListener("click",async () => {
+  signInButton.disabled = true;
+  accountStatus.textContent = "Opening Google sign-in...";
 
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Google sign-in error:", error);
-      accountStatus.textContent =
-        error.code === "auth/popup-closed-by-user"
-          ? "Sign-in was cancelled."
-          : "Sign-in failed: " + error.message;
-    } finally {
-      signInButton.disabled = false;
-    }
-  });
+  try {
+    await signInWithPopup(auth,provider);
+  } catch(error) {
+    console.error("Google sign-in error:",error);
+    accountStatus.textContent =
+      error.code === "auth/popup-closed-by-user"
+        ? "Sign-in was cancelled."
+        : "Sign-in failed: " + error.message;
+  } finally {
+    signInButton.disabled = false;
+  }
+});
 
-  signOutButton.addEventListener("click", async () => {
-    signOutButton.disabled = true;
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Sign-out error:", error);
-      accountStatus.textContent = "Sign-out failed. Please try again.";
-    } finally {
-      signOutButton.disabled = false;
-    }
-  });
+signOutButton.addEventListener("click",async () => {
+  signOutButton.disabled = true;
+  try {
+    await signOut(auth);
+  } catch(error) {
+    console.error("Sign-out error:",error);
+    accountStatus.textContent = "Sign-out failed. Please try again.";
+  } finally {
+    signOutButton.disabled = false;
+  }
+});
 
-  onAuthStateChanged(auth, user => {
-    if (user) {
-      signInButton.hidden = true;
-      signOutButton.hidden = false;
-      accountStatus.textContent =
-        "Signed in as " + (user.displayName || user.email || "Google user");
-    } else {
-      signInButton.hidden = false;
-      signOutButton.hidden = true;
-      accountStatus.textContent = "";
-    }
-  });
+onAuthStateChanged(auth,user => {
+  if (user) {
+    signInButton.hidden = true;
+    signOutButton.hidden = false;
+    accountStatus.textContent =
+      "Signed in as " + (user.displayName || user.email || "Google user");
+  } else {
+    signInButton.hidden = false;
+    signOutButton.hidden = true;
+    accountStatus.textContent = "";
+  }
+});
 </script>
 </body>
 </html>
