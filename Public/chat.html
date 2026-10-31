@@ -162,7 +162,7 @@ function openGallery(){
   image.loading="lazy";
   const src=character==="aria"
    ?`images/aria-${i}.jpeg`
-   :`images/${character}/${i}.jpeg`;
+   :`images/${character}/${character}-${i}.jpeg`;
 
   image.onload=()=>{
    loaded++;
