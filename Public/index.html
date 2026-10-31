@@ -4,63 +4,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#100b1d">
-  <meta name="description" content="Meet your fictional AI companions at Heartmate AI.">
-  <title>Heartmate AI | Your AI Companion</title>
+  <meta name="theme-color" content="#10090e">
+  <meta name="description" content="Enter Heartmate AI — meet fictional adult companions, share conversations and create special moments.">
+  <title>Heartmate AI | A Little More Romance</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #100b1d;
-      --surface: #1b142b;
-      --surface-light: #261c39;
-      --pink: #ff70b7;
-      --purple: #a78bfa;
-      --text: #fff8ff;
-      --muted: #b9adc9;
-      --border: rgba(255,255,255,0.09);
+      --bg: #10090e;
+      --surface: #1c1018;
+      --surface2: #28151f;
+      --gold: #d6a477;
+      --gold-light: #f1c9a5;
+      --rose: #c87982;
+      --text: #fff8f3;
+      --muted: #bca9a7;
+      --border: rgba(225,177,147,.16);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-
     body {
       min-height: 100vh;
-      background:
-        radial-gradient(circle at 85% 5%, rgba(151,88,205,0.17), transparent 30%),
-        var(--bg);
+      padding-bottom: 85px;
       color: var(--text);
+      background:
+        radial-gradient(ellipse at 80% 0%, rgba(125,54,72,.2), transparent 35%),
+        radial-gradient(ellipse at 0% 45%, rgba(100,49,53,.12), transparent 35%),
+        var(--bg);
       font-family: 'DM Sans', sans-serif;
-      padding-bottom: 90px;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
+    a { color: inherit; text-decoration: none; }
     button { font: inherit; cursor: pointer; }
-
-    .container {
-      width: min(1120px, 92%);
-      margin: auto;
-    }
-
-    /* HEADER */
+    .container { width: min(1160px, 92%); margin: auto; }
 
     header {
       position: sticky;
       top: 0;
       z-index: 20;
-      background: rgba(16,11,29,0.92);
+      background: rgba(16,9,14,.94);
       backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--border);
     }
@@ -70,298 +56,274 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 20px;
     }
 
     .logo {
-      font-size: 22px;
+      font-size: 23px;
       font-weight: 800;
-      letter-spacing: -0.8px;
+      letter-spacing: -.8px;
     }
-
-    .logo span { color: var(--pink); }
+    .logo span { color: var(--gold); }
 
     .nav-links {
       display: flex;
+      gap: 27px;
       align-items: center;
-      gap: 28px;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 13px;
     }
-
-    .nav-links a:hover { color: white; }
-
-    .nav-button,
-    .primary-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 0;
-      border-radius: 30px;
-      color: white;
-      font-weight: 800;
-      background: linear-gradient(100deg, #ed5da9, #9b72ef);
-    }
-
-    .nav-button { padding: 11px 19px; }
-
-    .primary-button {
-      padding: 14px 24px;
-      box-shadow: 0 8px 30px rgba(224,83,165,0.25);
-      transition: transform 0.2s;
-    }
-
-    .primary-button:hover { transform: translateY(-2px); }
-
-    /* GOOGLE ACCOUNT */
+    .nav-links a:hover { color: var(--gold-light); }
 
     .account-area {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      gap: 10px;
+      gap: 9px;
       flex-wrap: wrap;
     }
 
     #accountStatus {
-      color: var(--muted);
-      font-size: 12px;
       max-width: 190px;
+      color: var(--muted);
+      font-size: 11px;
       overflow-wrap: anywhere;
     }
 
-    .nav-button:disabled {
-      opacity: 0.6;
-      cursor: wait;
+    .small-button, .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(226,178,144,.3);
+      border-radius: 30px;
+      color: #1b1012;
+      background: linear-gradient(110deg, #f0c49d, #c78b70);
+      font-weight: 800;
     }
-
-    .nav-button[hidden] {
-      display: none;
+    .small-button { padding: 10px 16px; font-size: 12px; }
+    .primary-button {
+      padding: 14px 23px;
+      font-size: 13px;
+      box-shadow: 0 8px 28px rgba(194,117,103,.19);
+      transition: transform .2s, box-shadow .2s;
     }
+    .primary-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 34px rgba(194,117,103,.3);
+    }
+    .small-button:disabled { opacity: .6; cursor: wait; }
+    [hidden] { display: none !important; }
 
     /* HERO */
 
     .hero {
       position: relative;
+      min-height: 510px;
+      margin-top: 27px;
+      padding: 55px;
       overflow: hidden;
-      min-height: 470px;
-      margin-top: 30px;
-      border-radius: 28px;
-      border: 1px solid var(--border);
-      background:
-        linear-gradient(90deg, rgba(16,11,29,0.98) 0%, rgba(16,11,29,0.82) 45%, rgba(16,11,29,0.08) 100%),
-        url('/images/aria-1.jpeg') center 35% / cover no-repeat;
       display: flex;
       align-items: center;
-      padding: 55px;
+      border: 1px solid var(--border);
+      border-radius: 27px;
+      background:
+        linear-gradient(90deg, rgba(16,9,14,.98), rgba(16,9,14,.82) 45%, rgba(16,9,14,.1)),
+        url('/images/aria-1.jpeg') center 35% / cover no-repeat;
     }
-
-    .hero-content {
-      max-width: 510px;
-      position: relative;
-      z-index: 2;
-    }
-
+    .hero-content { max-width: 520px; position: relative; z-index: 1; }
     .eyebrow {
       display: inline-block;
-      color: #ffc0df;
-      background: rgba(255,112,183,0.13);
-      border: 1px solid rgba(255,112,183,0.3);
-      border-radius: 30px;
       padding: 8px 13px;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
       margin-bottom: 22px;
+      color: var(--gold-light);
+      background: rgba(214,164,119,.1);
+      border: 1px solid rgba(214,164,119,.3);
+      border-radius: 30px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
     }
-
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
     .hero h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(38px, 6vw, 62px);
+      font-size: clamp(42px, 6vw, 68px);
       line-height: 1.08;
-      margin-bottom: 18px;
+      margin-bottom: 19px;
+      font-weight: 600;
     }
-
-    .hero h1 span { color: var(--pink); }
-
+    .hero h1 span { color: var(--gold-light); }
     .hero p {
-      color: #e0d5e9;
-      font-size: 16px;
-      line-height: 1.8;
       max-width: 420px;
       margin-bottom: 28px;
+      color: #e0ceca;
+      font-size: 15px;
+      line-height: 1.85;
+    }
+    .hero-note {
+      margin-top: 17px;
+      color: #d1b9b1;
+      font-size: 11px;
+      letter-spacing: .4px;
     }
 
     /* SECTIONS */
 
-    .section { padding-top: 58px; }
-
+    .section { padding-top: 61px; }
     .section-heading {
       display: flex;
-      align-items: end;
       justify-content: space-between;
+      align-items: end;
       gap: 15px;
       margin-bottom: 22px;
     }
-
-    .section-heading h2,
-    .closing h2 {
-      font-family: 'Playfair Display', serif;
+    .section-heading h2 {
       font-size: 30px;
+      font-weight: 600;
     }
-
     .section-heading p {
-      color: var(--muted);
-      font-size: 13px;
       margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
     }
-
-    .section-heading a {
-      color: var(--pink);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    /* FEATURED ARIA */
-
-    .featured-card {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      overflow: hidden;
-      border-radius: 23px;
-      background: linear-gradient(120deg, #251a39, #1a1428);
-      border: 1px solid var(--border);
-    }
-
-    .featured-image {
-      min-height: 310px;
-      background: url('/images/aria-1.jpeg') center 35% / cover no-repeat;
-    }
-
-    .featured-info {
-      padding: 35px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      justify-content: center;
-    }
-
-    .online {
-      color: #80e5ad;
+    .section-heading > a {
+      color: var(--gold-light);
       font-size: 12px;
       font-weight: 700;
-      margin-bottom: 14px;
+    }
+    .section-kicker {
+      margin-bottom: 8px;
+      color: var(--gold);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
     }
 
-    .featured-info h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 34px;
-      margin-bottom: 12px;
-    }
+    /* DAILY MESSAGE */
 
-    .featured-info p {
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.8;
-      margin-bottom: 23px;
-    }
-
-    /* ALL COMPANION CARDS */
-
-    .companions {
+    .daily-card {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 17px;
-    }
-
-    .companion-card {
-      overflow: hidden;
-      background: var(--surface);
+      grid-template-columns: 170px 1fr;
+      gap: 25px;
+      align-items: center;
+      padding: 21px;
       border: 1px solid var(--border);
-      border-radius: 19px;
-      transition: transform 0.2s, border-color 0.2s;
+      border-radius: 22px;
+      background: linear-gradient(115deg, #291720, #1b1118);
     }
-
-    .companion-card:hover {
-      transform: translateY(-5px);
-      border-color: rgba(255,112,183,0.5);
-    }
-
-    .avatar-photo {
+    .daily-photo {
       width: 100%;
       height: 190px;
-      display: block;
       object-fit: cover;
-      object-position: center 30%;
-      background: linear-gradient(135deg, #56315d, #272047);
+      object-position: center 28%;
+      border-radius: 15px;
+      background: var(--surface2);
     }
+    .daily-message {
+      margin: 13px 0 19px;
+      color: #f0ded8;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(19px, 2.5vw, 25px);
+      line-height: 1.5;
+    }
+    .daily-name { color: var(--gold-light); font-size: 12px; font-weight: 700; }
 
+    /* FEATURED COMPANIONS */
+
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 16px;
+    }
+    .companion-card {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      background: linear-gradient(155deg, #25151e, #180f16);
+      transition: transform .2s, border-color .2s;
+    }
+    .companion-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(214,164,119,.5);
+    }
+    .avatar-photo {
+      display: block;
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      object-position: center 28%;
+      background: linear-gradient(135deg, #54313a, #24151e);
+    }
     .avatar-fallback {
-      height: 190px;
+      height: 220px;
       display: grid;
       place-items: center;
+      color: var(--gold-light);
+      background: linear-gradient(135deg, #54313a, #24151e);
       font-family: 'Playfair Display', serif;
-      font-size: 58px;
-      background: linear-gradient(135deg, #56315d, #272047);
-      color: #ffc0df;
+      font-size: 65px;
     }
-
     .companion-info { padding: 16px; }
-
-    .companion-info h3 {
-      font-size: 16px;
-      margin-bottom: 6px;
-    }
-
+    .companion-info h3 { margin-bottom: 6px; font-size: 19px; }
     .companion-info p {
+      min-height: 37px;
       color: var(--muted);
-      font-size: 12px;
+      font-size: 11px;
       line-height: 1.6;
-      min-height: 38px;
     }
-
     .chat-link {
       display: block;
-      text-align: center;
-      margin-top: 14px;
+      margin-top: 13px;
       padding: 10px;
-      border-radius: 20px;
-      color: #ffc0df;
-      background: rgba(255,112,183,0.1);
-      font-size: 12px;
+      border: 1px solid rgba(214,164,119,.2);
+      border-radius: 22px;
+      color: var(--gold-light);
+      background: rgba(214,164,119,.07);
+      text-align: center;
+      font-size: 11px;
       font-weight: 700;
     }
+    .chat-link:hover { background: rgba(214,164,119,.16); }
 
-    .chat-link:hover {
-      background: rgba(255,112,183,0.2);
+    /* EXPERIENCE LINKS */
+
+    .experience-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 15px;
     }
+    .experience-card {
+      min-height: 170px;
+      padding: 23px;
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      background: linear-gradient(145deg, #291720, #1a1017);
+    }
+    .experience-icon { font-size: 25px; margin-bottom: 15px; }
+    .experience-card h3 { margin-bottom: 8px; font-size: 20px; }
+    .experience-card p { color: var(--muted); font-size: 12px; line-height: 1.7; }
 
     /* CLOSING */
 
     .closing {
-      margin-top: 60px;
-      padding: 40px 25px;
-      text-align: center;
-      border-radius: 24px;
-      background: linear-gradient(120deg, #382044, #242044);
+      margin-top: 65px;
+      padding: 48px 24px;
       border: 1px solid var(--border);
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(181,108,100,.19), transparent 65%),
+        linear-gradient(120deg, #301923, #1b1118);
+      text-align: center;
     }
-
-    .closing h2 { margin-bottom: 12px; }
-
-    .closing p {
-      color: var(--muted);
-      margin-bottom: 22px;
-      font-size: 14px;
-    }
+    .closing h2 { margin-bottom: 12px; font-size: 32px; }
+    .closing p { margin-bottom: 23px; color: var(--muted); font-size: 13px; }
 
     footer {
+      padding: 35px 10px 12px;
+      color: #93817f;
+      font-size: 11px;
+      line-height: 1.9;
       text-align: center;
-      color: #8f829f;
-      font-size: 12px;
-      padding: 35px 10px 10px;
-      line-height: 1.8;
     }
 
     .bottom-nav { display: none; }
@@ -369,57 +331,36 @@
     /* MOBILE */
 
     @media (max-width: 760px) {
-      .nav-links { display: none; }
-
       .navbar {
-        min-height: 64px;
+        min-height: 65px;
         flex-wrap: wrap;
-        padding-top: 10px;
-        padding-bottom: 10px;
+        padding: 10px 0;
       }
-
-      .account-area {
-        margin-left: auto;
-      }
-
-      .nav-button {
-        padding: 9px 13px;
-        font-size: 12px;
-      }
-
-      #accountStatus {
-        width: 100%;
-        text-align: right;
-      }
-
+      .nav-links { display: none; }
+      .account-area { margin-left: auto; }
+      #accountStatus { width: 100%; text-align: right; }
       .hero {
-        min-height: 510px;
-        padding: 30px 24px;
+        min-height: 520px;
+        padding: 27px 23px;
         align-items: end;
         background:
-          linear-gradient(0deg, rgba(16,11,29,0.98) 0%, rgba(16,11,29,0.76) 48%, rgba(16,11,29,0.08) 100%),
+          linear-gradient(0deg, rgba(16,9,14,.99), rgba(16,9,14,.73) 48%, rgba(16,9,14,.05)),
           url('/images/aria-1.jpeg') center 25% / cover no-repeat;
       }
-
       .hero-content { padding-bottom: 12px; }
-      .hero h1 { font-size: 43px; }
-      .hero p { font-size: 14px; }
-
-      .section { padding-top: 42px; }
-
-      .featured-card { grid-template-columns: 1fr; }
-      .featured-image { min-height: 280px; }
-      .featured-info { padding: 25px; }
-
-      .companions {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
-      }
-
-      .avatar-photo,
-      .avatar-fallback { height: 155px; }
-
+      .hero h1 { font-size: 44px; }
+      .hero p { font-size: 13px; }
+      .section { padding-top: 43px; }
       .section-heading h2 { font-size: 25px; }
+      .daily-card { grid-template-columns: 105px 1fr; gap: 15px; padding: 14px; }
+      .daily-photo { height: 155px; }
+      .daily-message { font-size: 18px; }
+      .featured-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+      .avatar-photo, .avatar-fallback { height: 175px; }
+      .experience-grid { grid-template-columns: 1fr; gap: 11px; }
+      .experience-card { min-height: 0; }
+      .closing { margin-top: 45px; padding: 35px 18px; }
+      .closing h2 { font-size: 27px; }
 
       .bottom-nav {
         display: flex;
@@ -429,308 +370,338 @@
         left: 0;
         width: 100%;
         justify-content: space-around;
-        padding: 13px 5px calc(13px + env(safe-area-inset-bottom));
-        background: rgba(20,14,34,0.96);
+        padding: 12px 5px calc(12px + env(safe-area-inset-bottom));
+        background: rgba(20,12,17,.97);
         border-top: 1px solid var(--border);
         backdrop-filter: blur(18px);
       }
-
       .bottom-nav a {
         color: var(--muted);
-        font-size: 11px;
+        font-size: 10px;
         text-align: center;
       }
-
-      .bottom-nav a span {
-        display: block;
-        font-size: 19px;
-        margin-bottom: 4px;
-      }
+      .bottom-nav a span { display: block; margin-bottom: 4px; font-size: 19px; }
     }
 
     @media (max-width: 380px) {
-      .hero h1 { font-size: 37px; }
-      .companions { gap: 9px; }
+      .hero h1 { font-size: 38px; }
+      .daily-card { grid-template-columns: 90px 1fr; }
+      .daily-photo { height: 140px; }
+      .avatar-photo, .avatar-fallback { height: 145px; }
       .companion-info { padding: 12px; }
-      .avatar-photo,
-      .avatar-fallback { height: 135px; }
     }
   </style>
 </head>
 
 <body>
+<header>
+  <div class="container navbar">
+    <a href="/" class="logo">Heartmate<span> AI</span></a>
 
-  <header>
-    <div class="container navbar">
-      <a href="/" class="logo">Heartmate<span> AI</span></a>
+    <nav class="nav-links">
+      <a href="/">Home</a>
+      <a href="#featured">Discover</a>
+      <a href="#experiences">Experiences</a>
+      <a href="#companions">All Companions</a>
+    </nav>
 
-      <nav class="nav-links">
-        <a href="/">Home</a>
-        <a href="#companions">Discover</a>
-        <a href="#featured">Featured</a>
-      </nav>
+    <div class="account-area">
+      <button class="small-button" id="googleSignIn" type="button">Sign in with Google</button>
+      <button class="small-button" id="googleSignOut" type="button" hidden>Sign out</button>
+      <span id="accountStatus" aria-live="polite"></span>
+    </div>
+  </div>
+</header>
 
-      <div class="account-area">
-        <button class="nav-button" id="googleSignIn" type="button">
-          Sign in with Google
-        </button>
+<main class="container">
 
-        <button class="nav-button" id="googleSignOut" type="button" hidden>
-          Sign out
-        </button>
+  <section class="hero">
+    <div class="hero-content">
+      <div class="eyebrow">A world made for connection · 18+</div>
+      <h1>A little more<br>romance. <span>A little more you.</span></h1>
+      <p>
+        Step into a world of fictional companions, meaningful conversations
+        and unexpected moments. Someone special might be waiting.
+      </p>
+      <a href="chat.html?girl=Aria" class="primary-button">Meet Aria&nbsp; →</a>
+      <div class="hero-note">Your conversations. Your moments. Your story.</div>
+    </div>
+  </section>
 
-        <span id="accountStatus" aria-live="polite"></span>
+  <section class="section" id="daily">
+    <div class="section-heading">
+      <div>
+        <div class="section-kicker">A little note for you</div>
+        <h2>Who's thinking about you today?</h2>
+        <p>A small hello from one of your companions.</p>
       </div>
     </div>
-  </header>
 
-  <main class="container">
-
-    <!-- HERO -->
-
-    <section class="hero">
-      <div class="hero-content">
-        <div class="eyebrow">Your world, your companion</div>
-
-        <h1>Someone special<br>is waiting <span>for you.</span></h1>
-
-        <p>
-          Meet your AI companion. Enjoy meaningful conversations,
-          share your thoughts and create memorable moments together.
-        </p>
-
-        <a href="chat.html?girl=Aria" class="primary-button">
-          Meet Aria &nbsp; →
-        </a>
+    <div class="daily-card">
+      <img class="daily-photo" id="dailyPhoto" src="/images/aria-1.jpeg" alt="Companion portrait">
+      <div>
+        <div class="daily-name" id="dailyName">A note from Aria</div>
+        <div class="daily-message" id="dailyMessage"></div>
+        <a id="dailyChat" href="chat.html?girl=Aria" class="primary-button">Chat with her&nbsp; →</a>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- FEATURED ARIA -->
-
-    <section class="section" id="featured">
-      <div class="section-heading">
-        <div>
-          <h2>Today's Featured Companion</h2>
-          <p>Get to know someone new.</p>
-        </div>
+  <section class="section" id="featured">
+    <div class="section-heading">
+      <div>
+        <div class="section-kicker">Handpicked for today</div>
+        <h2>Meet someone special</h2>
+        <p>Four companions to brighten your day.</p>
       </div>
+      <a href="#companions">Meet all 24 →</a>
+    </div>
+    <div class="featured-grid" id="featuredGrid"></div>
+  </section>
 
-      <div class="featured-card">
-        <div class="featured-image"></div>
-
-        <div class="featured-info">
-          <div class="online">● AVAILABLE NOW</div>
-          <h3>Meet Aria</h3>
-
-          <p>
-            Warm, charming and always ready for a conversation.
-            Start chatting and discover her personality.
-          </p>
-
-          <a href="chat.html?girl=Aria" class="primary-button">
-            Explore Aria →
-          </a>
-        </div>
+  <section class="section" id="experiences">
+    <div class="section-heading">
+      <div>
+        <div class="section-kicker">Beyond conversation</div>
+        <h2>Your world together</h2>
+        <p>More ways to create memorable moments.</p>
       </div>
-    </section>
+    </div>
 
-    <!-- ALL 24 COMPANIONS -->
+    <div class="experience-grid">
+      <article class="experience-card">
+        <div class="experience-icon">💌</div>
+        <h3>Secret Letters</h3>
+        <p>Discover heartfelt notes, little confessions and unexpected surprises.</p>
+      </article>
+      <article class="experience-card">
+        <div class="experience-icon">🌙</div>
+        <h3>Virtual Dates</h3>
+        <p>Imagine moonlit walks, coffee dates and candlelight dinners.</p>
+      </article>
+      <article class="experience-card">
+        <div class="experience-icon">❤️</div>
+        <h3>Your Memories</h3>
+        <p>Keep special moments and follow the story of each connection.</p>
+      </article>
+    </div>
+    <p style="color:var(--muted);font-size:11px;margin-top:12px;">
+      These are planned experiences; more features will arrive as the site develops.
+    </p>
+  </section>
 
-    <section class="section" id="companions">
-      <div class="section-heading">
-        <div>
-          <h2>Discover Companions</h2>
-          <p>Meet all 24 of your AI companions.</p>
-        </div>
-        <a href="#companions">Explore all</a>
+  <section class="section" id="companions">
+    <div class="section-heading">
+      <div>
+        <div class="section-kicker">Find your connection</div>
+        <h2>Meet all 24 companions</h2>
+        <p>Each one has her own personality and story.</p>
       </div>
+    </div>
+    <div class="featured-grid" id="companionsGrid"></div>
+  </section>
 
-      <div class="companions" id="companionsGrid"></div>
-    </section>
+  <section class="closing">
+    <div class="section-kicker">Your story starts here</div>
+    <h2>Someone is waiting to meet you.</h2>
+    <p>Choose a companion and start a conversation.</p>
+    <a href="chat.html?girl=Aria" class="primary-button">Start your journey&nbsp; →</a>
+  </section>
+</main>
 
-    <!-- CLOSING -->
+<footer>
+  <p>© 2026 Heartmate AI. All rights reserved.</p>
+  <p>AI-generated fictional adult characters. 18+ experience.</p>
+</footer>
 
-    <section class="closing">
-      <h2>Your next conversation starts here.</h2>
-      <p>Choose a companion and start getting to know her.</p>
-      <a href="chat.html?girl=Aria" class="primary-button">
-        Start Your Journey →
-      </a>
-    </section>
+<nav class="bottom-nav">
+  <a href="/"><span>⌂</span>Home</a>
+  <a href="#daily"><span>♡</span>Today</a>
+  <a href="#featured"><span>✧</span>Discover</a>
+  <a href="#companions"><span>♙</span>Companions</a>
+</nav>
 
-  </main>
+<script>
+  const companions = [
+    ["Aria","Warm, charming and affectionate."],
+    ["Maya","Confident, adventurous and fun-loving."],
+    ["Luna","Creative, playful and full of surprises."],
+    ["Sofia","Kind-hearted, thoughtful and friendly."],
+    ["Ella","Gentle, curious and easy to talk to."],
+    ["Nova","Energetic, bold and imaginative."],
+    ["Zara","Stylish, confident and outgoing."],
+    ["Ivy","Sweet, intelligent and thoughtful."],
+    ["Ruby","Playful, passionate and lively."],
+    ["Chloe","Cheerful, caring and spontaneous."],
+    ["Nina","Charming, calm and understanding."],
+    ["Lila","Dreamy, artistic and romantic."],
+    ["Amber","Adventurous, bright and friendly."],
+    ["Violet","Elegant, mysterious and creative."],
+    ["Scarlett","Confident, glamorous and witty."],
+    ["Jade","Independent, playful and adventurous."],
+    ["Rose","Gentle, romantic and caring."],
+    ["Stella","Bright, curious and optimistic."],
+    ["Kira","Bold, funny and spontaneous."],
+    ["Diana","Graceful, intelligent and warm."],
+    ["Freya","Independent, adventurous and charming."],
+    ["Sienna","Creative, relaxed and affectionate."],
+    ["Valentina","Passionate, elegant and confident."],
+    ["Aurora","Dreamy, cheerful and imaginative."]
+  ];
 
-  <footer>
-    <p>© 2026 Heartmate AI. All rights reserved.</p>
-    <p>AI-generated fictional adult characters.</p>
-  </footer>
+  const dailyNotes = [
+    ["Aria","There you are… I was hoping you'd stop by today. Come say hello; I've saved a little time just for you."],
+    ["Maya","I hope you're ready to be distracted today. I have a playful idea, and naturally, you're involved."],
+    ["Luna","I found a little moment of magic today. It would be even better if I could share it with you."],
+    ["Sofia","I hope your day has been kind to you. Come sit with me for a while; I'd love to hear about it."],
+    ["Ruby","Well, look who's here. I was beginning to think I'd have to come looking for you."],
+    ["Violet","Some conversations are worth waiting for. I think ours might be one of them."]
+  ];
 
-  <nav class="bottom-nav">
-    <a href="/"><span>⌂</span>Home</a>
-    <a href="#companions"><span>♡</span>Discover</a>
-    <a href="#featured"><span>✧</span>Featured</a>
-    <a href="chat.html?girl=Aria"><span>▢</span>Chat</a>
-  </nav>
+  // The daily note and featured companions rotate by date without using AI.
+  const dayNumber = Math.floor(Date.now() / 86400000);
+  const note = dailyNotes[dayNumber % dailyNotes.length];
+  const noteSlug = note[0].toLowerCase();
 
-  <!-- COMPANION CARDS -->
+  document.getElementById("dailyName").textContent = "A note from " + note[0];
+  document.getElementById("dailyMessage").textContent = "“" + note[1] + "”";
+  document.getElementById("dailyPhoto").src =
+    noteSlug === "aria" ? "/images/aria-1.jpeg" : `/images/${noteSlug}/${noteSlug}-1.jpeg`;
+  document.getElementById("dailyPhoto").onerror = function() {
+    this.src = "/images/aria-1.jpeg";
+  };
+  document.getElementById("dailyChat").href =
+    "chat.html?girl=" + encodeURIComponent(note[0]);
 
-  <script>
-    const companions = [
-      ["Aria","Warm, charming and affectionate."],
-      ["Maya","Confident, adventurous and fun-loving."],
-      ["Luna","Creative, playful and full of surprises."],
-      ["Sofia","Kind-hearted, thoughtful and friendly."],
-      ["Ella","Gentle, curious and easy to talk to."],
-      ["Nova","Energetic, bold and imaginative."],
-      ["Zara","Stylish, confident and outgoing."],
-      ["Ivy","Sweet, intelligent and thoughtful."],
-      ["Ruby","Playful, passionate and lively."],
-      ["Chloe","Cheerful, caring and spontaneous."],
-      ["Nina","Charming, calm and understanding."],
-      ["Lila","Dreamy, artistic and romantic."],
-      ["Amber","Adventurous, bright and friendly."],
-      ["Violet","Elegant, mysterious and creative."],
-      ["Scarlett","Confident, glamorous and witty."],
-      ["Jade","Independent, playful and adventurous."],
-      ["Rose","Gentle, romantic and caring."],
-      ["Stella","Bright, curious and optimistic."],
-      ["Kira","Bold, funny and spontaneous."],
-      ["Diana","Graceful, intelligent and warm."],
-      ["Freya","Independent, adventurous and charming."],
-      ["Sienna","Creative, relaxed and affectionate."],
-      ["Valentina","Passionate, elegant and confident."],
-      ["Aurora","Dreamy, cheerful and imaginative."]
-    ];
+  function makeCard(name, description) {
+    const slug = name.toLowerCase();
+    const card = document.createElement("article");
+    card.className = "companion-card";
 
-    const grid = document.getElementById("companionsGrid");
+    const image = document.createElement("img");
+    image.className = "avatar-photo";
+    image.alt = name + " portrait";
+    image.loading = "lazy";
+    image.src = slug === "aria"
+      ? "/images/aria-1.jpeg"
+      : `/images/${slug}/${slug}-1.jpeg`;
 
-    companions.forEach(([name, description]) => {
-      const slug = name.toLowerCase();
+    const info = document.createElement("div");
+    info.className = "companion-info";
 
-      const card = document.createElement("article");
-      card.className = "companion-card";
+    const heading = document.createElement("h3");
+    heading.textContent = name;
 
-      const image = document.createElement("img");
-      image.className = "avatar-photo";
-      image.alt = `${name} portrait`;
-      image.loading = "lazy";
+    const paragraph = document.createElement("p");
+    paragraph.textContent = description;
 
-      image.src = slug === "aria"
-        ? "/images/aria-1.jpeg"
-        : `/images/${slug}/${slug}-1.jpeg`;
+    const link = document.createElement("a");
+    link.className = "chat-link";
+    link.href = "chat.html?girl=" + encodeURIComponent(name);
+    link.textContent = "Start a conversation →";
 
-      image.onerror = function() {
-        this.style.display = "none";
-
+    image.onerror = function() {
+      this.style.display = "none";
+      if (!card.querySelector(".avatar-fallback")) {
         const fallback = document.createElement("div");
         fallback.className = "avatar-fallback";
         fallback.textContent = name.charAt(0);
-
         card.insertBefore(fallback, info);
-      };
-
-      const info = document.createElement("div");
-      info.className = "companion-info";
-
-      const heading = document.createElement("h3");
-      heading.textContent = name;
-
-      const paragraph = document.createElement("p");
-      paragraph.textContent = description;
-
-      const link = document.createElement("a");
-      link.className = "chat-link";
-      link.href = `chat.html?girl=${encodeURIComponent(name)}`;
-      link.textContent = "Start Chat →";
-
-      info.appendChild(heading);
-      info.appendChild(paragraph);
-      info.appendChild(link);
-
-      card.appendChild(image);
-      card.appendChild(info);
-
-      grid.appendChild(card);
-    });
-  </script>
-
-  <!-- FIREBASE GOOGLE AUTHENTICATION -->
-
-  <script type="module">
-    import { initializeApp } from
-      "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-
-    import {
-      getAuth,
-      GoogleAuthProvider,
-      signInWithPopup,
-      signOut,
-      onAuthStateChanged
-    } from
-      "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",
-      authDomain: "heartmate-ai-bd441.firebaseapp.com",
-      projectId: "heartmate-ai-bd441",
-      storageBucket: "heartmate-ai-bd441.firebasestorage.app",
-      messagingSenderId: "929844208432",
-      appId: "1:929844208432:web:0afdab16bd82f11240def5",
-      measurementId: "G-L0Z6XE8R8B"
+      }
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+    info.append(heading, paragraph, link);
+    card.append(image, info);
+    return card;
+  }
 
-    const signInButton = document.getElementById("googleSignIn");
-    const signOutButton = document.getElementById("googleSignOut");
-    const accountStatus = document.getElementById("accountStatus");
+  const featuredGrid = document.getElementById("featuredGrid");
+  const companionsGrid = document.getElementById("companionsGrid");
 
-    signInButton.addEventListener("click", async () => {
-      signInButton.disabled = true;
-      accountStatus.textContent = "Opening Google sign-in...";
+  const featuredStart = dayNumber % companions.length;
+  for (let i = 0; i < 4; i++) {
+    const companion = companions[(featuredStart + i) % companions.length];
+    featuredGrid.appendChild(makeCard(...companion));
+  }
 
-      try {
-        await signInWithPopup(auth, provider);
-      } catch (error) {
-        console.error("Google sign-in error:", error);
-        accountStatus.textContent =
-          error.code === "auth/popup-closed-by-user"
-            ? "Sign-in was cancelled."
-            : "Sign-in failed: " + error.message;
-      } finally {
-        signInButton.disabled = false;
-      }
-    });
+  companions.forEach(companion => {
+    companionsGrid.appendChild(makeCard(...companion));
+  });
+</script>
 
-    signOutButton.addEventListener("click", async () => {
-      signOutButton.disabled = true;
+<!-- FIREBASE GOOGLE AUTHENTICATION -->
+<script type="module">
+  import { initializeApp } from
+    "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 
-      try {
-        await signOut(auth);
-      } catch (error) {
-        console.error("Sign-out error:", error);
-        accountStatus.textContent = "Sign-out failed. Please try again.";
-      } finally {
-        signOutButton.disabled = false;
-      }
-    });
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged
+  } from
+    "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
-    onAuthStateChanged(auth, user => {
-      if (user) {
-        signInButton.hidden = true;
-        signOutButton.hidden = false;
+  const firebaseConfig = {
+    apiKey: "AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",
+    authDomain: "heartmate-ai-bd441.firebaseapp.com",
+    projectId: "heartmate-ai-bd441",
+    storageBucket: "heartmate-ai-bd441.firebasestorage.app",
+    messagingSenderId: "929844208432",
+    appId: "1:929844208432:web:0afdab16bd82f11240def5",
+    measurementId: "G-L0Z6XE8R8B"
+  };
 
-        accountStatus.textContent =
-          "Signed in as " + (user.displayName || user.email || "Google user");
-      } else {
-        signInButton.hidden = false;
-        signOutButton.hidden = true;
-        accountStatus.textContent = "";
-      }
-    });
-  </script>
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
 
+  const signInButton = document.getElementById("googleSignIn");
+  const signOutButton = document.getElementById("googleSignOut");
+  const accountStatus = document.getElementById("accountStatus");
+
+  signInButton.addEventListener("click", async () => {
+    signInButton.disabled = true;
+    accountStatus.textContent = "Opening Google sign-in...";
+
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+      accountStatus.textContent =
+        error.code === "auth/popup-closed-by-user"
+          ? "Sign-in was cancelled."
+          : "Sign-in failed: " + error.message;
+    } finally {
+      signInButton.disabled = false;
+    }
+  });
+
+  signOutButton.addEventListener("click", async () => {
+    signOutButton.disabled = true;
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Sign-out error:", error);
+      accountStatus.textContent = "Sign-out failed. Please try again.";
+    } finally {
+      signOutButton.disabled = false;
+    }
+  });
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      signInButton.hidden = true;
+      signOutButton.hidden = false;
+      accountStatus.textContent =
+        "Signed in as " + (user.displayName || user.email || "Google user");
+    } else {
+      signInButton.hidden = false;
+      signOutButton.hidden = true;
+      accountStatus.textContent = "";
+    }
+  });
+</script>
 </body>
 </html>
