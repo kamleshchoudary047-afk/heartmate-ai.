@@ -19,6 +19,7 @@ header{height:78px;padding:12px 17px;display:flex;align-items:center;gap:13px;po
 .avatar{width:48px;height:48px;border-radius:17px;display:grid;place-items:center;font-size:24px;background:linear-gradient(145deg,#ff8abb,#9a70f3);box-shadow:0 6px 22px rgba(218,79,157,.28)}
 .profile{min-width:0}.profile h3{margin:0 0 4px;font-size:16px;letter-spacing:.2px}.profile small{color:#a8e6c0;font-size:12px}.profile small:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#68e5a0;margin-right:6px;box-shadow:0 0 9px #68e5a0}
 .header-tag{margin-left:auto;color:#d9c8f8;font-size:11px;border:1px solid rgba(184,145,255,.25);border-radius:20px;padding:7px 10px;background:rgba(168,139,255,.08)}
+.gallery-btn{background:linear-gradient(135deg,#a855f7,#ec4899);color:white;border:0;border-radius:20px;padding:9px 12px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
 #messages{height:calc(100dvh - 174px);min-height:300px;overflow-y:auto;padding:22px 16px 26px;display:flex;flex-direction:column;gap:13px;scroll-behavior:smooth}
 .welcome{align-self:center;text-align:center;max-width:300px;margin:5px auto 12px;color:var(--muted);font-size:12px;line-height:1.5}
 .message{max-width:min(84%,440px);padding:12px 15px;border-radius:19px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;box-shadow:0 5px 18px rgba(0,0,0,.12)}
@@ -50,6 +51,24 @@ button:disabled{opacity:.48;cursor:wait}
 .scene-input{width:100%;min-height:86px;resize:vertical;border:1px solid rgba(198,169,235,.2);border-radius:15px;padding:12px;background:#171222;color:white;font:14px inherit;outline:none}
 .modal-actions{display:flex;gap:9px;margin-top:13px}.modal-actions button{flex:1;border:0;border-radius:14px;padding:13px;color:white;font-weight:700;background:linear-gradient(135deg,#e967aa,#9863d7)}
 .modal-actions .cancel{background:rgba(255,255,255,.09)}
+
+/* Photo gallery */
+.gallery-overlay{display:none;position:fixed;inset:0;z-index:20;background:rgba(10,7,18,.97);overflow-y:auto;padding:20px 14px calc(25px + env(safe-area-inset-bottom))}
+.gallery-overlay.open{display:block}
+.gallery-header{max-width:900px;margin:0 auto 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.gallery-header h2{font-size:20px;margin:0}
+.gallery-close{width:42px;height:42px;border:1px solid var(--line);border-radius:14px;background:#292139;color:white;font-size:24px;cursor:pointer}
+.gallery-subtitle{max-width:900px;margin:0 auto 18px;color:var(--muted);font-size:13px}
+.gallery-grid{max-width:900px;margin:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gallery-photo{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:14px;background:#292139;border:1px solid var(--line);cursor:pointer}
+.gallery-photo:active{transform:scale(.98)}
+.gallery-empty{max-width:900px;margin:25px auto;padding:18px;border:1px solid var(--line);border-radius:15px;color:var(--muted);font-size:13px;line-height:1.6}
+.photo-viewer{display:none;position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.96);align-items:center;justify-content:center;padding:55px 12px 20px}
+.photo-viewer.open{display:flex}
+.photo-viewer img{max-width:100%;max-height:100%;object-fit:contain;border-radius:10px}
+.viewer-close{position:absolute;top:calc(12px + env(safe-area-inset-top));right:15px;width:42px;height:42px;border:1px solid rgba(255,255,255,.2);border-radius:50%;background:#292139;color:white;font-size:24px}
+@media(min-width:600px){.gallery-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:850px){.gallery-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(min-width:700px){#messages{padding-left:max(22px,calc((100vw - 720px)/2));padding-right:max(22px,calc((100vw - 720px)/2))}.footer{padding-left:22px;padding-right:22px}}
 </style>
 </head>
@@ -58,6 +77,7 @@ button:disabled{opacity:.48;cursor:wait}
   <a class="back" href="index.html" aria-label="Back">‹</a>
   <div class="avatar">💗</div>
   <div class="profile"><h3 id="girlName">Your Heartmate</h3><small>Here with you</small></div>
+  <button class="gallery-btn" type="button" onclick="openGallery()">📸 Photos</button>
   <div class="header-tag">♥ HEARTMATE</div>
 </header>
 
@@ -96,12 +116,119 @@ button:disabled{opacity:.48;cursor:wait}
   </div>
 </div>
 
+<!-- Photo gallery -->
+<div class="gallery-overlay" id="galleryOverlay" role="dialog" aria-modal="true" aria-label="Photo gallery">
+  <div class="gallery-header">
+    <h2 id="galleryTitle">💕 Photo Gallery</h2>
+    <button class="gallery-close" type="button" onclick="closeGallery()" aria-label="Close gallery">×</button>
+  </div>
+  <p class="gallery-subtitle" id="gallerySubtitle">Your favorite moments together</p>
+  <div class="gallery-grid" id="galleryGrid"></div>
+  <div class="gallery-empty" id="galleryEmpty" hidden>
+    No photos could be loaded. Please check that the photos are uploaded with the expected filenames.
+  </div>
+</div>
+
+<!-- Full-screen photo viewer -->
+<div class="photo-viewer" id="photoViewer" onclick="closePhotoViewer()">
+  <button class="viewer-close" type="button" aria-label="Close photo" onclick="closePhotoViewer()">×</button>
+  <img id="viewerImage" src="" alt="Full-size companion photo">
+</div>
+
 <script>
 const params=new URLSearchParams(location.search);
 const character=(params.get("girl")||"aria").toLowerCase();
 const names={aria:"Aria",maya:"Maya",luna:"Luna",sofia:"Sofia",ella:"Ella",nova:"Nova",zara:"Zara",ivy:"Ivy",ruby:"Ruby",chloe:"Chloe",nina:"Nina",lila:"Lila",amber:"Amber",violet:"Violet",scarlett:"Scarlett",jade:"Jade",rose:"Rose",stella:"Stella",kira:"Kira",diana:"Diana",freya:"Freya",sienna:"Sienna",valentina:"Valentina",aurora:"Aurora"};
 const girlName=names[character]||"Aria";
 document.getElementById("girlName").textContent=girlName;
+
+/* Number of uploaded photos in each companion's folder */
+const photoCounts={
+ aria:4,
+ zara:4,ivy:6,ruby:10,nina:4,lila:5,amber:8,violet:10,
+ jade:15,scarlett:5,stella:8,kira:10,diana:8,freya:10,
+ sienna:10,valentina:8,aurora:10,chloe:8,ella:10,rose:3,
+ nova:5,sofia:6,luna:4,maya:5
+};
+
+function openGallery(){
+ const overlay=document.getElementById("galleryOverlay");
+ const grid=document.getElementById("galleryGrid");
+ const empty=document.getElementById("galleryEmpty");
+ const count=photoCounts[character]||0;
+
+ document.getElementById("galleryTitle").textContent="💕 "+girlName+"'s Photos";
+ document.getElementById("gallerySubtitle").textContent=count+" photos · Tap any photo to view it";
+ grid.innerHTML="";
+ empty.hidden=true;
+ overlay.classList.add("open");
+ document.body.style.overflow="hidden";
+
+ if(!count){
+  empty.hidden=false;
+  return;
+ }
+
+ let loaded=0;
+ let failed=0;
+
+ for(let i=1;i<=count;i++){
+  const image=document.createElement("img");
+  image.className="gallery-photo";
+  image.alt=girlName+" photo "+i;
+  image.loading="lazy";
+
+  /* Aria's original photos use different filenames and .jpeg extension */
+  if(character==="aria"){
+   image.src="images/aria-"+i+".jpeg";
+  }else{
+   image.src="images/"+character+"/"+i+".jpg";
+  }
+
+  image.onload=()=>{
+   loaded++;
+   empty.hidden=true;
+  };
+
+  image.onerror=()=>{
+   failed++;
+   image.remove();
+   if(failed===count&&loaded===0){
+    empty.hidden=false;
+   }
+  };
+
+  image.addEventListener("click",()=>{
+   openPhotoViewer(image.src);
+  });
+
+  grid.appendChild(image);
+ }
+}
+
+function closeGallery(){
+ document.getElementById("galleryOverlay").classList.remove("open");
+ document.body.style.overflow="";
+ closePhotoViewer();
+}
+
+function openPhotoViewer(src){
+ const viewer=document.getElementById("photoViewer");
+ document.getElementById("viewerImage").src=src;
+ viewer.classList.add("open");
+}
+
+function closePhotoViewer(){
+ document.getElementById("photoViewer").classList.remove("open");
+ document.getElementById("viewerImage").src="";
+}
+
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){
+  closePhotoViewer();
+  closeGallery();
+ }
+});
 
 const messages=document.getElementById("messages");
 const input=document.getElementById("messageInput");
