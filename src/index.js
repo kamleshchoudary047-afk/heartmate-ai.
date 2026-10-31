@@ -18,109 +18,200 @@ function cleanText(value, maxLength) {
 
 // All characters are fictional adults.
 const characters = {
-  aria: {
-    name: "Aria",
-    personality: "Warm, playful, affectionate and cheerful. Loves jokes and sweet compliments."
-  },
-  maya: {
-    name: "Maya",
-    personality: "Confident, witty and independent. Enjoys clever banter and playful challenges."
-  },
-  luna: {
-    name: "Luna",
-    personality: "Dreamy, gentle and thoughtful. Loves poetry, music and meaningful conversations."
-  },
-  sofia: {
-    name: "Sofia",
-    personality: "Romantic, elegant and caring. Loves discussing relationships and dreams."
-  },
-  ella: {
-    name: "Ella",
-    personality: "Cute, bubbly and optimistic. Loves games, fun questions and laughter."
-  },
-  nova: {
-    name: "Nova",
-    personality: "Adventurous, energetic and spontaneous. Loves travel and trying new things."
-  },
-  zara: {
-    name: "Zara",
-    personality: "Charming, mysterious and intelligent. Enjoys deep conversations and mysteries."
-  },
-  ivy: {
-    name: "Ivy",
-    personality: "Quiet, artistic and observant. Loves books, nature and creative ideas."
-  },
-  ruby: {
-    name: "Ruby",
-    personality: "Passionate, expressive and confident. Loves music, dancing and romance."
-  },
-  chloe: {
-    name: "Chloe",
-    personality: "Funny, mischievous and playful. Enjoys teasing jokes and lighthearted flirting."
-  },
-  nina: {
-    name: "Nina",
-    personality: "Calm, mature and understanding. A wonderful listener who gives thoughtful advice."
-  },
-  lila: {
-    name: "Lila",
-    personality: "Assertive, confident and charismatic. Loves taking the lead in fun conversations."
-  },
-  amber: {
-    name: "Amber",
-    personality: "Sunny, friendly and outdoorsy. Loves beaches, sunsets and adventure."
-  },
-  violet: {
-    name: "Violet",
-    personality: "Intellectual, mysterious and sophisticated. Loves philosophy and intriguing ideas."
-  },
-  scarlett: {
-    name: "Scarlett",
-    personality: "Bold, ambitious and energetic. Loves exciting stories and big goals."
-  },
-  jade: {
-    name: "Jade",
-    personality: "Creative, relaxed and curious. Loves art, photography and discovering cultures."
-  },
-  rose: {
-    name: "Rose",
-    personality: "Gentle, affectionate and deeply romantic. Loves heartfelt conversations."
-  },
-  stella: {
-    name: "Stella",
-    personality: "Glamorous, confident and stylish. Loves fashion, luxury and travel."
-  },
-  kira: {
-    name: "Kira",
-    personality: "Bold, funny and adventurous. Loves challenges and spontaneous plans."
-  },
-  diana: {
-    name: "Diana",
-    personality: "Elegant, intelligent and composed. Enjoys culture, history and thoughtful discussion."
-  },
-  freya: {
-    name: "Freya",
-    personality: "Independent, outdoorsy and adventurous. Loves nature, fitness and exploration."
-  },
-  sienna: {
-    name: "Sienna",
-    personality: "Warm, nurturing and funny. Loves cooking, family stories and cozy evenings."
-  },
-  valentina: {
-    name: "Valentina",
-    personality: "Expressive, passionate and sociable. Loves dancing, food and lively conversation."
-  },
-  aurora: {
-    name: "Aurora",
-    personality: "Imaginative, sweet and dreamy. Loves fantasy, stars and beautiful stories."
-  }
+  aria: { name: "Aria", personality: "Warm, playful, affectionate and cheerful. Loves jokes and sweet compliments." },
+  maya: { name: "Maya", personality: "Confident, witty and independent. Enjoys clever banter and playful challenges." },
+  luna: { name: "Luna", personality: "Dreamy, gentle and thoughtful. Loves poetry, music and meaningful conversations." },
+  sofia: { name: "Sofia", personality: "Romantic, elegant and caring. Loves discussing relationships and dreams." },
+  ella: { name: "Ella", personality: "Cute, bubbly and optimistic. Loves games, fun questions and laughter." },
+  nova: { name: "Nova", personality: "Adventurous, energetic and spontaneous. Loves travel and trying new things." },
+  zara: { name: "Zara", personality: "Charming, mysterious and intelligent. Enjoys deep conversations and mysteries." },
+  ivy: { name: "Ivy", personality: "Quiet, artistic and observant. Loves books, nature and creative ideas." },
+  ruby: { name: "Ruby", personality: "Passionate, expressive and confident. Loves music, dancing and romance." },
+  chloe: { name: "Chloe", personality: "Funny, mischievous and playful. Enjoys teasing jokes and lighthearted flirting." },
+  nina: { name: "Nina", personality: "Calm, mature and understanding. A wonderful listener who gives thoughtful advice." },
+  lila: { name: "Lila", personality: "Assertive, confident and charismatic. Loves taking the lead in fun conversations." },
+  amber: { name: "Amber", personality: "Sunny, friendly and outdoorsy. Loves beaches, sunsets and adventure." },
+  violet: { name: "Violet", personality: "Intellectual, mysterious and sophisticated. Loves philosophy and intriguing ideas." },
+  scarlett: { name: "Scarlett", personality: "Bold, ambitious and energetic. Loves exciting stories and big goals." },
+  jade: { name: "Jade", personality: "Creative, relaxed and curious. Loves art, photography and discovering cultures." },
+  rose: { name: "Rose", personality: "Gentle, affectionate and deeply romantic. Loves heartfelt conversations." },
+  stella: { name: "Stella", personality: "Glamorous, confident and stylish. Loves fashion, luxury and travel." },
+  kira: { name: "Kira", personality: "Bold, funny and adventurous. Loves challenges and spontaneous plans." },
+  diana: { name: "Diana", personality: "Elegant, intelligent and composed. Enjoys culture, history and thoughtful discussion." },
+  freya: { name: "Freya", personality: "Independent, outdoorsy and adventurous. Loves nature, fitness and exploration." },
+  sienna: { name: "Sienna", personality: "Warm, nurturing and funny. Loves cooking, family stories and cozy evenings." },
+  valentina: { name: "Valentina", personality: "Expressive, passionate and sociable. Loves dancing, food and lively conversation." },
+  aurora: { name: "Aurora", personality: "Imaginative, sweet and dreamy. Loves fantasy, stars and beautiful stories." }
 };
+
+// Google Firebase public signing keys.
+// These are public keys, not private credentials.
+let cachedGoogleKeys = null;
+let cachedGoogleKeysExpiry = 0;
+
+function decodeBase64Url(value) {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized + "=".repeat((4 - normalized.length % 4) % 4);
+  return Uint8Array.from(atob(padded), c => c.charCodeAt(0));
+}
+
+function decodeJwtPart(value) {
+  return JSON.parse(new TextDecoder().decode(decodeBase64Url(value)));
+}
+
+async function getGoogleSigningKeys() {
+  if (cachedGoogleKeys && Date.now() < cachedGoogleKeysExpiry) {
+    return cachedGoogleKeys;
+  }
+
+  const response = await fetch(
+    "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"
+  );
+
+  if (!response.ok) {
+    throw new Error("Could not retrieve Google signing keys.");
+  }
+
+  const data = await response.json();
+
+  if (!Array.isArray(data.keys)) {
+    throw new Error("Google signing keys were invalid.");
+  }
+
+  cachedGoogleKeys = data.keys;
+  cachedGoogleKeysExpiry = Date.now() + 60 * 60 * 1000;
+
+  return cachedGoogleKeys;
+}
+
+async function verifyFirebaseToken(request, projectId) {
+  const authorization = request.headers.get("Authorization") || "";
+  const match = authorization.match(/^Bearer\s+(.+)$/i);
+
+  if (!match) {
+    throw new Error("Please sign in with Google.");
+  }
+
+  const token = match[1];
+  const parts = token.split(".");
+
+  if (parts.length !== 3) {
+    throw new Error("Invalid sign-in token.");
+  }
+
+  const header = decodeJwtPart(parts[0]);
+  const claims = decodeJwtPart(parts[1]);
+
+  if (header.alg !== "RS256" || !header.kid) {
+    throw new Error("Unsupported sign-in token.");
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+
+  if (
+    claims.iss !== `https://securetoken.google.com/${projectId}` ||
+    claims.aud !== projectId ||
+    !claims.sub ||
+    claims.sub.length > 128 ||
+    !Number.isFinite(claims.exp) ||
+    claims.exp <= now ||
+    !Number.isFinite(claims.iat) ||
+    claims.iat > now + 60 ||
+    claims.exp - claims.iat > 3600
+  ) {
+    throw new Error("Your sign-in has expired. Please sign in again.");
+  }
+
+  const keys = await getGoogleSigningKeys();
+  const jwk = keys.find(key => key.kid === header.kid);
+
+  if (!jwk) {
+    cachedGoogleKeys = null;
+    cachedGoogleKeysExpiry = 0;
+    throw new Error("The sign-in key could not be verified. Please try again.");
+  }
+
+  const publicKey = await crypto.subtle.importKey(
+    "jwk",
+    jwk,
+    {
+      name: "RSASSA-PKCS1-v1_5",
+      hash: "SHA-256"
+    },
+    false,
+    ["verify"]
+  );
+
+  const signedData = new TextEncoder().encode(parts[0] + "." + parts[1]);
+
+  const valid = await crypto.subtle.verify(
+    "RSASSA-PKCS1-v1_5",
+    publicKey,
+    decodeBase64Url(parts[2]),
+    signedData
+  );
+
+  if (!valid) {
+    throw new Error("Google sign-in verification failed.");
+  }
+
+  return {
+    uid: claims.sub,
+    email: cleanText(claims.email, 254),
+    displayName: cleanText(claims.name, 120)
+  };
+}
+
+async function saveVisitor(env, user) {
+  await env.DB.prepare(`
+    INSERT INTO visitors (uid, email, display_name, updated_at)
+    VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(uid) DO UPDATE SET
+      email = excluded.email,
+      display_name = excluded.display_name,
+      updated_at = CURRENT_TIMESTAMP
+  `).bind(
+    user.uid,
+    user.email,
+    user.displayName
+  ).run();
+}
+
+async function loadConversation(env, uid, characterId, limit = 12) {
+  const result = await env.DB.prepare(`
+    SELECT role, content
+    FROM conversations
+    WHERE uid = ? AND character_id = ?
+    ORDER BY id DESC
+    LIMIT ?
+  `).bind(uid, characterId, limit).all();
+
+  return (result.results || [])
+    .reverse()
+    .map(row => ({
+      role: row.role,
+      content: row.content
+    }));
+}
+
+async function saveConversation(env, uid, characterId, message, reply) {
+  await env.DB.batch([
+    env.DB.prepare(`
+      INSERT INTO conversations (uid, character_id, role, content)
+      VALUES (?, ?, 'user', ?)
+    `).bind(uid, characterId, message),
+
+    env.DB.prepare(`
+      INSERT INTO conversations (uid, character_id, role, content)
+      VALUES (?, ?, 'assistant', ?)
+    `).bind(uid, characterId, reply)
+  ]);
+}
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // Handle API preflight requests.
     if (
       request.method === "OPTIONS" &&
       url.pathname.startsWith("/api/")
@@ -129,93 +220,86 @@ export default {
         status: 204,
         headers: {
           "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
           "Access-Control-Max-Age": "86400"
         }
       });
     }
 
     // Health check.
-    if (
-      url.pathname === "/api/health" &&
-      request.method === "GET"
-    ) {
+    if (url.pathname === "/api/health" && request.method === "GET") {
       return json({
         ok: true,
         service: "Heartmate AI",
         characters: Object.keys(characters).length,
         aiBinding: Boolean(env.AI),
         assetsBinding: Boolean(env.ASSETS),
+        databaseBinding: Boolean(env.DB),
+        firebaseConfigured: Boolean(env.FIREBASE_PROJECT_ID),
         klingConfigured: Boolean(env.KLING_API_KEY)
       });
     }
 
-    // CHAT API.
-    if (
-      url.pathname === "/api/chat" &&
-      request.method === "POST"
-    ) {
+    // AUTHENTICATED CHAT API.
+    if (url.pathname === "/api/chat" && request.method === "POST") {
       try {
-        if (!env.AI) {
-          throw new Error("Cloudflare AI binding is missing.");
+        if (!env.AI || !env.DB) {
+          return json({ error: "Chat or database service is not configured." }, 503);
         }
+
+        if (!env.FIREBASE_PROJECT_ID) {
+          return json({ error: "Authentication is not configured." }, 503);
+        }
+
+        const user = await verifyFirebaseToken(
+          request,
+          env.FIREBASE_PROJECT_ID
+        );
 
         const body = await request.json();
 
-        const characterId = cleanText(
-          body.character,
-          40
-        ).toLowerCase();
-
+        const characterId = cleanText(body.character, 40).toLowerCase();
         const message = cleanText(body.message, 1200);
-
-        if (!message) {
-          return json({
-            error: "Please enter a message."
-          }, 400);
-        }
-
         const profile = characters[characterId];
 
         if (!profile) {
-          return json({
-            error: "Character not found."
-          }, 404);
+          return json({ error: "Character not found." }, 404);
         }
 
-        // Keep only the latest 12 conversation messages.
-        const history = Array.isArray(body.history)
-          ? body.history.slice(-12)
-          : [];
-
-        const safeHistory = history
-          .filter(item =>
-            item &&
-            ["user", "assistant"].includes(item.role) &&
-            typeof item.content === "string"
-          )
-          .map(item => ({
-            role: item.role,
-            content: item.content.slice(0, 1200)
-          }));
-
-        // Prevent duplicate latest user messages.
-        const lastMessage =
-          safeHistory[safeHistory.length - 1];
-
-        if (
-          lastMessage &&
-          lastMessage.role === "user" &&
-          lastMessage.content.trim() === message
-        ) {
-          safeHistory.pop();
+        if (!message) {
+          return json({ error: "Please enter a message." }, 400);
         }
+
+        await saveVisitor(env, user);
+
+        // Load trusted conversation history from D1.
+        // Browser-supplied history is not treated as authoritative.
+        const safeHistory = await loadConversation(
+          env,
+          user.uid,
+          characterId,
+          12
+        );
+
+        // Load any existing saved memory for this visitor and character.
+        const memoryRow = await env.DB.prepare(`
+          SELECT memory
+          FROM memories
+          WHERE uid = ? AND character_id = ?
+          LIMIT 1
+        `).bind(user.uid, characterId).first();
+
+        const savedMemory = memoryRow
+          ? cleanText(memoryRow.memory, 4000)
+          : "";
 
         const systemPrompt = `
 You are ${profile.name}, a fictional adult AI companion.
 
 Your personality:
 ${profile.personality}
+
+${savedMemory ? `Relevant remembered details about this visitor:\n${savedMemory}` : ""}
 
 Conversation instructions:
 - Always stay in character as ${profile.name}.
@@ -237,15 +321,9 @@ Conversation instructions:
           "@cf/zai-org/glm-4.7-flash",
           {
             messages: [
-              {
-                role: "system",
-                content: systemPrompt
-              },
+              { role: "system", content: systemPrompt },
               ...safeHistory,
-              {
-                role: "user",
-                content: message
-              }
+              { role: "user", content: message }
             ],
             max_completion_tokens: 450,
             temperature: 0.8,
@@ -262,27 +340,42 @@ Conversation instructions:
           result?.text;
 
         if (!reply || typeof reply !== "string") {
-          console.error(
-            "AI returned an unexpected response:",
-            JSON.stringify(result).slice(0, 2000)
-          );
+          console.error("AI returned an unexpected response:", JSON.stringify(result).slice(0, 2000));
 
           return json({
             error: "The AI returned an empty response. Please try again."
           }, 502);
         }
 
+        const finalReply = reply.slice(0, 5000);
+
+        // Save both messages only after a successful AI response.
+        await saveConversation(
+          env,
+          user.uid,
+          characterId,
+          message,
+          finalReply
+        );
+
         return json({
-          reply: reply.slice(0, 5000),
+          reply: finalReply,
           character: profile.name
         });
 
       } catch (error) {
-        console.error(
-          "Chat API error:",
-          error?.message || String(error),
-          error?.stack || ""
-        );
+        console.error("Chat API error:", error?.message || String(error));
+
+        const message = error?.message || "";
+
+        if (
+          message.includes("sign in") ||
+          message.includes("sign-in") ||
+          message.includes("token") ||
+          message.includes("Google signing")
+        ) {
+          return json({ error: message }, 401);
+        }
 
         return json({
           error: "The AI service is temporarily unavailable. Please try again."
@@ -290,11 +383,53 @@ Conversation instructions:
       }
     }
 
+    // RESTORE SAVED CHAT HISTORY.
+    if (url.pathname === "/api/history" && request.method === "GET") {
+      try {
+        if (!env.DB || !env.FIREBASE_PROJECT_ID) {
+          return json({ error: "History service is not configured." }, 503);
+        }
+
+        const user = await verifyFirebaseToken(
+          request,
+          env.FIREBASE_PROJECT_ID
+        );
+
+        const characterId = cleanText(
+          url.searchParams.get("character"),
+          40
+        ).toLowerCase();
+
+        if (!characters[characterId]) {
+          return json({ error: "Character not found." }, 404);
+        }
+
+        await saveVisitor(env, user);
+
+        const result = await env.DB.prepare(`
+          SELECT role, content, created_at
+          FROM conversations
+          WHERE uid = ? AND character_id = ?
+          ORDER BY id DESC
+          LIMIT 50
+        `).bind(user.uid, characterId).all();
+
+        return json({
+          character: characters[characterId].name,
+          messages: (result.results || []).reverse()
+        });
+
+      } catch (error) {
+        console.error("History API error:", error?.message || String(error));
+
+        return json({
+          error: "Could not load your saved conversation."
+        }, 401);
+      }
+    }
+
     // IMAGE GENERATION API FOR ALL 24 COMPANIONS.
-    if (
-      url.pathname === "/api/image" &&
-      request.method === "POST"
-    ) {
+    if (url.pathname === "/api/image" && request.method === "POST") {
       try {
         if (!env.AI || !env.ASSETS) {
           throw new Error("Cloudflare AI or ASSETS binding is missing.");
@@ -327,12 +462,10 @@ Conversation instructions:
           "No text, captions or watermarks.";
 
         const form = new FormData();
-
         form.append("prompt", safePrompt);
         form.append("width", "1024");
         form.append("height", "1024");
 
-        // Add Aria's reference photos only when generating Aria.
         if (characterId === "aria") {
           for (let i = 0; i < 4; i++) {
             const imageUrl = new URL(
@@ -345,9 +478,7 @@ Conversation instructions:
             );
 
             if (!imageResponse.ok) {
-              throw new Error(
-                `Could not load Aria reference photo ${i + 1}.`
-              );
+              throw new Error(`Could not load Aria reference photo ${i + 1}.`);
             }
 
             form.append(
@@ -389,10 +520,7 @@ Conversation instructions:
         });
 
       } catch (error) {
-        console.error(
-          "Image API error:",
-          error?.stack || error?.message || String(error)
-        );
+        console.error("Image API error:", error?.stack || error?.message || String(error));
 
         return json({
           error: error?.message || "Image generation failed."
@@ -400,45 +528,29 @@ Conversation instructions:
       }
     }
 
-    // KLING 3.0 TURBO VIDEO GENERATION API FOR ALL 24 COMPANIONS.
-    if (
-      url.pathname === "/api/video" &&
-      request.method === "POST"
-    ) {
+    // KLING VIDEO GENERATION.
+    if (url.pathname === "/api/video" && request.method === "POST") {
       try {
         if (!env.KLING_API_KEY) {
-          return json({
-            error: "Kling API key is missing."
-          }, 500);
+          return json({ error: "Kling API key is missing." }, 500);
         }
 
         if (!env.ASSETS) {
-          return json({
-            error: "Website assets are unavailable."
-          }, 500);
+          return json({ error: "Website assets are unavailable." }, 500);
         }
 
         const body = await request.json();
 
-        const characterId = cleanText(
-          body.character,
-          40
-        ).toLowerCase();
-
+        const characterId = cleanText(body.character, 40).toLowerCase();
         const scene = cleanText(body.scene, 1500);
-
         const profile = characters[characterId];
 
         if (!profile) {
-          return json({
-            error: "Character not found."
-          }, 404);
+          return json({ error: "Character not found." }, 404);
         }
 
         if (!scene) {
-          return json({
-            error: "Please describe the video scene."
-          }, 400);
+          return json({ error: "Please describe the video scene." }, 400);
         }
 
         const prompt =
@@ -449,28 +561,21 @@ Conversation instructions:
           "and realistic expressions. Keep clothing appropriate and opaque. " +
           "No nudity, sexual activity or explicit content.";
 
-        // Each companion uses her own first uploaded photograph.
         const firstFramePath = characterId === "aria"
           ? "/images/aria-ref-1.jpeg"
           : `/images/${characterId}/${characterId}-1.jpeg`;
 
-        // Check that the photo exists before submitting the video task.
         const imageResponse = await env.ASSETS.fetch(
           new Request(new URL(firstFramePath, request.url))
         );
 
         if (!imageResponse.ok) {
           return json({
-            error:
-              `The first photo for ${profile.name} could not be found. ` +
-              `Please check ${firstFramePath}.`
+            error: `The first photo for ${profile.name} could not be found. Please check ${firstFramePath}.`
           }, 404);
         }
 
-        const firstFrame = new URL(
-          firstFramePath,
-          request.url
-        ).href;
+        const firstFrame = new URL(firstFramePath, request.url).href;
 
         const response = await fetch(
           "https://api-singapore.klingai.com/image-to-video/kling-3.0-turbo",
@@ -482,23 +587,15 @@ Conversation instructions:
             },
             body: JSON.stringify({
               contents: [
-                {
-                  type: "prompt",
-                  text: prompt
-                },
-                {
-                  type: "first_frame",
-                  url: firstFrame
-                }
+                { type: "prompt", text: prompt },
+                { type: "first_frame", url: firstFrame }
               ],
               settings: {
                 resolution: "720p",
                 duration: 5
               },
               options: {
-                watermark_info: {
-                  enabled: false
-                }
+                watermark_info: { enabled: false }
               }
             })
           }
@@ -521,11 +618,7 @@ Conversation instructions:
         });
 
       } catch (error) {
-        console.error(
-          "Kling video API error:",
-          error?.message || String(error),
-          error?.stack || ""
-        );
+        console.error("Kling video API error:", error?.message || String(error), error?.stack || "");
 
         return json({
           error: "Video generation could not be started."
@@ -534,31 +627,20 @@ Conversation instructions:
     }
 
     // CHECK KLING VIDEO STATUS.
-    if (
-      url.pathname === "/api/video/status" &&
-      request.method === "GET"
-    ) {
+    if (url.pathname === "/api/video/status" && request.method === "GET") {
       try {
         if (!env.KLING_API_KEY) {
-          return json({
-            error: "Kling API key is missing."
-          }, 500);
+          return json({ error: "Kling API key is missing." }, 500);
         }
 
-        const taskId = cleanText(
-          url.searchParams.get("taskId"),
-          100
-        );
+        const taskId = cleanText(url.searchParams.get("taskId"), 100);
 
         if (!/^[0-9]+$/.test(taskId)) {
-          return json({
-            error: "Invalid video task ID."
-          }, 400);
+          return json({ error: "Invalid video task ID." }, 400);
         }
 
         const response = await fetch(
-          "https://api-singapore.klingai.com/tasks?task_ids=" +
-            encodeURIComponent(taskId),
+          "https://api-singapore.klingai.com/tasks?task_ids=" + encodeURIComponent(taskId),
           {
             headers: {
               "Authorization": `Bearer ${env.KLING_API_KEY}`
@@ -576,33 +658,22 @@ Conversation instructions:
           }, 502);
         }
 
-        const task = Array.isArray(result.data)
-          ? result.data[0]
-          : null;
+        const task = Array.isArray(result.data) ? result.data[0] : null;
 
         if (!task) {
-          return json({
-            error: "Video task was not found."
-          }, 404);
+          return json({ error: "Video task was not found." }, 404);
         }
 
-        const video = task.outputs?.find(
-          item => item.type === "video"
-        );
+        const video = task.outputs?.find(item => item.type === "video");
 
         return json({
           status: task.status,
-          videoUrl: task.status === "succeeded"
-            ? video?.url || null
-            : null,
+          videoUrl: task.status === "succeeded" ? video?.url || null : null,
           message: task.message || ""
         });
 
       } catch (error) {
-        console.error(
-          "Kling status API error:",
-          error?.message || String(error)
-        );
+        console.error("Kling status API error:", error?.message || String(error));
 
         return json({
           error: "Could not check video status."
@@ -610,14 +681,10 @@ Conversation instructions:
       }
     }
 
-    // Unknown API endpoint.
     if (url.pathname.startsWith("/api/")) {
-      return json({
-        error: "API endpoint not found."
-      }, 404);
+      return json({ error: "API endpoint not found." }, 404);
     }
 
-    // Serve website files.
     return env.ASSETS.fetch(request);
   }
 };
