@@ -27,6 +27,7 @@
 
     * { box-sizing:border-box; margin:0; padding:0; }
     html { scroll-behavior:smooth; }
+
     body {
       min-height:100vh;
       padding-bottom:85px;
@@ -64,6 +65,7 @@
       font-weight:800;
       letter-spacing:-.8px;
     }
+
     .logo span { color:var(--gold); }
 
     .nav-links {
@@ -73,6 +75,7 @@
       color:var(--muted);
       font-size:13px;
     }
+
     .nav-links a:hover { color:var(--gold-light); }
 
     .account-area {
@@ -100,17 +103,21 @@
       background:linear-gradient(110deg,#f0c49d,#c78b70);
       font-weight:800;
     }
+
     .small-button { padding:10px 16px; font-size:12px; }
+
     .primary-button {
       padding:14px 23px;
       font-size:13px;
       box-shadow:0 8px 28px rgba(194,117,103,.19);
       transition:transform .2s,box-shadow .2s;
     }
+
     .primary-button:hover {
       transform:translateY(-2px);
       box-shadow:0 12px 34px rgba(194,117,103,.3);
     }
+
     .small-button:disabled { opacity:.6; cursor:wait; }
     [hidden] { display:none!important; }
 
@@ -128,7 +135,9 @@
         linear-gradient(90deg,rgba(16,9,14,.98),rgba(16,9,14,.82) 45%,rgba(16,9,14,.1)),
         url('/images/aria-1.jpeg') center 35%/cover no-repeat;
     }
+
     .hero-content { max-width:520px; position:relative; z-index:1; }
+
     .eyebrow {
       display:inline-block;
       padding:8px 13px;
@@ -142,14 +151,18 @@
       letter-spacing:1.6px;
       text-transform:uppercase;
     }
+
     h1,h2,h3 { font-family:'Playfair Display',serif; }
+
     .hero h1 {
       font-size:clamp(42px,6vw,68px);
       line-height:1.08;
       margin-bottom:19px;
       font-weight:600;
     }
+
     .hero h1 span { color:var(--gold-light); }
+
     .hero p {
       max-width:420px;
       margin-bottom:28px;
@@ -157,6 +170,7 @@
       font-size:15px;
       line-height:1.85;
     }
+
     .hero-note {
       margin-top:17px;
       color:#d1b9b1;
@@ -165,6 +179,7 @@
     }
 
     .section { padding-top:61px; }
+
     .section-heading {
       display:flex;
       justify-content:space-between;
@@ -172,17 +187,21 @@
       gap:15px;
       margin-bottom:22px;
     }
+
     .section-heading h2 { font-size:30px; font-weight:600; }
+
     .section-heading p {
       margin-top:7px;
       color:var(--muted);
       font-size:12px;
     }
+
     .section-heading>a {
       color:var(--gold-light);
       font-size:12px;
       font-weight:700;
     }
+
     .section-kicker {
       margin-bottom:8px;
       color:var(--gold);
@@ -202,6 +221,7 @@
       border-radius:22px;
       background:linear-gradient(115deg,#291720,#1b1118);
     }
+
     .daily-photo {
       width:100%;
       height:190px;
@@ -210,6 +230,7 @@
       border-radius:15px;
       background:var(--surface2);
     }
+
     .daily-message {
       margin:13px 0 19px;
       color:#f0ded8;
@@ -217,7 +238,13 @@
       font-size:clamp(19px,2.5vw,25px);
       line-height:1.5;
     }
-    .daily-name { color:var(--gold-light); font-size:12px; font-weight:700; }
+
+    .daily-name {
+      color:var(--gold-light);
+      font-size:12px;
+      font-weight:700;
+    }
+
     .daily-mood {
       display:inline-block;
       margin-top:8px;
@@ -232,6 +259,7 @@
       grid-template-columns:repeat(4,minmax(0,1fr));
       gap:16px;
     }
+
     .companion-card {
       overflow:hidden;
       border:1px solid var(--border);
@@ -239,10 +267,12 @@
       background:linear-gradient(155deg,#25151e,#180f16);
       transition:transform .2s,border-color .2s;
     }
+
     .companion-card:hover {
       transform:translateY(-4px);
       border-color:rgba(214,164,119,.5);
     }
+
     .avatar-photo {
       display:block;
       width:100%;
@@ -251,6 +281,7 @@
       object-position:center 28%;
       background:linear-gradient(135deg,#54313a,#24151e);
     }
+
     .avatar-fallback {
       height:220px;
       display:grid;
@@ -260,14 +291,33 @@
       font-family:'Playfair Display',serif;
       font-size:65px;
     }
+
     .companion-info { padding:16px; }
-    .companion-info h3 { margin-bottom:6px; font-size:19px; }
+
+    .companion-info h3 {
+      margin-bottom:6px;
+      font-size:19px;
+    }
+
     .companion-info p {
       min-height:37px;
       color:var(--muted);
       font-size:11px;
       line-height:1.6;
     }
+
+    .companion-mood {
+      display:inline-block;
+      margin:5px 0 10px;
+      padding:6px 10px;
+      border:1px solid rgba(214,164,119,.25);
+      border-radius:20px;
+      color:var(--gold-light);
+      background:rgba(214,164,119,.08);
+      font-size:10px;
+      font-weight:700;
+    }
+
     .chat-link {
       display:block;
       margin-top:13px;
@@ -280,6 +330,7 @@
       font-size:11px;
       font-weight:700;
     }
+
     .chat-link:hover { background:rgba(214,164,119,.16); }
 
     .experience-grid {
@@ -287,6 +338,7 @@
       grid-template-columns:repeat(3,1fr);
       gap:15px;
     }
+
     .experience-card {
       min-height:170px;
       padding:23px;
@@ -294,8 +346,14 @@
       border-radius:19px;
       background:linear-gradient(145deg,#291720,#1a1017);
     }
+
     .experience-icon { font-size:25px; margin-bottom:15px; }
-    .experience-card h3 { margin-bottom:8px; font-size:20px; }
+
+    .experience-card h3 {
+      margin-bottom:8px;
+      font-size:20px;
+    }
+
     .experience-card p {
       color:var(--muted);
       font-size:12px;
@@ -312,8 +370,14 @@
         linear-gradient(120deg,#301923,#1b1118);
       text-align:center;
     }
+
     .closing h2 { margin-bottom:12px; font-size:32px; }
-    .closing p { margin-bottom:23px; color:var(--muted); font-size:13px; }
+
+    .closing p {
+      margin-bottom:23px;
+      color:var(--muted);
+      font-size:13px;
+    }
 
     footer {
       padding:35px 10px 12px;
@@ -322,6 +386,7 @@
       line-height:1.9;
       text-align:center;
     }
+
     .bottom-nav { display:none; }
 
     @media(max-width:760px) {
@@ -330,9 +395,11 @@
         flex-wrap:wrap;
         padding:10px 0;
       }
+
       .nav-links { display:none; }
       .account-area { margin-left:auto; }
       #accountStatus { width:100%; text-align:right; }
+
       .hero {
         min-height:520px;
         padding:27px 23px;
@@ -341,20 +408,33 @@
           linear-gradient(0deg,rgba(16,9,14,.99),rgba(16,9,14,.73) 48%,rgba(16,9,14,.05)),
           url('/images/aria-1.jpeg') center 25%/cover no-repeat;
       }
+
       .hero-content { padding-bottom:12px; }
       .hero h1 { font-size:44px; }
       .hero p { font-size:13px; }
       .section { padding-top:43px; }
       .section-heading h2 { font-size:25px; }
-      .daily-card { grid-template-columns:105px 1fr; gap:15px; padding:14px; }
+
+      .daily-card {
+        grid-template-columns:105px 1fr;
+        gap:15px;
+        padding:14px;
+      }
+
       .daily-photo { height:155px; }
       .daily-message { font-size:18px; }
-      .featured-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+
+      .featured-grid {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:12px;
+      }
+
       .avatar-photo,.avatar-fallback { height:175px; }
       .experience-grid { grid-template-columns:1fr; gap:11px; }
       .experience-card { min-height:0; }
       .closing { margin-top:45px; padding:35px 18px; }
       .closing h2 { font-size:27px; }
+
       .bottom-nav {
         display:flex;
         position:fixed;
@@ -368,17 +448,20 @@
         border-top:1px solid var(--border);
         backdrop-filter:blur(18px);
       }
+
       .bottom-nav a {
         color:var(--muted);
         font-size:10px;
         text-align:center;
       }
+
       .bottom-nav a span {
         display:block;
         margin-bottom:4px;
         font-size:19px;
       }
     }
+
     @media(max-width:380px) {
       .hero h1 { font-size:38px; }
       .daily-card { grid-template-columns:90px 1fr; }
@@ -393,12 +476,14 @@
 <header>
   <div class="container navbar">
     <a href="/" class="logo">Heartmate<span> AI</span></a>
+
     <nav class="nav-links">
       <a href="/">Home</a>
       <a href="#featured">Discover</a>
       <a href="#experiences">Experiences</a>
       <a href="#companions">All Companions</a>
     </nav>
+
     <div class="account-area">
       <button class="small-button" id="googleSignIn" type="button">Sign in with Google</button>
       <button class="small-button" id="googleSignOut" type="button" hidden>Sign out</button>
@@ -426,8 +511,10 @@
         <p>A small hello from one of your companions.</p>
       </div>
     </div>
+
     <div class="daily-card">
       <img class="daily-photo" id="dailyPhoto" src="/images/aria-1.jpeg" alt="Companion portrait">
+
       <div>
         <div class="daily-name" id="dailyName">A note from Aria</div>
         <div class="daily-mood" id="dailyMood">Today's mood</div>
@@ -446,6 +533,7 @@
       </div>
       <a href="#companions">Meet all 24 →</a>
     </div>
+
     <div class="featured-grid" id="featuredGrid"></div>
   </section>
 
@@ -457,23 +545,27 @@
         <p>More ways to create memorable moments.</p>
       </div>
     </div>
+
     <div class="experience-grid">
       <article class="experience-card">
         <div class="experience-icon">💌</div>
         <h3>Secret Letters</h3>
         <p>Discover heartfelt notes, little confessions and unexpected surprises.</p>
       </article>
+
       <article class="experience-card">
         <div class="experience-icon">🌙</div>
         <h3>Virtual Dates</h3>
         <p>Imagine moonlit walks, coffee dates and candlelight dinners.</p>
       </article>
+
       <article class="experience-card">
         <div class="experience-icon">❤️</div>
         <h3>Your Memories</h3>
         <p>Keep special moments and follow the story of each connection.</p>
       </article>
     </div>
+
     <p style="color:var(--muted);font-size:11px;margin-top:12px;">
       These are planned experiences; more features will arrive as the site develops.
     </p>
@@ -487,6 +579,7 @@
         <p>Each one has her own personality and story.</p>
       </div>
     </div>
+
     <div class="featured-grid" id="companionsGrid"></div>
   </section>
 
@@ -538,11 +631,6 @@ const companions = [
   ["Aurora","Dreamy, cheerful and imaginative."]
 ];
 
-/*
-  Three messages per companion.
-  The selected message changes each time that companion is featured.
-  All messages are prewritten: no AI request is made.
-*/
 const dailyNotes = [
   ["Aria","Warm, affectionate and gently seductive.",[
     "There you are… I was hoping you'd stop by. Come closer; I've saved a little affection just for you. ❤️",
@@ -666,14 +754,82 @@ const dailyNotes = [
   ]]
 ];
 
-const dayNumber = Math.floor(Date.now() / 86400000);
-const note = dailyNotes[dayNumber % dailyNotes.length];
-const noteIndex = Math.floor(dayNumber / dailyNotes.length) % note[2].length;
-const noteSlug = note[0].toLowerCase();
+/* Each companion receives an individual mood each day.
+   This uses only local JavaScript calculations, not an AI request. */
 
-document.getElementById("dailyName").textContent = "A note from " + note[0];
-document.getElementById("dailyMood").textContent = note[1];
-document.getElementById("dailyMessage").textContent = "“" + note[2][noteIndex] + "”";
+const moods = [
+  {
+    name:"Romantic",
+    emoji:"💕",
+    message:"I'm feeling especially romantic today. Let's make a beautiful little moment together."
+  },
+  {
+    name:"Playful",
+    emoji:"😉",
+    message:"I'm in a playful mood today. I hope you're ready for some teasing."
+  },
+  {
+    name:"Mysterious",
+    emoji:"🌙",
+    message:"I have a mysterious little secret today. Perhaps I'll share it with you."
+  },
+  {
+    name:"Spicy",
+    emoji:"🔥",
+    message:"I'm feeling bold and a little daring today. Come closer and find out."
+  },
+  {
+    name:"Affectionate",
+    emoji:"🥰",
+    message:"Today I'm craving warmth, affection and a little extra attention."
+  },
+  {
+    name:"Mischievous",
+    emoji:"😈",
+    message:"I'm feeling mischievous today. I can't promise I'll behave."
+  },
+  {
+    name:"Adventurous",
+    emoji:"✨",
+    message:"I'm ready for something exciting today. Let's dream up an adventure."
+  }
+];
+
+/* Use the visitor's local calendar date for daily rotation. */
+function getLocalDayNumber() {
+  const now = new Date();
+  const localMidnight = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
+  return Math.floor(localMidnight.getTime() / 86400000);
+}
+
+const dayNumber = getLocalDayNumber();
+
+function getMood(companionName) {
+  const index = companions.findIndex(c => c[0] === companionName);
+  const moodIndex = (dayNumber + index * 3) % moods.length;
+  return moods[moodIndex];
+}
+
+/* Daily companion note */
+const note = dailyNotes[dayNumber % dailyNotes.length];
+const noteIndex =
+  Math.floor(dayNumber / dailyNotes.length) % note[2].length;
+
+const noteSlug = note[0].toLowerCase();
+const dailyMood = getMood(note[0]);
+
+document.getElementById("dailyName").textContent =
+  "A note from " + note[0];
+
+document.getElementById("dailyMood").textContent =
+  dailyMood.emoji + " " + dailyMood.name + " · " + note[1];
+
+document.getElementById("dailyMessage").textContent =
+  "“" + dailyMood.message + " " + note[2][noteIndex] + "”";
 
 document.getElementById("dailyPhoto").src =
   noteSlug === "aria"
@@ -687,6 +843,7 @@ document.getElementById("dailyPhoto").onerror = function() {
 document.getElementById("dailyChat").href =
   "chat.html?girl=" + encodeURIComponent(note[0]);
 
+/* Build companion cards */
 function makeCard(name,description) {
   const slug = name.toLowerCase();
   const card = document.createElement("article");
@@ -696,6 +853,7 @@ function makeCard(name,description) {
   image.className = "avatar-photo";
   image.alt = name + " portrait";
   image.loading = "lazy";
+
   image.src = slug === "aria"
     ? "/images/aria-1.jpeg"
     : `/images/${slug}/${slug}-1.jpeg`;
@@ -705,6 +863,11 @@ function makeCard(name,description) {
 
   const heading = document.createElement("h3");
   heading.textContent = name;
+
+  const mood = getMood(name);
+  const moodBadge = document.createElement("div");
+  moodBadge.className = "companion-mood";
+  moodBadge.textContent = mood.emoji + " " + mood.name;
 
   const paragraph = document.createElement("p");
   paragraph.textContent = description;
@@ -716,6 +879,7 @@ function makeCard(name,description) {
 
   image.onerror = function() {
     this.style.display = "none";
+
     if (!card.querySelector(".avatar-fallback")) {
       const fallback = document.createElement("div");
       fallback.className = "avatar-fallback";
@@ -724,14 +888,16 @@ function makeCard(name,description) {
     }
   };
 
-  info.append(heading,paragraph,link);
+  info.append(heading,moodBadge,paragraph,link);
   card.append(image,info);
+
   return card;
 }
 
 const featuredGrid = document.getElementById("featuredGrid");
 const companionsGrid = document.getElementById("companionsGrid");
 
+/* Rotate the four featured companions daily. */
 const featuredStart = dayNumber % companions.length;
 
 for (let i=0;i<4;i++) {
@@ -739,6 +905,7 @@ for (let i=0;i<4;i++) {
   featuredGrid.appendChild(makeCard(...companion));
 }
 
+/* Display all 24 companions. */
 companions.forEach(companion => {
   companionsGrid.appendChild(makeCard(...companion));
 });
@@ -784,6 +951,7 @@ signInButton.addEventListener("click",async () => {
     await signInWithPopup(auth,provider);
   } catch(error) {
     console.error("Google sign-in error:",error);
+
     accountStatus.textContent =
       error.code === "auth/popup-closed-by-user"
         ? "Sign-in was cancelled."
@@ -795,6 +963,7 @@ signInButton.addEventListener("click",async () => {
 
 signOutButton.addEventListener("click",async () => {
   signOutButton.disabled = true;
+
   try {
     await signOut(auth);
   } catch(error) {
@@ -809,6 +978,7 @@ onAuthStateChanged(auth,user => {
   if (user) {
     signInButton.hidden = true;
     signOutButton.hidden = false;
+
     accountStatus.textContent =
       "Signed in as " + (user.displayName || user.email || "Google user");
   } else {
@@ -818,5 +988,6 @@ onAuthStateChanged(auth,user => {
   }
 });
 </script>
+
 </body>
 </html>
