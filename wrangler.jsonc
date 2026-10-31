@@ -12,6 +12,9 @@
   "ai": {
     "binding": "AI"
   },
+  "vars": {
+    "FIREBASE_PROJECT_ID": "heartmate-ai-bd441"
+  },
   "d1_databases": [
     {
       "binding": "DB",
