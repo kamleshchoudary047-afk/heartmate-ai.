@@ -160,8 +160,30 @@ button:disabled{opacity:.48;cursor:wait}
   <img id="viewerImage" src="" alt="Full-size photo" onclick="event.stopPropagation()">
 </div>
 
-<!-- COMPANION CHAT, PHOTO AND VIDEO FEATURES -->
+<!-- AUTHENTICATION STATE SHARED WITH FIREBASE MODULE -->
+<script>
+const history = [];
 
+let resolveAuthReady;
+
+window.heartmateAuthReady = new Promise(resolve => {
+  resolveAuthReady = resolve;
+});
+
+window.heartmateAuth = {
+  user: null,
+
+  async getToken() {
+    if (!this.user) {
+      throw new Error("Please sign in with Google to chat.");
+    }
+
+    return await this.user.getIdToken();
+  }
+};
+</script>
+
+<!-- COMPANION CHAT, PHOTO AND VIDEO FEATURES -->
 <script>
 const params=new URLSearchParams(location.search);
 const names={
@@ -194,7 +216,6 @@ const modalTitle=document.getElementById("modalTitle");
 const modalDescription=document.getElementById("modalDescription");
 const confirmMedia=document.getElementById("confirmMedia");
 
-const history=[];
 let busy=false;
 let mediaChoice="image";
 
@@ -403,6 +424,17 @@ async function sendChat(message){
   return;
  }
 
+ await window.heartmateAuthReady;
+
+ let token;
+
+ try {
+  token = await window.heartmateAuth.getToken();
+ } catch(error) {
+  addMessage("Please sign in with Google before starting a conversation. 💗","bot");
+  return;
+ }
+
  addMessage(message,"user");
  history.push({role:"user",content:message});
  input.value="";
@@ -413,7 +445,10 @@ async function sendChat(message){
  try{
   const response=await fetch("/api/chat",{
    method:"POST",
-   headers:{"Content-Type":"application/json"},
+   headers:{
+     "Content-Type":"application/json",
+     "Authorization":"Bearer "+token
+   },
    body:JSON.stringify({character,message,history})
   });
 
@@ -556,7 +591,6 @@ async function generateVideo(scene){
 </script>
 
 <!-- FIREBASE GOOGLE AUTHENTICATION -->
-
 <script type="module">
 import { initializeApp, getApps }
   from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
@@ -621,6 +655,14 @@ logout.addEventListener("click", async () => {
 });
 
 onAuthStateChanged(auth, user => {
+  window.heartmateAuth.user = user;
+
+  // Resolve the initial authentication check only once.
+  if (resolveAuthReady) {
+    resolveAuthReady(user);
+    resolveAuthReady = null;
+  }
+
   if (user) {
     login.hidden = true;
     logout.hidden = false;
