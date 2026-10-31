@@ -219,6 +219,112 @@ const confirmMedia=document.getElementById("confirmMedia");
 let busy=false;
 let mediaChoice="image";
 
+/* SAVED CONVERSATION RESTORATION */
+let historyLoadPromise=Promise.resolve();
+let historyLoadedForUid="";
+
+function resetChatDisplay(){
+  history.length=0;
+
+  messages.innerHTML=`
+    <div class="welcome">
+      A little space for good conversations, sweet moments and creativity ✨
+    </div>
+    <div class="message bot">
+      Hey there! 💕 I'm happy you're here. How is your day going?
+    </div>
+  `;
+
+  scrollToBottom();
+}
+
+function accountStatusForHistory(text){
+  const status=document.getElementById("chatAccountStatus");
+  if(status)status.textContent=text;
+}
+
+async function loadSavedHistory(user){
+  if(!user){
+    historyLoadedForUid="";
+    resetChatDisplay();
+    return;
+  }
+
+  if(historyLoadedForUid===user.uid)return;
+
+  // Clear the previous account's conversation before loading another account.
+  historyLoadedForUid=user.uid;
+  resetChatDisplay();
+  accountStatusForHistory("Loading saved chats…");
+
+  try{
+    const token=await user.getIdToken();
+
+    const response=await fetch(
+      "/api/history?character="+encodeURIComponent(character),
+      {
+        method:"GET",
+        headers:{
+          "Authorization":"Bearer "+token
+        },
+        cache:"no-store"
+      }
+    );
+
+    if(!response.ok){
+      const data=await response.json().catch(()=>({}));
+      throw new Error(data.error||"Could not load saved conversations.");
+    }
+
+    const data=await response.json();
+
+    // Ignore a response if the signed-in account changed while loading.
+    if(!window.heartmateAuth.user||
+       window.heartmateAuth.user.uid!==user.uid){
+      return;
+    }
+
+    if(Array.isArray(data.messages)&&data.messages.length>0){
+      messages.innerHTML="";
+      history.length=0;
+
+      for(const item of data.messages){
+        if(
+          !["user","assistant"].includes(item.role)||
+          typeof item.content!=="string"
+        )continue;
+
+        history.push({
+          role:item.role,
+          content:item.content
+        });
+
+        addMessage(
+          item.content,
+          item.role==="user"?"user":"bot"
+        );
+      }
+    }
+
+    accountStatusForHistory(
+      user.displayName||user.email||"Signed in"
+    );
+
+    scrollToBottom();
+
+  }catch(error){
+    console.error("History loading error:",error);
+
+    if(window.heartmateAuth.user&&
+       window.heartmateAuth.user.uid===user.uid){
+      historyLoadedForUid="";
+      accountStatusForHistory("Signed in · history unavailable");
+    }
+  }
+}
+
+window.heartmateLoadHistory=loadSavedHistory;
+
 const photoCounts={
  aria:4,zara:4,ivy:6,ruby:10,nina:4,lila:5,amber:8,violet:10,
  jade:15,scarlett:5,stella:8,kira:10,diana:8,freya:10,
@@ -424,13 +530,15 @@ async function sendChat(message){
   return;
  }
 
+ // Wait until Firebase has checked the account and saved history has loaded.
  await window.heartmateAuthReady;
+ await historyLoadPromise;
 
  let token;
 
- try {
-  token = await window.heartmateAuth.getToken();
- } catch(error) {
+ try{
+  token=await window.heartmateAuth.getToken();
+ }catch(error){
   addMessage("Please sign in with Google before starting a conversation. 💗","bot");
   return;
  }
@@ -657,21 +765,24 @@ logout.addEventListener("click", async () => {
 onAuthStateChanged(auth, user => {
   window.heartmateAuth.user = user;
 
-  // Resolve the initial authentication check only once.
-  if (resolveAuthReady) {
-    resolveAuthReady(user);
-    resolveAuthReady = null;
+  if(user){
+    login.hidden=true;
+    logout.hidden=false;
+    accountStatus.textContent=
+      user.displayName||user.email||"Signed in";
+  }else{
+    login.hidden=false;
+    logout.hidden=true;
+    accountStatus.textContent="Not signed in";
   }
 
-  if (user) {
-    login.hidden = true;
-    logout.hidden = false;
-    accountStatus.textContent =
-      user.displayName || user.email || "Signed in";
-  } else {
-    login.hidden = false;
-    logout.hidden = true;
-    accountStatus.textContent = "Not signed in";
+  // Start loading this account's saved messages.
+  historyLoadPromise=window.heartmateLoadHistory(user);
+
+  // Release the initial authentication wait only once.
+  if(resolveAuthReady){
+    resolveAuthReady(user);
+    resolveAuthReady=null;
   }
 });
 </script>
