@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#100b1d">
+  <meta name="description" content="Meet your fictional AI companions at Heartmate AI.">
   <title>Heartmate AI | Your AI Companion</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,9 +30,7 @@
       padding: 0;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
       min-height: 100vh;
@@ -48,10 +47,7 @@
       text-decoration: none;
     }
 
-    button {
-      font: inherit;
-      cursor: pointer;
-    }
+    button { font: inherit; cursor: pointer; }
 
     .container {
       width: min(1120px, 92%);
@@ -64,7 +60,7 @@
       position: sticky;
       top: 0;
       z-index: 20;
-      background: rgba(16,11,29,0.88);
+      background: rgba(16,11,29,0.92);
       backdrop-filter: blur(18px);
       border-bottom: 1px solid var(--border);
     }
@@ -83,9 +79,7 @@
       letter-spacing: -0.8px;
     }
 
-    .logo span {
-      color: var(--pink);
-    }
+    .logo span { color: var(--pink); }
 
     .nav-links {
       display: flex;
@@ -95,18 +89,29 @@
       font-size: 14px;
     }
 
-    .nav-links a:hover {
-      color: white;
-    }
+    .nav-links a:hover { color: white; }
 
-    .nav-button {
+    .nav-button,
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border: 0;
       border-radius: 30px;
-      padding: 11px 19px;
       color: white;
-      font-weight: 700;
+      font-weight: 800;
       background: linear-gradient(100deg, #ed5da9, #9b72ef);
     }
+
+    .nav-button { padding: 11px 19px; }
+
+    .primary-button {
+      padding: 14px 24px;
+      box-shadow: 0 8px 30px rgba(224,83,165,0.25);
+      transition: transform 0.2s;
+    }
+
+    .primary-button:hover { transform: translateY(-2px); }
 
     /* HERO */
 
@@ -118,7 +123,7 @@
       border-radius: 28px;
       border: 1px solid var(--border);
       background:
-        linear-gradient(90deg, rgba(16,11,29,0.98) 0%, rgba(16,11,29,0.85) 45%, rgba(16,11,29,0.05) 100%),
+        linear-gradient(90deg, rgba(16,11,29,0.98) 0%, rgba(16,11,29,0.82) 45%, rgba(16,11,29,0.08) 100%),
         url('/images/aria-1.jpeg') center 35% / cover no-repeat;
       display: flex;
       align-items: center;
@@ -152,9 +157,7 @@
       margin-bottom: 18px;
     }
 
-    .hero h1 span {
-      color: var(--pink);
-    }
+    .hero h1 span { color: var(--pink); }
 
     .hero p {
       color: #e0d5e9;
@@ -164,29 +167,9 @@
       margin-bottom: 28px;
     }
 
-    .primary-button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 0;
-      border-radius: 30px;
-      padding: 14px 24px;
-      color: white;
-      font-weight: 800;
-      background: linear-gradient(100deg, #f05da9, #986cf0);
-      box-shadow: 0 8px 30px rgba(224,83,165,0.25);
-      transition: transform 0.2s;
-    }
+    /* SECTIONS */
 
-    .primary-button:hover {
-      transform: translateY(-2px);
-    }
-
-    /* SECTION HEADINGS */
-
-    .section {
-      padding-top: 58px;
-    }
+    .section { padding-top: 58px; }
 
     .section-heading {
       display: flex;
@@ -196,7 +179,8 @@
       margin-bottom: 22px;
     }
 
-    .section-heading h2 {
+    .section-heading h2,
+    .closing h2 {
       font-family: 'Playfair Display', serif;
       font-size: 30px;
     }
@@ -213,7 +197,7 @@
       font-weight: 700;
     }
 
-    /* FEATURE CARDS */
+    /* FEATURED ARIA */
 
     .featured-card {
       display: grid;
@@ -257,11 +241,11 @@
       margin-bottom: 23px;
     }
 
-    /* COMPANION CARDS */
+    /* ALL COMPANION CARDS */
 
     .companions {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 17px;
     }
 
@@ -278,34 +262,26 @@
       border-color: rgba(255,112,183,0.5);
     }
 
-    .avatar {
-      height: 150px;
-      display: grid;
-      place-items: center;
-      font-family: 'Playfair Display', serif;
-      font-size: 48px;
+    .avatar-photo {
+      width: 100%;
+      height: 190px;
+      display: block;
+      object-fit: cover;
+      object-position: center 30%;
       background: linear-gradient(135deg, #56315d, #272047);
     }
 
-    .avatar.luna {
-      background: linear-gradient(135deg, #293c68, #593c78);
+    .avatar-fallback {
+      height: 190px;
+      display: grid;
+      place-items: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 58px;
+      background: linear-gradient(135deg, #56315d, #272047);
+      color: #ffc0df;
     }
 
-    .avatar.sofia {
-      background: linear-gradient(135deg, #713f52, #3d284f);
-    }
-
-    .avatar.maya {
-      background: linear-gradient(135deg, #77502f, #422d4d);
-    }
-
-    .avatar.ella {
-      background: linear-gradient(135deg, #375c60, #292b54);
-    }
-
-    .companion-info {
-      padding: 16px;
-    }
+    .companion-info { padding: 16px; }
 
     .companion-info h3 {
       font-size: 16px;
@@ -331,7 +307,11 @@
       font-weight: 700;
     }
 
-    /* BOTTOM CALL TO ACTION */
+    .chat-link:hover {
+      background: rgba(255,112,183,0.2);
+    }
+
+    /* CLOSING */
 
     .closing {
       margin-top: 60px;
@@ -342,11 +322,7 @@
       border: 1px solid var(--border);
     }
 
-    .closing h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 30px;
-      margin-bottom: 12px;
-    }
+    .closing h2 { margin-bottom: 12px; }
 
     .closing p {
       color: var(--muted);
@@ -359,22 +335,16 @@
       color: #8f829f;
       font-size: 12px;
       padding: 35px 10px 10px;
+      line-height: 1.8;
     }
 
-    /* MOBILE NAVIGATION */
+    .bottom-nav { display: none; }
 
-    .bottom-nav {
-      display: none;
-    }
+    /* MOBILE */
 
     @media (max-width: 760px) {
-      .nav-links {
-        display: none;
-      }
-
-      .navbar {
-        min-height: 64px;
-      }
+      .nav-links { display: none; }
+      .navbar { min-height: 64px; }
 
       .hero {
         min-height: 510px;
@@ -385,46 +355,25 @@
           url('/images/aria-1.jpeg') center 25% / cover no-repeat;
       }
 
-      .hero-content {
-        padding-bottom: 12px;
-      }
+      .hero-content { padding-bottom: 12px; }
+      .hero h1 { font-size: 43px; }
+      .hero p { font-size: 14px; }
 
-      .hero h1 {
-        font-size: 43px;
-      }
+      .section { padding-top: 42px; }
 
-      .hero p {
-        font-size: 14px;
-      }
-
-      .section {
-        padding-top: 42px;
-      }
-
-      .featured-card {
-        grid-template-columns: 1fr;
-      }
-
-      .featured-image {
-        min-height: 280px;
-      }
-
-      .featured-info {
-        padding: 25px;
-      }
+      .featured-card { grid-template-columns: 1fr; }
+      .featured-image { min-height: 280px; }
+      .featured-info { padding: 25px; }
 
       .companions {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 12px;
       }
 
-      .avatar {
-        height: 125px;
-      }
+      .avatar-photo,
+      .avatar-fallback { height: 155px; }
 
-      .section-heading h2 {
-        font-size: 25px;
-      }
+      .section-heading h2 { font-size: 25px; }
 
       .bottom-nav {
         display: flex;
@@ -454,17 +403,11 @@
     }
 
     @media (max-width: 380px) {
-      .hero h1 {
-        font-size: 37px;
-      }
-
-      .companions {
-        gap: 9px;
-      }
-
-      .companion-info {
-        padding: 12px;
-      }
+      .hero h1 { font-size: 37px; }
+      .companions { gap: 9px; }
+      .companion-info { padding: 12px; }
+      .avatar-photo,
+      .avatar-fallback { height: 135px; }
     }
   </style>
 </head>
@@ -487,6 +430,8 @@
 
   <main class="container">
 
+    <!-- HERO -->
+
     <section class="hero">
       <div class="hero-content">
         <div class="eyebrow">Your world, your companion</div>
@@ -503,6 +448,8 @@
         </a>
       </div>
     </section>
+
+    <!-- FEATURED ARIA -->
 
     <section class="section" id="featured">
       <div class="section-heading">
@@ -524,66 +471,32 @@
             Start chatting and discover her personality.
           </p>
 
-          <a href="aria.html" class="primary-button">
+          <a href="chat.html?girl=Aria" class="primary-button">
             Explore Aria →
           </a>
         </div>
       </div>
     </section>
 
+    <!-- ALL 24 COMPANIONS -->
+
     <section class="section" id="companions">
       <div class="section-heading">
         <div>
           <h2>Discover Companions</h2>
-          <p>Find a personality you'll love talking to.</p>
+          <p>Meet all 24 of your AI companions.</p>
         </div>
         <a href="#companions">Explore all</a>
       </div>
 
-      <div class="companions">
-
-        <article class="companion-card">
-          <div class="avatar luna">L</div>
-          <div class="companion-info">
-            <h3>Luna</h3>
-            <p>Creative, playful and full of surprises.</p>
-            <a class="chat-link" href="chat.html?girl=Luna">Start Chat →</a>
-          </div>
-        </article>
-
-        <article class="companion-card">
-          <div class="avatar sofia">S</div>
-          <div class="companion-info">
-            <h3>Sofia</h3>
-            <p>Kind-hearted, thoughtful and friendly.</p>
-            <a class="chat-link" href="chat.html?girl=Sofia">Start Chat →</a>
-          </div>
-        </article>
-
-        <article class="companion-card">
-          <div class="avatar maya">M</div>
-          <div class="companion-info">
-            <h3>Maya</h3>
-            <p>Confident, adventurous and fun-loving.</p>
-            <a class="chat-link" href="chat.html?girl=Maya">Start Chat →</a>
-          </div>
-        </article>
-
-        <article class="companion-card">
-          <div class="avatar ella">E</div>
-          <div class="companion-info">
-            <h3>Ella</h3>
-            <p>Gentle, curious and easy to talk to.</p>
-            <a class="chat-link" href="chat.html?girl=Ella">Start Chat →</a>
-          </div>
-        </article>
-
-      </div>
+      <div class="companions" id="companionsGrid"></div>
     </section>
+
+    <!-- CLOSING -->
 
     <section class="closing">
       <h2>Your next conversation starts here.</h2>
-      <p>Choose a companion and start getting to know them.</p>
+      <p>Choose a companion and start getting to know her.</p>
       <a href="chat.html?girl=Aria" class="primary-button">
         Start Your Journey →
       </a>
@@ -593,15 +506,97 @@
 
   <footer>
     <p>© 2026 Heartmate AI. All rights reserved.</p>
-    <p style="margin-top:8px;">AI-generated fictional adult characters.</p>
+    <p>AI-generated fictional adult characters.</p>
   </footer>
 
   <nav class="bottom-nav">
     <a href="/"><span>⌂</span>Home</a>
     <a href="#companions"><span>♡</span>Discover</a>
-    <a href="aria.html"><span>✧</span>Aria</a>
+    <a href="#featured"><span>✧</span>Featured</a>
     <a href="chat.html?girl=Aria"><span>▢</span>Chat</a>
   </nav>
+
+  <script>
+    const companions = [
+      ["Aria","Warm, charming and affectionate."],
+      ["Maya","Confident, adventurous and fun-loving."],
+      ["Luna","Creative, playful and full of surprises."],
+      ["Sofia","Kind-hearted, thoughtful and friendly."],
+      ["Ella","Gentle, curious and easy to talk to."],
+      ["Nova","Energetic, bold and imaginative."],
+      ["Zara","Stylish, confident and outgoing."],
+      ["Ivy","Sweet, intelligent and thoughtful."],
+      ["Ruby","Playful, passionate and lively."],
+      ["Chloe","Cheerful, caring and spontaneous."],
+      ["Nina","Charming, calm and understanding."],
+      ["Lila","Dreamy, artistic and romantic."],
+      ["Amber","Adventurous, bright and friendly."],
+      ["Violet","Elegant, mysterious and creative."],
+      ["Scarlett","Confident, glamorous and witty."],
+      ["Jade","Independent, playful and adventurous."],
+      ["Rose","Gentle, romantic and caring."],
+      ["Stella","Bright, curious and optimistic."],
+      ["Kira","Bold, funny and spontaneous."],
+      ["Diana","Graceful, intelligent and warm."],
+      ["Freya","Independent, adventurous and charming."],
+      ["Sienna","Creative, relaxed and affectionate."],
+      ["Valentina","Passionate, elegant and confident."],
+      ["Aurora","Dreamy, cheerful and imaginative."]
+    ];
+
+    const grid = document.getElementById("companionsGrid");
+
+    companions.forEach(([name, description]) => {
+      const slug = name.toLowerCase();
+
+      const card = document.createElement("article");
+      card.className = "companion-card";
+
+      const image = document.createElement("img");
+      image.className = "avatar-photo";
+      image.alt = `${name} portrait`;
+      image.loading = "lazy";
+
+      // Aria's photos are in the main images folder.
+      // All other companions have their own image folder.
+      image.src = slug === "aria"
+        ? `/images/aria-1.jpeg`
+        : `/images/${slug}/${slug}-1.jpeg`;
+
+      image.onerror = function() {
+        this.style.display = "none";
+
+        const fallback = document.createElement("div");
+        fallback.className = "avatar-fallback";
+        fallback.textContent = name.charAt(0);
+
+        card.insertBefore(fallback, info);
+      };
+
+      const info = document.createElement("div");
+      info.className = "companion-info";
+
+      const heading = document.createElement("h3");
+      heading.textContent = name;
+
+      const paragraph = document.createElement("p");
+      paragraph.textContent = description;
+
+      const link = document.createElement("a");
+      link.className = "chat-link";
+      link.href = `chat.html?girl=${encodeURIComponent(name)}`;
+      link.textContent = "Start Chat →";
+
+      info.appendChild(heading);
+      info.appendChild(paragraph);
+      info.appendChild(link);
+
+      card.appendChild(image);
+      card.appendChild(info);
+
+      grid.appendChild(card);
+    });
+  </script>
 
 </body>
 </html>
