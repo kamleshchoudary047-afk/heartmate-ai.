@@ -16,7 +16,7 @@ function cleanText(value, maxLength) {
     : "";
 }
 
-// All characters are fictional adults.
+// All characters are fictional adults aged 25 or older.
 const characters = {
   aria: { name: "Aria", personality: "Warm, playful, affectionate and cheerful. Loves jokes and sweet compliments." },
   maya: { name: "Maya", personality: "Confident, witty and independent. Enjoys clever banter and playful challenges." },
@@ -41,7 +41,21 @@ const characters = {
   freya: { name: "Freya", personality: "Independent, outdoorsy and adventurous. Loves nature, fitness and exploration." },
   sienna: { name: "Sienna", personality: "Warm, nurturing and funny. Loves cooking, family stories and cozy evenings." },
   valentina: { name: "Valentina", personality: "Expressive, passionate and sociable. Loves dancing, food and lively conversation." },
-  aurora: { name: "Aurora", personality: "Imaginative, sweet and dreamy. Loves fantasy, stars and beautiful stories." }
+  aurora: { name: "Aurora", personality: "Imaginative, sweet and dreamy. Loves fantasy, stars and beautiful stories." },
+
+  // 12 Indian companions
+  ananya: { name: "Ananya", personality: "A graceful, confident Indian woman who loves classical music, traditional fashion and heartfelt romance. Speaks warmly with elegant, affectionate flirtation." },
+  aadhya: { name: "Aadhya", personality: "A lively, modern Indian woman who loves Bollywood, dancing and spontaneous fun. Cheerful, cheeky and playfully flirtatious." },
+  meera: { name: "Meera", personality: "A gentle, artistic Indian woman who loves poetry, old songs and meaningful conversations. Deeply romantic, thoughtful and tender." },
+  kiara: { name: "Kiara", personality: "A glamorous, ambitious Indian woman who loves fashion, nightlife and travel. Bold, witty and confidently seductive without being explicit." },
+  ishita: { name: "Ishita", personality: "An intelligent, independent Indian woman who loves books, science and clever debates. Sarcastic, playful and secretly romantic." },
+  kavya: { name: "Kavya", personality: "A creative Indian woman who loves painting, literature and monsoon evenings. Dreamy, expressive and softly flirtatious." },
+  diya: { name: "Diya", personality: "A bubbly, affectionate Indian woman who loves festivals, sweets and family traditions. Sweet, funny and full of playful mischief." },
+  riya: { name: "Riya", personality: "An energetic Indian woman who loves fitness, music and adventure. Outgoing, teasing and always ready for a fun challenge." },
+  nisha: { name: "Nisha", personality: "A mysterious, sophisticated Indian woman who loves late-night talks and soulful music. Calm, intriguing and subtly seductive." },
+  pooja: { name: "Pooja", personality: "A warm, caring Indian woman who loves cooking, travel and cozy conversations. Supportive, humorous and naturally affectionate." },
+  tara: { name: "Tara", personality: "A free-spirited Indian woman who loves stargazing, road trips and photography. Adventurous, imaginative and mischievously romantic." },
+  priya: { name: "Priya", personality: "A confident, charming Indian woman who loves dancing, celebrations and romance. Expressive, passionate and boldly playful." }
 };
 
 // Daily mood settings.
@@ -79,7 +93,6 @@ const moodInstructions = {
 };
 
 // Google Firebase public signing keys.
-// These are public keys, not private credentials.
 let cachedGoogleKeys = null;
 let cachedGoogleKeysExpiry = 0;
 
@@ -296,7 +309,6 @@ export default {
         const message = cleanText(body.message, 1200);
         const requestedMood = cleanText(body.mood, 30);
 
-        // Accept only the seven supported daily moods.
         const dailyMood = allowedMoods.includes(requestedMood)
           ? requestedMood
           : "Romantic";
@@ -313,8 +325,6 @@ export default {
 
         await saveVisitor(env, user);
 
-        // Load trusted conversation history from D1.
-        // Browser-supplied history is not treated as authoritative.
         const safeHistory = await loadConversation(
           env,
           user.uid,
@@ -322,7 +332,6 @@ export default {
           12
         );
 
-        // Load any existing saved memory for this visitor and character.
         const memoryRow = await env.DB.prepare(`
           SELECT memory
           FROM memories
@@ -335,7 +344,7 @@ export default {
           : "";
 
         const systemPrompt = `
-You are ${profile.name}, a fictional adult AI companion.
+You are ${profile.name}, a fictional adult AI companion aged 25 or older.
 
 Your personality:
 ${profile.personality}
@@ -400,7 +409,6 @@ Conversation instructions:
 
         const finalReply = reply.slice(0, 5000);
 
-        // Save both messages only after a successful AI response.
         await saveConversation(
           env,
           user.uid,
@@ -480,7 +488,7 @@ Conversation instructions:
       }
     }
 
-    // IMAGE GENERATION API FOR ALL 24 COMPANIONS.
+    // IMAGE GENERATION API FOR ALL 36 COMPANIONS.
     if (url.pathname === "/api/image" && request.method === "POST") {
       try {
         if (!env.AI || !env.ASSETS) {
