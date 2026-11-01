@@ -19,6 +19,7 @@ header{min-height:78px;padding:12px 17px;display:flex;align-items:center;gap:13p
 .back{width:38px;height:38px;border:1px solid var(--line);border-radius:14px;display:grid;place-items:center;color:white;text-decoration:none;font-size:25px;background:rgba(255,255,255,.04);flex-shrink:0}
 .avatar{width:48px;height:48px;border-radius:17px;display:grid;place-items:center;font-size:24px;background:linear-gradient(145deg,#ff8abb,#9a70f3);box-shadow:0 6px 22px rgba(218,79,157,.28);flex-shrink:0}
 .profile{min-width:0}.profile h3{margin:0 0 4px;font-size:16px;letter-spacing:.2px}.profile small{color:#a8e6c0;font-size:12px}.profile small:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#68e5a0;margin-right:6px;box-shadow:0 0 9px #68e5a0}
+#dailyMood{display:block;color:#ffb6d7;font-size:11px;margin-top:3px}
 .gallery-btn{border:1px solid rgba(255,255,255,.15);border-radius:13px;padding:9px 11px;background:rgba(255,255,255,.07);color:white;font-size:12px;white-space:nowrap;cursor:pointer;flex-shrink:0}
 
 .account-controls{margin-left:auto;display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;min-width:0}
@@ -96,6 +97,7 @@ button:disabled{opacity:.48;cursor:wait}
   <div class="profile">
     <h3 id="girlName">Your Heartmate</h3>
     <small>Here with you</small>
+    <span id="dailyMood"></span>
   </div>
 
   <button class="gallery-btn" type="button" onclick="openGallery()">📸 Photos</button>
@@ -199,7 +201,35 @@ const requestedCharacter=(params.get("girl")||"aria").toLowerCase();
 const character=names[requestedCharacter]?requestedCharacter:"aria";
 const girlName=names[character];
 
+/* DAILY MOOD — MATCHES THE HOMEPAGE ROTATION */
+const moods=[
+ {name:"Romantic",emoji:"💕"},
+ {name:"Playful",emoji:"😉"},
+ {name:"Mysterious",emoji:"🌙"},
+ {name:"Spicy",emoji:"🔥"},
+ {name:"Affectionate",emoji:"🥰"},
+ {name:"Mischievous",emoji:"😈"},
+ {name:"Adventurous",emoji:"✨"}
+];
+
+const companionOrder=Object.keys(names);
+const companionIndex=companionOrder.indexOf(character);
+
+const now=new Date();
+const localMidnight=new Date(
+ now.getFullYear(),
+ now.getMonth(),
+ now.getDate()
+);
+const dayNumber=Math.floor(localMidnight.getTime()/86400000);
+
+const dailyMood=moods[
+ (dayNumber+companionIndex*3)%moods.length
+];
+
 document.getElementById("girlName").textContent=girlName;
+document.getElementById("dailyMood").textContent=
+ dailyMood.emoji+" Today's mood: "+dailyMood.name;
 document.getElementById("typing").textContent=girlName+" is typing… 💗";
 
 const messages=document.getElementById("messages");
@@ -252,7 +282,6 @@ async function loadSavedHistory(user){
 
   if(historyLoadedForUid===user.uid)return;
 
-  // Clear the previous account's conversation before loading another account.
   historyLoadedForUid=user.uid;
   resetChatDisplay();
   accountStatusForHistory("Loading saved chats…");
@@ -278,7 +307,6 @@ async function loadSavedHistory(user){
 
     const data=await response.json();
 
-    // Ignore a response if the signed-in account changed while loading.
     if(!window.heartmateAuth.user||
        window.heartmateAuth.user.uid!==user.uid){
       return;
@@ -530,7 +558,6 @@ async function sendChat(message){
   return;
  }
 
- // Wait until Firebase has checked the account and saved history has loaded.
  await window.heartmateAuthReady;
  await historyLoadPromise;
 
@@ -557,7 +584,12 @@ async function sendChat(message){
      "Content-Type":"application/json",
      "Authorization":"Bearer "+token
    },
-   body:JSON.stringify({character,message,history})
+   body:JSON.stringify({
+     character,
+     message,
+     history,
+     mood:dailyMood.name
+   })
   });
 
   const data=await response.json();
@@ -776,10 +808,8 @@ onAuthStateChanged(auth, user => {
     accountStatus.textContent="Not signed in";
   }
 
-  // Start loading this account's saved messages.
   historyLoadPromise=window.heartmateLoadHistory(user);
 
-  // Release the initial authentication wait only once.
   if(resolveAuthReady){
     resolveAuthReady(user);
     resolveAuthReady=null;
