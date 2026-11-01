@@ -6,11 +6,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#100b1b">
 <title>Heartmate AI — Chat</title>
+
 <style>
 :root {
   --bg:#100b1b;
   --panel:#1d152b;
-  --panel2:#291d39;
   --pink:#ff83bd;
   --lav:#b69aff;
   --text:#fff8ff;
@@ -36,7 +36,7 @@ header {
   gap:12px;
   padding:14px;
   padding-top:max(14px,env(safe-area-inset-top));
-  background:#160f23eF;
+  background:#160f23ed;
   border-bottom:1px solid #ffffff18;
   backdrop-filter:blur(18px);
 }
@@ -122,7 +122,7 @@ button {
   max-width:88%;
   padding:9px;
   border-radius:17px;
-  background:var(--panel2);
+  background:#291d39;
 }
 .media img,.media video {
   display:block;
@@ -197,6 +197,7 @@ button {
   font-size:13px;
   font-weight:700;
 }
+button:disabled{opacity:.5;cursor:wait}
 #status {
   max-width:760px;
   margin:0 auto 8px;
@@ -232,7 +233,7 @@ button {
   border-radius:14px;
   background:#171020;
   color:white;
-  font:14px inherit;
+  font:14px Arial,sans-serif;
 }
 .modal-actions{display:flex;gap:9px;margin-top:13px}
 .modal-actions button {
@@ -260,6 +261,7 @@ button {
 }
 </style>
 </head>
+
 <body>
 
 <header>
@@ -289,12 +291,12 @@ button {
     <button onclick="openMedia('image')">📸 Create image</button>
     <button onclick="openMedia('video')">🎬 Create video</button>
     <button onclick="toggleVoice()">🔊 Voice replies</button>
-    <button onclick="recordVoice()">🎙️ Voice input</button>
+    <button onclick="toggleRecording()">🎙️ Voice input</button>
   </div>
   <div id="status"></div>
   <div class="composer">
     <input id="messageInput" placeholder="Write something sweet…" autocomplete="off">
-    <button class="action" onclick="recordVoice()" aria-label="Voice input">🎙️</button>
+    <button class="action" onclick="toggleRecording()" aria-label="Voice input">🎙️</button>
     <button class="action" id="sendButton">➤</button>
   </div>
 </footer>
@@ -322,21 +324,24 @@ const requested = (params.get("girl") || "aria").toLowerCase();
 const character = names[requested] ? requested : "aria";
 const girlName = names[character];
 
-document.getElementById("girlName").textContent = girlName;
-
 const $ = id => document.getElementById(id);
+$("girlName").textContent = girlName;
+$("typing").textContent = girlName + " is typing… 💗";
+
 const messages = $("messages");
 const input = $("messageInput");
 const sendButton = $("sendButton");
 const typing = $("typing");
 const status = $("status");
 
-let user = null;
 let busy = false;
 let voiceReplies = true;
 let mediaType = "image";
 let chatHistory = [];
 let recorder = null;
+let recordingStream = null;
+let recordingChunks = [];
+let userReady = Promise.resolve();
 
 function addMessage(text, sender) {
   const div = document.createElement("div");
@@ -370,8 +375,11 @@ function addVideo(url) {
 }
 
 async function authToken() {
-  if (!user) throw new Error("Please sign in with Google first.");
-  return user.getIdToken();
+  await userReady;
+  if (!window.heartmateUser) {
+    throw new Error("Please sign in with Google first.");
+  }
+  return window.heartmateUser.getIdToken();
 }
 
 async function api(path, options = {}) {
@@ -380,20 +388,27 @@ async function api(path, options = {}) {
     ...(options.headers || {}),
     Authorization: "Bearer " + token
   };
+
   if (options.body && !headers["Content-Type"]) {
     headers["Content-Type"] = "application/json";
   }
+
   const response = await fetch(path, {...options, headers});
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || "Request failed.");
+
+  if (!response.ok) {
+    throw new Error(data.error || "Request failed.");
+  }
   return data;
 }
+
+/* CHAT */
 
 async function sendChat() {
   const message = input.value.trim();
   if (!message || busy) return;
 
-  if (!user) {
+  if (!window.heartmateUser) {
     addMessage("Please sign in with Google before chatting. 💗", "bot");
     return;
   }
@@ -419,6 +434,7 @@ async function sendChat() {
 
     addMessage(data.reply, "bot");
     chatHistory.push({role:"assistant", content:data.reply});
+
     if (voiceReplies) speak(data.reply);
   } catch (error) {
     addMessage("Sorry, I couldn't connect. " + error.message, "bot");
@@ -431,12 +447,15 @@ async function sendChat() {
 }
 
 sendButton.addEventListener("click", sendChat);
+
 input.addEventListener("keydown", event => {
   if (event.key === "Enter") {
     event.preventDefault();
     sendChat();
   }
 });
+
+/* IMAGE AND VIDEO */
 
 function openMedia(type) {
   mediaType = type;
@@ -457,6 +476,7 @@ $("createMediaButton").addEventListener("click", async () => {
   if (!scene || busy) return;
 
   closeMedia();
+
   if (mediaType === "video") {
     if (!confirm("Video generation may use paid credits. Continue?")) return;
     await generateVideo(scene);
@@ -480,14 +500,17 @@ async function generateImage(scene) {
       },
       body:JSON.stringify({character, scene})
     });
+
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
       throw new Error(data.error || "Image creation failed.");
     }
+
     const blob = await response.blob();
     if (!blob.type.startsWith("image/")) {
       throw new Error("The server did not return an image.");
     }
+
     addImage(URL.createObjectURL(blob));
   } catch (error) {
     addMessage("Image creation failed: " + error.message, "bot");
@@ -512,7 +535,9 @@ async function generateVideo(scene) {
       },
       body:JSON.stringify({character, scene})
     });
-    const data = await response.json();
+
+    const data = await response.json().catch(() => ({}));
+
     if (!response.ok || !data.taskId) {
       throw new Error(data.error || "Video generation could not start.");
     }
@@ -521,20 +546,24 @@ async function generateVideo(scene) {
 
     for (let i = 0; i < 60; i++) {
       await new Promise(resolve => setTimeout(resolve, 5000));
+
       const result = await fetch(
         "/api/video/status?taskId=" + encodeURIComponent(data.taskId),
         {headers:{Authorization:"Bearer " + token}}
       );
-      const progress = await result.json();
+
+      const progress = await result.json().catch(() => ({}));
 
       if (progress.status === "succeeded" && progress.videoUrl) {
         addVideo(progress.videoUrl);
         return;
       }
+
       if (progress.status === "failed") {
         throw new Error(progress.message || "Video generation failed.");
       }
     }
+
     addMessage("The video is taking longer than expected.", "bot");
   } catch (error) {
     addMessage("Video creation failed: " + error.message, "bot");
@@ -544,39 +573,82 @@ async function generateVideo(scene) {
   }
 }
 
+/* VOICE REPLIES */
+
 function toggleVoice() {
   voiceReplies = !voiceReplies;
-  addMessage("Voice replies " + (voiceReplies ? "enabled 🔊" : "disabled"), "bot");
+  addMessage(
+    "Voice replies " + (voiceReplies ? "enabled 🔊" : "disabled"),
+    "bot"
+  );
 }
 
 function speak(text) {
   if (!("speechSynthesis" in window)) return;
+
   window.speechSynthesis.cancel();
+
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.rate = 1;
   utterance.pitch = 1.05;
+
   window.speechSynthesis.speak(utterance);
 }
 
-async function recordVoice() {
+/* VOICE RECORDING */
+
+async function toggleRecording() {
+  if (recorder && recorder.state === "recording") {
+    recorder.stop();
+    status.textContent = "Processing your voice…";
+    return;
+  }
+
   if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
     addMessage("Voice recording isn't supported in this browser.", "bot");
     return;
   }
 
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-    recorder = new MediaRecorder(stream);
-    const chunks = [];
+    recordingStream = await navigator.mediaDevices.getUserMedia({audio:true});
+    recordingChunks = [];
+
+    const preferredTypes = [
+      "audio/mp4",
+      "audio/webm;codecs=opus",
+      "audio/webm"
+    ];
+
+    const mimeType = preferredTypes.find(type =>
+      MediaRecorder.isTypeSupported(type)
+    );
+
+    recorder = mimeType
+      ? new MediaRecorder(recordingStream, {mimeType})
+      : new MediaRecorder(recordingStream);
 
     recorder.ondataavailable = event => {
-      if (event.data.size) chunks.push(event.data);
+      if (event.data.size) recordingChunks.push(event.data);
     };
 
     recorder.onstop = async () => {
-      stream.getTracks().forEach(track => track.stop());
-      const blob = new Blob(chunks, {type:recorder.mimeType || "audio/webm"});
-      if (!blob.size) return;
+      recordingStream.getTracks().forEach(track => track.stop());
+      recordingStream = null;
+
+      const blob = new Blob(recordingChunks, {
+        type:recorder.mimeType || "audio/webm"
+      });
+
+      if (!blob.size) {
+        status.textContent = "";
+        return;
+      }
+
+      if (blob.size > 2 * 1024 * 1024) {
+        status.textContent = "";
+        addMessage("That recording is too large. Try a shorter message.", "bot");
+        return;
+      }
 
       try {
         const token = await authToken();
@@ -588,36 +660,55 @@ async function recordVoice() {
           },
           body:blob
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Transcription failed.");
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(data.error || "Transcription failed.");
+        }
+
         input.value = data.text || data.transcript || "";
+
+        if (!input.value) {
+          throw new Error("No speech was detected.");
+        }
+
         input.focus();
+        status.textContent = "Voice converted to text. Tap Send.";
       } catch (error) {
+        status.textContent = "";
         addMessage("Voice transcription failed: " + error.message, "bot");
       }
     };
 
     recorder.start();
     status.textContent = "Recording… tap the microphone again to finish.";
+
     setTimeout(() => {
-      if (recorder && recorder.state === "recording") recorder.stop();
-      status.textContent = "";
+      if (recorder && recorder.state === "recording") {
+        recorder.stop();
+      }
     }, 30000);
 
-    recorder.onstop = recorder.onstop;
-    $("messageInput").placeholder = "Recording…";
-    $("messageInput").onfocus = () => {
-      if (recorder && recorder.state === "recording") recorder.stop();
-    };
   } catch (error) {
+    if (recordingStream) {
+      recordingStream.getTracks().forEach(track => track.stop());
+      recordingStream = null;
+    }
     addMessage("Please allow microphone access to record.", "bot");
   }
 }
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeMedia();
+});
+
 </script>
 
 <script type="module">
 import {initializeApp, getApps}
   from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
 import {
   getAuth,
   GoogleAuthProvider,
@@ -636,7 +727,10 @@ const firebaseConfig = {
   measurementId:"G-L0Z6XE8R8B"
 };
 
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const app = getApps().length
+  ? getApps()[0]
+  : initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
@@ -645,6 +739,7 @@ const logout = document.getElementById("signOut");
 
 login.addEventListener("click", async () => {
   login.disabled = true;
+
   try {
     await signInWithPopup(auth, provider);
   } catch (error) {
@@ -655,18 +750,32 @@ login.addEventListener("click", async () => {
 });
 
 logout.addEventListener("click", async () => {
+  logout.disabled = true;
+
   try {
     await signOut(auth);
   } catch (error) {
     alert("Sign-out failed: " + error.message);
+  } finally {
+    logout.disabled = false;
   }
 });
 
 onAuthStateChanged(auth, currentUser => {
-  window.user = currentUser;
+  window.heartmateUser = currentUser;
+
   login.hidden = !!currentUser;
   logout.hidden = !currentUser;
+
+  if (currentUser) {
+    document.querySelector(".profile small").textContent =
+      "● Signed in · Here with you";
+  } else {
+    document.querySelector(".profile small").textContent =
+      "● Here with you";
+  }
 });
 </script>
+
 </body>
 </html>
