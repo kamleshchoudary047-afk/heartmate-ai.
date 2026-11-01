@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -105,7 +104,6 @@ button:disabled{opacity:.48;cursor:wait}
 
 <main id="messages">
   <div class="welcome">A little space for good conversations, sweet moments and creativity ✨</div>
-  <div class="message bot">Hey there! 💕 I'm happy you're here. How is your day going?</div>
 </main>
 
 <div id="typing">Your Heartmate is typing… 💗</div>
@@ -234,6 +232,8 @@ let mediaChoice = "image";
 /* SAVED CONVERSATION RESTORATION */
 let historyLoadPromise = Promise.resolve();
 let historyLoadedForUid = "";
+let dailyWelcomeLoadForUid = "";
+let dailyWelcomePromise = null;
 
 function scrollToBottom() {
  messages.scrollTop = messages.scrollHeight;
@@ -244,9 +244,6 @@ function resetChatDisplay() {
  messages.innerHTML = `
   <div class="welcome">
    A little space for good conversations, sweet moments and creativity ✨
-  </div>
-  <div class="message bot">
-   Hey there! 💕 I'm happy you're here. How is your day going?
   </div>
  `;
  scrollToBottom();
@@ -260,6 +257,8 @@ function accountStatusForHistory(text) {
 async function loadSavedHistory(user) {
  if (!user) {
   historyLoadedForUid = "";
+  dailyWelcomeLoadForUid = "";
+  dailyWelcomePromise = null;
   resetChatDisplay();
   return;
  }
@@ -320,7 +319,7 @@ async function loadSavedHistory(user) {
 
 window.heartmateLoadHistory = loadSavedHistory;
 
-/* PHOTO COUNTS
+  /* PHOTO COUNTS
    New companions are set to one photo each.
    Increase these numbers when more photos are uploaded.
 */
@@ -444,6 +443,68 @@ function addVideo(url,description) {
  messages.appendChild(box);
  scrollToBottom();
 }
+
+/* DAILY PERSONALised WELCOME */
+async function loadDailyWelcome(user) {
+ if (!user) return;
+ if (dailyWelcomeLoadForUid === user.uid) return dailyWelcomePromise;
+
+ dailyWelcomeLoadForUid = user.uid;
+
+ dailyWelcomePromise = (async () => {
+  try {
+   if (!window.heartmateAuth.user ||
+       window.heartmateAuth.user.uid !== user.uid) return;
+
+   const currentDate = new Date();
+   const localDate = [
+    currentDate.getFullYear(),
+    String(currentDate.getMonth()+1).padStart(2,"0"),
+    String(currentDate.getDate()).padStart(2,"0")
+   ].join("-");
+
+   const token = await user.getIdToken();
+
+   const response = await fetch("/api/daily-welcome",{
+    method:"POST",
+    headers:{
+     "Content-Type":"application/json",
+     "Authorization":"Bearer " + token
+    },
+    body:JSON.stringify({
+     character,
+     date:localDate,
+     mood:dailyMood.name
+    })
+   });
+
+   const data = await response.json();
+
+   if (!response.ok) {
+    throw new Error(data.error || "Daily welcome could not be loaded.");
+   }
+
+   if (!window.heartmateAuth.user ||
+       window.heartmateAuth.user.uid !== user.uid) return;
+
+   if (data.welcome && !data.alreadyShown) {
+    addMessage(data.welcome,"bot");
+    chatHistory.push({
+     role:"assistant",
+     content:data.welcome
+    });
+   }
+
+  } catch (error) {
+   console.error("Daily welcome error:",error);
+   accountStatusForHistory("Signed in · welcome unavailable");
+  }
+ })();
+
+ return dailyWelcomePromise;
+}
+
+window.heartmateLoadDailyWelcome = loadDailyWelcome;
 
 function detectMediaRequest(message) {
  const text = message.toLowerCase();
@@ -764,6 +825,15 @@ onAuthStateChanged(auth,user => {
  }
 
  historyLoadPromise = window.heartmateLoadHistory(user);
+
+ if (user) {
+  historyLoadPromise = historyLoadPromise.then(() => {
+   if (window.heartmateAuth.user &&
+       window.heartmateAuth.user.uid === user.uid) {
+    return window.heartmateLoadDailyWelcome(user);
+   }
+  });
+ }
 
  if (resolveAuthReady) {
   resolveAuthReady(user);
