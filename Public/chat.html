@@ -21,13 +21,11 @@ header{min-height:78px;padding:12px 17px;display:flex;align-items:center;gap:13p
 .profile{min-width:0}.profile h3{margin:0 0 4px;font-size:16px;letter-spacing:.2px}.profile small{color:#a8e6c0;font-size:12px}.profile small:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#68e5a0;margin-right:6px;box-shadow:0 0 9px #68e5a0}
 #dailyMood{display:block;color:#ffb6d7;font-size:11px;margin-top:3px}
 .gallery-btn{border:1px solid rgba(255,255,255,.15);border-radius:13px;padding:9px 11px;background:rgba(255,255,255,.07);color:white;font-size:12px;white-space:nowrap;cursor:pointer;flex-shrink:0}
-
 .account-controls{margin-left:auto;display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap;min-width:0}
 .account-controls button{border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:8px 10px;background:linear-gradient(135deg,#e967aa,#9863d7);color:white;font-size:11px;font-weight:700;cursor:pointer}
 .account-controls button:disabled{opacity:.5;cursor:wait}
 .account-controls button[hidden]{display:none}
 #chatAccountStatus{color:var(--muted);font-size:10px;max-width:125px;overflow-wrap:anywhere;text-align:right}
-
 #messages{height:calc(100dvh - 174px);min-height:300px;overflow-y:auto;padding:22px 16px 26px;display:flex;flex-direction:column;gap:13px;scroll-behavior:smooth}
 .welcome{align-self:center;text-align:center;max-width:300px;margin:5px auto 12px;color:var(--muted);font-size:12px;line-height:1.5}
 .message{max-width:min(84%,440px);padding:12px 15px;border-radius:19px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;box-shadow:0 5px 18px rgba(0,0,0,.12)}
@@ -71,7 +69,6 @@ button:disabled{opacity:.48;cursor:wait}
 .photo-viewer.open{display:flex}
 .photo-viewer img{max-width:100%;max-height:85dvh;object-fit:contain;border-radius:10px}
 .viewer-close{position:absolute;top:18px;right:18px;width:44px;height:44px;border:0;border-radius:50%;background:#292139;color:white;font-size:25px}
-
 @media(min-width:700px){
  #messages{padding-left:max(22px,calc((100vw - 720px)/2));padding-right:max(22px,calc((100vw - 720px)/2))}
  .footer{padding-left:22px;padding-right:22px}
@@ -90,7 +87,6 @@ button:disabled{opacity:.48;cursor:wait}
 </head>
 
 <body>
-
 <header>
   <a class="back" href="index.html" aria-label="Back">‹</a>
   <div class="avatar">💗</div>
@@ -99,9 +95,7 @@ button:disabled{opacity:.48;cursor:wait}
     <small>Here with you</small>
     <span id="dailyMood"></span>
   </div>
-
   <button class="gallery-btn" type="button" onclick="openGallery()">📸 Photos</button>
-
   <div class="account-controls">
     <button id="chatSignIn" type="button">Google sign in</button>
     <button id="chatSignOut" type="button" hidden>Sign out</button>
@@ -119,7 +113,6 @@ button:disabled{opacity:.48;cursor:wait}
 <div class="footer">
   <div class="status" id="photoStatus">Creating your picture… Please wait.</div>
   <div class="status" id="videoStatus">Creating your video… This may take a few minutes.</div>
-
   <div class="composer">
     <div class="create-wrap">
       <button class="icon-button" id="createButton" type="button" aria-label="Create image or video">＋</button>
@@ -128,11 +121,9 @@ button:disabled{opacity:.48;cursor:wait}
         <button class="create-option" id="openVideo" type="button"><span>🎬</span>Create video</button>
       </div>
     </div>
-
     <input id="messageInput" type="text" placeholder="Write something sweet…" autocomplete="off">
     <button class="send-button" id="sendButton" type="submit" form="chatForm">Send</button>
   </div>
-
   <form id="chatForm" hidden></form>
 </div>
 
@@ -162,47 +153,45 @@ button:disabled{opacity:.48;cursor:wait}
   <img id="viewerImage" src="" alt="Full-size photo" onclick="event.stopPropagation()">
 </div>
 
-<!-- AUTHENTICATION STATE SHARED WITH FIREBASE MODULE -->
 <script>
-const history = [];
+const chatHistory = [];
 
 let resolveAuthReady;
-
 window.heartmateAuthReady = new Promise(resolve => {
   resolveAuthReady = resolve;
 });
 
 window.heartmateAuth = {
   user: null,
-
   async getToken() {
-    if (!this.user) {
-      throw new Error("Please sign in with Google to chat.");
-    }
-
+    if (!this.user) throw new Error("Please sign in with Google to chat.");
     return await this.user.getIdToken();
   }
 };
 </script>
 
-<!-- COMPANION CHAT, PHOTO AND VIDEO FEATURES -->
 <script>
-const params=new URLSearchParams(location.search);
-const names={
+const params = new URLSearchParams(location.search);
+
+/* ALL 36 COMPANIONS */
+const names = {
  aria:"Aria",maya:"Maya",luna:"Luna",sofia:"Sofia",ella:"Ella",
  nova:"Nova",zara:"Zara",ivy:"Ivy",ruby:"Ruby",chloe:"Chloe",
  nina:"Nina",lila:"Lila",amber:"Amber",violet:"Violet",
  scarlett:"Scarlett",jade:"Jade",rose:"Rose",stella:"Stella",
  kira:"Kira",diana:"Diana",freya:"Freya",sienna:"Sienna",
- valentina:"Valentina",aurora:"Aurora"
+ valentina:"Valentina",aurora:"Aurora",
+ ananya:"Ananya",aadhya:"Aadhya",meera:"Meera",kiara:"Kiara",
+ ishita:"Ishita",kavya:"Kavya",diya:"Diya",riya:"Riya",
+ nisha:"Nisha",pooja:"Pooja",tara:"Tara",priya:"Priya"
 };
 
-const requestedCharacter=(params.get("girl")||"aria").toLowerCase();
-const character=names[requestedCharacter]?requestedCharacter:"aria";
-const girlName=names[character];
+const requestedCharacter = (params.get("girl") || "aria").toLowerCase();
+const character = names[requestedCharacter] ? requestedCharacter : "aria";
+const girlName = names[character];
 
-/* DAILY MOOD — MATCHES THE HOMEPAGE ROTATION */
-const moods=[
+/* DAILY MOOD */
+const moods = [
  {name:"Romantic",emoji:"💕"},
  {name:"Playful",emoji:"😉"},
  {name:"Mysterious",emoji:"🌙"},
@@ -212,348 +201,322 @@ const moods=[
  {name:"Adventurous",emoji:"✨"}
 ];
 
-const companionOrder=Object.keys(names);
-const companionIndex=companionOrder.indexOf(character);
+const companionOrder = Object.keys(names);
+const companionIndex = companionOrder.indexOf(character);
 
-const now=new Date();
-const localMidnight=new Date(
- now.getFullYear(),
- now.getMonth(),
- now.getDate()
-);
-const dayNumber=Math.floor(localMidnight.getTime()/86400000);
+const now = new Date();
+const localMidnight = new Date(now.getFullYear(),now.getMonth(),now.getDate());
+const dayNumber = Math.floor(localMidnight.getTime()/86400000);
+const dailyMood = moods[(dayNumber + companionIndex * 3) % moods.length];
 
-const dailyMood=moods[
- (dayNumber+companionIndex*3)%moods.length
-];
+document.getElementById("girlName").textContent = girlName;
+document.getElementById("dailyMood").textContent =
+ dailyMood.emoji + " Today's mood: " + dailyMood.name;
+document.getElementById("typing").textContent = girlName + " is typing… 💗";
 
-document.getElementById("girlName").textContent=girlName;
-document.getElementById("dailyMood").textContent=
- dailyMood.emoji+" Today's mood: "+dailyMood.name;
-document.getElementById("typing").textContent=girlName+" is typing… 💗";
+const messages = document.getElementById("messages");
+const input = document.getElementById("messageInput");
+const sendButton = document.getElementById("sendButton");
+const typing = document.getElementById("typing");
+const photoStatus = document.getElementById("photoStatus");
+const videoStatus = document.getElementById("videoStatus");
+const createButton = document.getElementById("createButton");
+const createMenu = document.getElementById("createMenu");
+const modal = document.getElementById("mediaModal");
+const sceneInput = document.getElementById("sceneInput");
+const modalTitle = document.getElementById("modalTitle");
+const modalDescription = document.getElementById("modalDescription");
+const confirmMedia = document.getElementById("confirmMedia");
 
-const messages=document.getElementById("messages");
-const input=document.getElementById("messageInput");
-const sendButton=document.getElementById("sendButton");
-const typing=document.getElementById("typing");
-const photoStatus=document.getElementById("photoStatus");
-const videoStatus=document.getElementById("videoStatus");
-const createButton=document.getElementById("createButton");
-const createMenu=document.getElementById("createMenu");
-const modal=document.getElementById("mediaModal");
-const sceneInput=document.getElementById("sceneInput");
-const modalTitle=document.getElementById("modalTitle");
-const modalDescription=document.getElementById("modalDescription");
-const confirmMedia=document.getElementById("confirmMedia");
-
-let busy=false;
-let mediaChoice="image";
+let busy = false;
+let mediaChoice = "image";
 
 /* SAVED CONVERSATION RESTORATION */
-let historyLoadPromise=Promise.resolve();
-let historyLoadedForUid="";
+let historyLoadPromise = Promise.resolve();
+let historyLoadedForUid = "";
 
-function resetChatDisplay(){
-  history.length=0;
-
-  messages.innerHTML=`
-    <div class="welcome">
-      A little space for good conversations, sweet moments and creativity ✨
-    </div>
-    <div class="message bot">
-      Hey there! 💕 I'm happy you're here. How is your day going?
-    </div>
-  `;
-
-  scrollToBottom();
+function scrollToBottom() {
+ messages.scrollTop = messages.scrollHeight;
 }
 
-function accountStatusForHistory(text){
-  const status=document.getElementById("chatAccountStatus");
-  if(status)status.textContent=text;
+function resetChatDisplay() {
+ chatHistory.length = 0;
+ messages.innerHTML = `
+  <div class="welcome">
+   A little space for good conversations, sweet moments and creativity ✨
+  </div>
+  <div class="message bot">
+   Hey there! 💕 I'm happy you're here. How is your day going?
+  </div>
+ `;
+ scrollToBottom();
 }
 
-async function loadSavedHistory(user){
-  if(!user){
-    historyLoadedForUid="";
-    resetChatDisplay();
-    return;
-  }
+function accountStatusForHistory(text) {
+ const status = document.getElementById("chatAccountStatus");
+ if (status) status.textContent = text;
+}
 
-  if(historyLoadedForUid===user.uid)return;
-
-  historyLoadedForUid=user.uid;
+async function loadSavedHistory(user) {
+ if (!user) {
+  historyLoadedForUid = "";
   resetChatDisplay();
-  accountStatusForHistory("Loading saved chats…");
+  return;
+ }
 
-  try{
-    const token=await user.getIdToken();
+ if (historyLoadedForUid === user.uid) return;
 
-    const response=await fetch(
-      "/api/history?character="+encodeURIComponent(character),
-      {
-        method:"GET",
-        headers:{
-          "Authorization":"Bearer "+token
-        },
-        cache:"no-store"
-      }
-    );
+ historyLoadedForUid = user.uid;
+ resetChatDisplay();
+ accountStatusForHistory("Loading saved chats…");
 
-    if(!response.ok){
-      const data=await response.json().catch(()=>({}));
-      throw new Error(data.error||"Could not load saved conversations.");
-    }
+ try {
+  const token = await user.getIdToken();
+  const response = await fetch(
+   "/api/history?character=" + encodeURIComponent(character),
+   {
+    method:"GET",
+    headers:{"Authorization":"Bearer " + token},
+    cache:"no-store"
+   }
+  );
 
-    const data=await response.json();
-
-    if(!window.heartmateAuth.user||
-       window.heartmateAuth.user.uid!==user.uid){
-      return;
-    }
-
-    if(Array.isArray(data.messages)&&data.messages.length>0){
-      messages.innerHTML="";
-      history.length=0;
-
-      for(const item of data.messages){
-        if(
-          !["user","assistant"].includes(item.role)||
-          typeof item.content!=="string"
-        )continue;
-
-        history.push({
-          role:item.role,
-          content:item.content
-        });
-
-        addMessage(
-          item.content,
-          item.role==="user"?"user":"bot"
-        );
-      }
-    }
-
-    accountStatusForHistory(
-      user.displayName||user.email||"Signed in"
-    );
-
-    scrollToBottom();
-
-  }catch(error){
-    console.error("History loading error:",error);
-
-    if(window.heartmateAuth.user&&
-       window.heartmateAuth.user.uid===user.uid){
-      historyLoadedForUid="";
-      accountStatusForHistory("Signed in · history unavailable");
-    }
+  if (!response.ok) {
+   const data = await response.json().catch(() => ({}));
+   throw new Error(data.error || "Could not load saved conversations.");
   }
+
+  const data = await response.json();
+
+  if (!window.heartmateAuth.user ||
+      window.heartmateAuth.user.uid !== user.uid) return;
+
+  if (Array.isArray(data.messages) && data.messages.length > 0) {
+   messages.innerHTML = "";
+   chatHistory.length = 0;
+
+   for (const item of data.messages) {
+    if (!["user","assistant"].includes(item.role) ||
+        typeof item.content !== "string") continue;
+
+    chatHistory.push({role:item.role,content:item.content});
+    addMessage(item.content,item.role === "user" ? "user" : "bot");
+   }
+  }
+
+  accountStatusForHistory(user.displayName || user.email || "Signed in");
+  scrollToBottom();
+
+ } catch (error) {
+  console.error("History loading error:",error);
+
+  if (window.heartmateAuth.user &&
+      window.heartmateAuth.user.uid === user.uid) {
+   historyLoadedForUid = "";
+   accountStatusForHistory("Signed in · history unavailable");
+  }
+ }
 }
 
-window.heartmateLoadHistory=loadSavedHistory;
+window.heartmateLoadHistory = loadSavedHistory;
 
-const photoCounts={
+/* PHOTO COUNTS
+   New companions are set to one photo each.
+   Increase these numbers when more photos are uploaded.
+*/
+const photoCounts = {
  aria:4,zara:4,ivy:6,ruby:10,nina:4,lila:5,amber:8,violet:10,
  jade:15,scarlett:5,stella:8,kira:10,diana:8,freya:10,
  sienna:10,valentina:8,aurora:10,chloe:8,ella:10,rose:3,
- nova:5,sofia:6,luna:4,maya:5
+ nova:5,sofia:6,luna:4,maya:5,
+ ananya:1,aadhya:1,meera:1,kiara:1,ishita:1,kavya:1,
+ diya:1,riya:1,nisha:1,pooja:1,tara:1,priya:1
 };
 
-function photoPath(index){
- return character==="aria"
-  ?`images/aria-${index}.jpeg`
-  :`images/${character}/${character}-${index}.jpeg`;
+function photoPath(index) {
+ return character === "aria"
+  ? `images/aria-${index}.jpeg`
+  : `images/${character}/${character}-${index}.jpeg`;
 }
 
-function openGallery(){
- const overlay=document.getElementById("galleryOverlay");
- const grid=document.getElementById("galleryGrid");
- const empty=document.getElementById("galleryEmpty");
+function openGallery() {
+ const overlay = document.getElementById("galleryOverlay");
+ const grid = document.getElementById("galleryGrid");
+ const empty = document.getElementById("galleryEmpty");
 
- document.getElementById("galleryTitle").textContent=girlName+"'s Photos 💗";
- grid.innerHTML="";
- empty.style.display="none";
+ document.getElementById("galleryTitle").textContent = girlName + "'s Photos 💗";
+ grid.innerHTML = "";
+ empty.style.display = "none";
  overlay.classList.add("open");
 
- const count=photoCounts[character]||0;
- let loaded=0;
- let finished=0;
+ const count = photoCounts[character] || 0;
+ let loaded = 0;
+ let finished = 0;
 
- for(let i=1;i<=count;i++){
-  const image=document.createElement("img");
-  image.alt=girlName+" photo "+i;
-  image.loading="lazy";
-  const src=photoPath(i);
+ for (let i=1;i<=count;i++) {
+  const image = document.createElement("img");
+  image.alt = girlName + " photo " + i;
+  image.loading = "lazy";
+  const src = photoPath(i);
 
-  image.onload=()=>{
+  image.onload = () => {
    loaded++;
    finished++;
-   if(finished===count&&loaded===0)empty.style.display="block";
+   if (finished === count && loaded === 0) empty.style.display = "block";
   };
 
-  image.onerror=()=>{
+  image.onerror = () => {
    finished++;
-   image.style.display="none";
-   if(finished===count&&loaded===0)empty.style.display="block";
+   image.style.display = "none";
+   if (finished === count && loaded === 0) empty.style.display = "block";
   };
 
-  image.addEventListener("click",()=>showViewer(src));
+  image.addEventListener("click",() => showViewer(src));
   grid.appendChild(image);
-  image.src=src;
+  image.src = src;
  }
 
- if(count===0)empty.style.display="block";
+ if (count === 0) empty.style.display = "block";
 }
 
-function closeGallery(){
+function closeGallery() {
  document.getElementById("galleryOverlay").classList.remove("open");
 }
 
-function showViewer(src){
- document.getElementById("viewerImage").src=src;
+function showViewer(src) {
+ document.getElementById("viewerImage").src = src;
  document.getElementById("photoViewer").classList.add("open");
 }
 
-function closeViewer(){
+function closeViewer() {
  document.getElementById("photoViewer").classList.remove("open");
 }
 
-document.addEventListener("keydown",e=>{
- if(e.key==="Escape"){
+document.addEventListener("keydown",e => {
+ if (e.key === "Escape") {
   closeViewer();
   closeGallery();
   closeMediaModal();
  }
 });
 
-function scrollToBottom(){
- messages.scrollTop=messages.scrollHeight;
-}
-
-function addMessage(text,sender){
- const div=document.createElement("div");
- div.className="message "+sender;
- div.textContent=text;
+function addMessage(text,sender) {
+ const div = document.createElement("div");
+ div.className = "message " + sender;
+ div.textContent = text;
  messages.appendChild(div);
  scrollToBottom();
 }
 
-function addImage(url,description){
- const box=document.createElement("div");
- box.className="image-message";
+function addImage(url,description) {
+ const box = document.createElement("div");
+ box.className = "image-message";
 
- const caption=document.createElement("div");
- caption.className="media-caption";
- caption.textContent="💕 "+description;
+ const caption = document.createElement("div");
+ caption.className = "media-caption";
+ caption.textContent = "💕 " + description;
 
- const image=document.createElement("img");
- image.src=url;
- image.alt=girlName+" generated picture";
- image.loading="lazy";
+ const image = document.createElement("img");
+ image.src = url;
+ image.alt = girlName + " generated picture";
+ image.loading = "lazy";
 
  box.append(caption,image);
  messages.appendChild(box);
  scrollToBottom();
 }
 
-function addVideo(url,description){
- const box=document.createElement("div");
- box.className="image-message";
+function addVideo(url,description) {
+ const box = document.createElement("div");
+ box.className = "image-message";
 
- const caption=document.createElement("div");
- caption.className="media-caption";
- caption.textContent="💕 "+description;
+ const caption = document.createElement("div");
+ caption.className = "media-caption";
+ caption.textContent = "💕 " + description;
 
- const video=document.createElement("video");
- video.src=url;
- video.controls=true;
- video.playsInline=true;
- video.preload="metadata";
+ const video = document.createElement("video");
+ video.src = url;
+ video.controls = true;
+ video.playsInline = true;
+ video.preload = "metadata";
 
  box.append(caption,video);
  messages.appendChild(box);
  scrollToBottom();
 }
 
-function detectMediaRequest(message){
- const text=message.toLowerCase();
- const videoWords=/\b(video|clip|movie|animation)\b/.test(text);
- const imageWords=/\b(photo|picture|image|selfie|portrait)\b/.test(text);
- const requestWords=/\b(send|show|make|create|generate|give|share|want|need|draw)\b/.test(text);
+function detectMediaRequest(message) {
+ const text = message.toLowerCase();
+ const videoWords = /\b(video|clip|movie|animation)\b/.test(text);
+ const imageWords = /\b(photo|picture|image|selfie|portrait)\b/.test(text);
+ const requestWords = /\b(send|show|make|create|generate|give|share|want|need|draw)\b/.test(text);
 
- if(videoWords&&requestWords)return"video";
- if(imageWords&&requestWords)return"image";
- return"";
+ if (videoWords && requestWords) return "video";
+ if (imageWords && requestWords) return "image";
+ return "";
 }
 
-function openMediaModal(type,prompt=""){
- mediaChoice=type;
+function openMediaModal(type,prompt="") {
+ mediaChoice = type;
  createMenu.classList.remove("open");
 
- modalTitle.textContent=type==="video"
-  ?"Create a video of "+girlName+" 🎬"
-  :"Create an image of "+girlName+" 📸";
+ modalTitle.textContent = type === "video"
+  ? "Create a video of " + girlName + " 🎬"
+  : "Create an image of " + girlName + " 📸";
 
- modalDescription.textContent=type==="video"
-  ?"Describe the video scene for "+girlName+". Video generation may use paid Kling credits."
-  :"Describe the picture you'd like "+girlName+" to create.";
+ modalDescription.textContent = type === "video"
+  ? "Describe the video scene for " + girlName + ". Video generation may use paid Kling credits."
+  : "Describe the picture you'd like " + girlName + " to create.";
 
- confirmMedia.textContent=type==="video"?"Continue to video":"Create image";
- sceneInput.value=prompt;
+ confirmMedia.textContent = type === "video" ? "Continue to video" : "Create image";
+ sceneInput.value = prompt;
  modal.classList.add("open");
- setTimeout(()=>sceneInput.focus(),100);
+ setTimeout(() => sceneInput.focus(),100);
 }
 
-function closeMediaModal(){
+function closeMediaModal() {
  modal.classList.remove("open");
 }
 
-createButton.addEventListener("click",()=>{
+createButton.addEventListener("click",() => {
  createMenu.classList.toggle("open");
 });
 
-document.getElementById("openImage").addEventListener("click",()=>{
- openMediaModal("image");
-});
-
-document.getElementById("openVideo").addEventListener("click",()=>{
- openMediaModal("video");
-});
-
+document.getElementById("openImage").addEventListener("click",() => openMediaModal("image"));
+document.getElementById("openVideo").addEventListener("click",() => openMediaModal("video"));
 document.getElementById("cancelModal").addEventListener("click",closeMediaModal);
 
-modal.addEventListener("click",e=>{
- if(e.target===modal)closeMediaModal();
+modal.addEventListener("click",e => {
+ if (e.target === modal) closeMediaModal();
 });
 
-confirmMedia.addEventListener("click",async()=>{
- const scene=sceneInput.value.trim();
- if(!scene||busy)return;
+confirmMedia.addEventListener("click",async() => {
+ const scene = sceneInput.value.trim();
+ if (!scene || busy) return;
 
- if(mediaChoice==="video"){
-  if(!confirm("Video generation may use paid Kling credits. Continue?"))return;
+ if (mediaChoice === "video") {
+  if (!confirm("Video generation may use paid Kling credits. Continue?")) return;
  }
 
  closeMediaModal();
 
  addMessage(
-  (mediaChoice==="video"?"Create a video of "+girlName+": ":"Create a picture of "+girlName+": ")+scene,
+  (mediaChoice === "video" ? "Create a video of " + girlName + ": " : "Create a picture of " + girlName + ": ") + scene,
   "user"
  );
 
- if(mediaChoice==="video"){
+ if (mediaChoice === "video") {
   await generateVideo(scene);
- }else{
+ } else {
   await generateImage(scene);
  }
 });
 
-async function sendChat(message){
- if(!message||busy)return;
+async function sendChat(message) {
+ if (!message || busy) return;
 
- const mediaType=detectMediaRequest(message);
- if(mediaType){
+ const mediaType = detectMediaRequest(message);
+ if (mediaType) {
   openMediaModal(mediaType,message);
   return;
  }
@@ -562,201 +525,194 @@ async function sendChat(message){
  await historyLoadPromise;
 
  let token;
-
- try{
-  token=await window.heartmateAuth.getToken();
- }catch(error){
+ try {
+  token = await window.heartmateAuth.getToken();
+ } catch (error) {
   addMessage("Please sign in with Google before starting a conversation. 💗","bot");
   return;
  }
 
  addMessage(message,"user");
- history.push({role:"user",content:message});
- input.value="";
- busy=true;
- sendButton.disabled=true;
- typing.style.display="block";
+ chatHistory.push({role:"user",content:message});
+ input.value = "";
+ busy = true;
+ sendButton.disabled = true;
+ typing.style.display = "block";
 
- try{
-  const response=await fetch("/api/chat",{
+ try {
+  const response = await fetch("/api/chat",{
    method:"POST",
    headers:{
-     "Content-Type":"application/json",
-     "Authorization":"Bearer "+token
+    "Content-Type":"application/json",
+    "Authorization":"Bearer " + token
    },
    body:JSON.stringify({
-     character,
-     message,
-     history,
-     mood:dailyMood.name
+    character,
+    message,
+    history:chatHistory,
+    mood:dailyMood.name
    })
   });
 
-  const data=await response.json();
-  if(!response.ok)throw new Error(data.error||"Chat unavailable.");
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Chat unavailable.");
 
-  const reply=data.reply;
-  if(!reply)throw new Error("Empty AI response.");
+  const reply = data.reply;
+  if (!reply) throw new Error("Empty AI response.");
 
   addMessage(reply,"bot");
-  history.push({role:"assistant",content:reply});
+  chatHistory.push({role:"assistant",content:reply});
 
- }catch(error){
-  addMessage("Sorry, I'm having trouble connecting. "+error.message,"bot");
- }finally{
-  busy=false;
-  sendButton.disabled=false;
-  typing.style.display="none";
+ } catch (error) {
+  addMessage("Sorry, I'm having trouble connecting. " + error.message,"bot");
+ } finally {
+  busy = false;
+  sendButton.disabled = false;
+  typing.style.display = "none";
   input.focus();
  }
 }
 
-document.getElementById("chatForm").addEventListener("submit",e=>{
+document.getElementById("chatForm").addEventListener("submit",e => {
  e.preventDefault();
  sendChat(input.value.trim());
 });
 
-sendButton.addEventListener("click",e=>{
+sendButton.addEventListener("click",e => {
  e.preventDefault();
  sendChat(input.value.trim());
 });
 
-input.addEventListener("keydown",e=>{
- if(e.key==="Enter"){
+input.addEventListener("keydown",e => {
+ if (e.key === "Enter") {
   e.preventDefault();
   sendChat(input.value.trim());
  }
 });
 
-async function generateImage(scene){
- if(busy)return;
+async function generateImage(scene) {
+ if (busy) return;
 
- busy=true;
- sendButton.disabled=true;
- createButton.disabled=true;
- photoStatus.style.display="block";
+ busy = true;
+ sendButton.disabled = true;
+ createButton.disabled = true;
+ photoStatus.style.display = "block";
 
- try{
-  const response=await fetch("/api/image",{
+ try {
+  const response = await fetch("/api/image",{
    method:"POST",
    headers:{"Content-Type":"application/json"},
    body:JSON.stringify({character,scene})
   });
 
-  if(!response.ok){
-   const data=await response.json();
-   throw new Error(data.error||"Image generation failed.");
+  if (!response.ok) {
+   const data = await response.json();
+   throw new Error(data.error || "Image generation failed.");
   }
 
-  const blob=await response.blob();
-  if(!blob.type.startsWith("image/"))throw new Error("Invalid image returned.");
+  const blob = await response.blob();
+  if (!blob.type.startsWith("image/")) throw new Error("Invalid image returned.");
 
-  const imageUrl=URL.createObjectURL(blob);
-  addImage(imageUrl,"A new picture of "+girlName);
+  const imageUrl = URL.createObjectURL(blob);
+  addImage(imageUrl,"A new picture of " + girlName);
 
- }catch(error){
-  addMessage("I couldn't create that picture. "+error.message,"bot");
- }finally{
-  busy=false;
-  sendButton.disabled=false;
-  createButton.disabled=false;
-  photoStatus.style.display="none";
+ } catch (error) {
+  addMessage("I couldn't create that picture. " + error.message,"bot");
+ } finally {
+  busy = false;
+  sendButton.disabled = false;
+  createButton.disabled = false;
+  photoStatus.style.display = "none";
  }
 }
 
-async function generateVideo(scene){
- if(busy)return;
+async function generateVideo(scene) {
+ if (busy) return;
 
- busy=true;
- sendButton.disabled=true;
- createButton.disabled=true;
- videoStatus.style.display="block";
+ busy = true;
+ sendButton.disabled = true;
+ createButton.disabled = true;
+ videoStatus.style.display = "block";
 
- try{
-  addMessage("🎬 "+girlName+" is preparing your video. Please wait…","bot");
+ try {
+  addMessage("🎬 " + girlName + " is preparing your video. Please wait…","bot");
 
-  const response=await fetch("/api/video",{
+  const response = await fetch("/api/video",{
    method:"POST",
    headers:{"Content-Type":"application/json"},
    body:JSON.stringify({character,scene})
   });
 
-  const data=await response.json();
-
-  if(!response.ok||!data.taskId){
-   throw new Error(data.error||"Kling could not start the video.");
+  const data = await response.json();
+  if (!response.ok || !data.taskId) {
+   throw new Error(data.error || "Kling could not start the video.");
   }
 
-  addMessage("Your video of "+girlName+" is being generated. This can take a few minutes. 💗","bot");
+  addMessage("Your video of " + girlName + " is being generated. This can take a few minutes. 💗","bot");
 
-  let completed=false;
+  let completed = false;
 
-  for(let attempt=0;attempt<60;attempt++){
-   await new Promise(resolve=>setTimeout(resolve,5000));
+  for (let attempt=0;attempt<60;attempt++) {
+   await new Promise(resolve => setTimeout(resolve,5000));
 
-   const statusResponse=await fetch(
-    "/api/video/status?taskId="+encodeURIComponent(data.taskId)
+   const statusResponse = await fetch(
+    "/api/video/status?taskId=" + encodeURIComponent(data.taskId)
    );
+   const statusData = await statusResponse.json();
 
-   const statusData=await statusResponse.json();
-
-   if(!statusResponse.ok){
-    throw new Error(statusData.error||"Could not check video progress.");
+   if (!statusResponse.ok) {
+    throw new Error(statusData.error || "Could not check video progress.");
    }
 
-   if(statusData.status==="succeeded"&&statusData.videoUrl){
-    addVideo(statusData.videoUrl,"Your new video of "+girlName);
-    completed=true;
+   if (statusData.status === "succeeded" && statusData.videoUrl) {
+    addVideo(statusData.videoUrl,"Your new video of " + girlName);
+    completed = true;
     break;
    }
 
-   if(statusData.status==="failed"){
-    throw new Error(statusData.message||"Kling could not complete the video.");
+   if (statusData.status === "failed") {
+    throw new Error(statusData.message || "Kling could not complete the video.");
    }
   }
 
-  if(!completed){
+  if (!completed) {
    addMessage("The video is taking longer than expected. Your task may still be processing. Please try again later.","bot");
   }
 
- }catch(error){
-  addMessage("I couldn't create the video. "+error.message,"bot");
- }finally{
-  busy=false;
-  sendButton.disabled=false;
-  createButton.disabled=false;
-  videoStatus.style.display="none";
+ } catch (error) {
+  addMessage("I couldn't create the video. " + error.message,"bot");
+ } finally {
+  busy = false;
+  sendButton.disabled = false;
+  createButton.disabled = false;
+  videoStatus.style.display = "none";
  }
 }
 </script>
 
-<!-- FIREBASE GOOGLE AUTHENTICATION -->
 <script type="module">
 import { initializeApp, getApps }
-  from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+ from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 
 import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-  onAuthStateChanged
+ getAuth,
+ GoogleAuthProvider,
+ signInWithPopup,
+ signOut,
+ onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",
-  authDomain: "heartmate-ai-bd441.firebaseapp.com",
-  projectId: "heartmate-ai-bd441",
-  storageBucket: "heartmate-ai-bd441.firebasestorage.app",
-  messagingSenderId: "929844208432",
-  appId: "1:929844208432:web:0afdab16bd82f11240def5",
-  measurementId: "G-L0Z6XE8R8B"
+ apiKey: "AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",
+ authDomain: "heartmate-ai-bd441.firebaseapp.com",
+ projectId: "heartmate-ai-bd441",
+ storageBucket: "heartmate-ai-bd441.firebasestorage.app",
+ messagingSenderId: "929844208432",
+ appId: "1:929844208432:web:0afdab16bd82f11240def5",
+ measurementId: "G-L0Z6XE8R8B"
 };
 
-const app = getApps().length
-  ? getApps()[0]
-  : initializeApp(firebaseConfig);
-
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
@@ -764,56 +720,55 @@ const login = document.getElementById("chatSignIn");
 const logout = document.getElementById("chatSignOut");
 const accountStatus = document.getElementById("chatAccountStatus");
 
-login.addEventListener("click", async () => {
-  login.disabled = true;
-  accountStatus.textContent = "Opening Google…";
+login.addEventListener("click",async() => {
+ login.disabled = true;
+ accountStatus.textContent = "Opening Google…";
 
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (error) {
-    console.error("Google sign-in error:", error);
-    accountStatus.textContent =
-      error.code === "auth/popup-closed-by-user"
-        ? "Sign-in cancelled."
-        : "Sign-in failed. Please try again.";
-  } finally {
-    login.disabled = false;
-  }
+ try {
+  await signInWithPopup(auth,provider);
+ } catch (error) {
+  console.error("Google sign-in error:",error);
+  accountStatus.textContent =
+   error.code === "auth/popup-closed-by-user"
+    ? "Sign-in cancelled."
+    : "Sign-in failed. Please try again.";
+ } finally {
+  login.disabled = false;
+ }
 });
 
-logout.addEventListener("click", async () => {
-  logout.disabled = true;
+logout.addEventListener("click",async() => {
+ logout.disabled = true;
 
-  try {
-    await signOut(auth);
-  } catch (error) {
-    console.error("Google sign-out error:", error);
-    accountStatus.textContent = "Sign-out failed.";
-  } finally {
-    logout.disabled = false;
-  }
+ try {
+  await signOut(auth);
+ } catch (error) {
+  console.error("Google sign-out error:",error);
+  accountStatus.textContent = "Sign-out failed.";
+ } finally {
+  logout.disabled = false;
+ }
 });
 
-onAuthStateChanged(auth, user => {
-  window.heartmateAuth.user = user;
+onAuthStateChanged(auth,user => {
+ window.heartmateAuth.user = user;
 
-  if(user){
-    login.hidden=true;
-    logout.hidden=false;
-    accountStatus.textContent=
-      user.displayName||user.email||"Signed in";
-  }else{
-    login.hidden=false;
-    logout.hidden=true;
-    accountStatus.textContent="Not signed in";
-  }
+ if (user) {
+  login.hidden = true;
+  logout.hidden = false;
+  accountStatus.textContent = user.displayName || user.email || "Signed in";
+ } else {
+  login.hidden = false;
+  logout.hidden = true;
+  accountStatus.textContent = "Not signed in";
+ }
 
-  historyLoadPromise=window.heartmateLoadHistory(user);
+ historyLoadPromise = window.heartmateLoadHistory(user);
 
-  if(resolveAuthReady){
-    resolveAuthReady(user);
-    resolveAuthReady=null;
-  }
+ if (resolveAuthReady) {
+  resolveAuthReady(user);
+  resolveAuthReady = null;
+ }
 });
 </script>
 
