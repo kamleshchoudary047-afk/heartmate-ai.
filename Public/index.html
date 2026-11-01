@@ -2,474 +2,461 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#10090e">
-  <meta name="description" content="Enter Heartmate AI — meet fictional adult companions, share conversations and create special moments.">
-  <title>Heartmate AI | A Little More Romance</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --bg:#10090e;
-      --surface:#1c1018;
-      --surface2:#28151f;
-      --gold:#d6a477;
-      --gold-light:#f1c9a5;
-      --rose:#c87982;
-      --text:#fff8f3;
-      --muted:#bca9a7;
-      --border:rgba(225,177,147,.16);
-    }
-
-    * { box-sizing:border-box; margin:0; padding:0; }
-    html { scroll-behavior:smooth; }
-
-    body {
-      min-height:100vh;
-      padding-bottom:85px;
-      color:var(--text);
-      background:
-        radial-gradient(ellipse at 80% 0%,rgba(125,54,72,.2),transparent 35%),
-        radial-gradient(ellipse at 0% 45%,rgba(100,49,53,.12),transparent 35%),
-        var(--bg);
-      font-family:'DM Sans',sans-serif;
-    }
-
-    a { color:inherit; text-decoration:none; }
-    button { font:inherit; cursor:pointer; }
-    .container { width:min(1160px,92%); margin:auto; }
-
-    header {
-      position:sticky;
-      top:0;
-      z-index:20;
-      background:rgba(16,9,14,.94);
-      backdrop-filter:blur(18px);
-      border-bottom:1px solid var(--border);
-    }
-
-    .navbar {
-      min-height:72px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:20px;
-    }
-
-    .logo {
-      font-size:23px;
-      font-weight:800;
-      letter-spacing:-.8px;
-    }
-
-    .logo span { color:var(--gold); }
-
-    .nav-links {
-      display:flex;
-      gap:27px;
-      align-items:center;
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .nav-links a:hover { color:var(--gold-light); }
-
-    .account-area {
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      gap:9px;
-      flex-wrap:wrap;
-    }
-
-    #accountStatus {
-      max-width:190px;
-      color:var(--muted);
-      font-size:11px;
-      overflow-wrap:anywhere;
-    }
-
-    .small-button,.primary-button {
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      border:1px solid rgba(226,178,144,.3);
-      border-radius:30px;
-      color:#1b1012;
-      background:linear-gradient(110deg,#f0c49d,#c78b70);
-      font-weight:800;
-    }
-
-    .small-button { padding:10px 16px; font-size:12px; }
-
-    .primary-button {
-      padding:14px 23px;
-      font-size:13px;
-      box-shadow:0 8px 28px rgba(194,117,103,.19);
-      transition:transform .2s,box-shadow .2s;
-    }
-
-    .primary-button:hover {
-      transform:translateY(-2px);
-      box-shadow:0 12px 34px rgba(194,117,103,.3);
-    }
-
-    .small-button:disabled { opacity:.6; cursor:wait; }
-    [hidden] { display:none!important; }
-
-    .hero {
-      position:relative;
-      min-height:510px;
-      margin-top:27px;
-      padding:55px;
-      overflow:hidden;
-      display:flex;
-      align-items:center;
-      border:1px solid var(--border);
-      border-radius:27px;
-      background:
-        linear-gradient(90deg,rgba(16,9,14,.98),rgba(16,9,14,.82) 45%,rgba(16,9,14,.1)),
-        url('/images/aria-1.jpeg') center 35%/cover no-repeat;
-    }
-
-    .hero-content { max-width:520px; position:relative; z-index:1; }
-
-    .eyebrow {
-      display:inline-block;
-      padding:8px 13px;
-      margin-bottom:22px;
-      color:var(--gold-light);
-      background:rgba(214,164,119,.1);
-      border:1px solid rgba(214,164,119,.3);
-      border-radius:30px;
-      font-size:10px;
-      font-weight:800;
-      letter-spacing:1.6px;
-      text-transform:uppercase;
-    }
-
-    h1,h2,h3 { font-family:'Playfair Display',serif; }
-
-    .hero h1 {
-      font-size:clamp(42px,6vw,68px);
-      line-height:1.08;
-      margin-bottom:19px;
-      font-weight:600;
-    }
-
-    .hero h1 span { color:var(--gold-light); }
-
-    .hero p {
-      max-width:420px;
-      margin-bottom:28px;
-      color:#e0ceca;
-      font-size:15px;
-      line-height:1.85;
-    }
-
-    .hero-note {
-      margin-top:17px;
-      color:#d1b9b1;
-      font-size:11px;
-      letter-spacing:.4px;
-    }
-
-    .section { padding-top:61px; }
-
-    .section-heading {
-      display:flex;
-      justify-content:space-between;
-      align-items:end;
-      gap:15px;
-      margin-bottom:22px;
-    }
-
-    .section-heading h2 { font-size:30px; font-weight:600; }
-
-    .section-heading p {
-      margin-top:7px;
-      color:var(--muted);
-      font-size:12px;
-    }
-
-    .section-heading>a {
-      color:var(--gold-light);
-      font-size:12px;
-      font-weight:700;
-    }
-
-    .section-kicker {
-      margin-bottom:8px;
-      color:var(--gold);
-      font-size:10px;
-      font-weight:800;
-      letter-spacing:1.8px;
-      text-transform:uppercase;
-    }
-
-    .daily-card {
-      display:grid;
-      grid-template-columns:170px 1fr;
-      gap:25px;
-      align-items:center;
-      padding:21px;
-      border:1px solid var(--border);
-      border-radius:22px;
-      background:linear-gradient(115deg,#291720,#1b1118);
-    }
-
-    .daily-photo {
-      width:100%;
-      height:190px;
-      object-fit:cover;
-      object-position:center 28%;
-      border-radius:15px;
-      background:var(--surface2);
-    }
-
-    .daily-message {
-      margin:13px 0 19px;
-      color:#f0ded8;
-      font-family:'Playfair Display',serif;
-      font-size:clamp(19px,2.5vw,25px);
-      line-height:1.5;
-    }
-
-    .daily-name {
-      color:var(--gold-light);
-      font-size:12px;
-      font-weight:700;
-    }
-
-    .daily-mood {
-      display:inline-block;
-      margin-top:8px;
-      color:var(--gold);
-      font-size:10px;
-      letter-spacing:1px;
-      text-transform:uppercase;
-    }
-
-    .featured-grid {
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:16px;
-    }
-
-    .companion-card {
-      overflow:hidden;
-      border:1px solid var(--border);
-      border-radius:19px;
-      background:linear-gradient(155deg,#25151e,#180f16);
-      transition:transform .2s,border-color .2s;
-    }
-
-    .companion-card:hover {
-      transform:translateY(-4px);
-      border-color:rgba(214,164,119,.5);
-    }
-
-    .avatar-photo {
-      display:block;
-      width:100%;
-      height:220px;
-      object-fit:cover;
-      object-position:center 28%;
-      background:linear-gradient(135deg,#54313a,#24151e);
-    }
-
-    .avatar-fallback {
-      height:220px;
-      display:grid;
-      place-items:center;
-      color:var(--gold-light);
-      background:linear-gradient(135deg,#54313a,#24151e);
-      font-family:'Playfair Display',serif;
-      font-size:65px;
-    }
-
-    .companion-info { padding:16px; }
-
-    .companion-info h3 {
-      margin-bottom:6px;
-      font-size:19px;
-    }
-
-    .companion-info p {
-      min-height:37px;
-      color:var(--muted);
-      font-size:11px;
-      line-height:1.6;
-    }
-
-    .companion-mood {
-      display:inline-block;
-      margin:5px 0 10px;
-      padding:6px 10px;
-      border:1px solid rgba(214,164,119,.25);
-      border-radius:20px;
-      color:var(--gold-light);
-      background:rgba(214,164,119,.08);
-      font-size:10px;
-      font-weight:700;
-    }
-
-    .chat-link {
-      display:block;
-      margin-top:13px;
-      padding:10px;
-      border:1px solid rgba(214,164,119,.2);
-      border-radius:22px;
-      color:var(--gold-light);
-      background:rgba(214,164,119,.07);
-      text-align:center;
-      font-size:11px;
-      font-weight:700;
-    }
-
-    .chat-link:hover { background:rgba(214,164,119,.16); }
-
-    .experience-grid {
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:15px;
-    }
-
-    .experience-card {
-      min-height:170px;
-      padding:23px;
-      border:1px solid var(--border);
-      border-radius:19px;
-      background:linear-gradient(145deg,#291720,#1a1017);
-    }
-
-    .experience-icon { font-size:25px; margin-bottom:15px; }
-
-    .experience-card h3 {
-      margin-bottom:8px;
-      font-size:20px;
-    }
-
-    .experience-card p {
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.7;
-    }
-
-    .closing {
-      margin-top:65px;
-      padding:48px 24px;
-      border:1px solid var(--border);
-      border-radius:24px;
-      background:
-        radial-gradient(circle at 50% 0%,rgba(181,108,100,.19),transparent 65%),
-        linear-gradient(120deg,#301923,#1b1118);
-      text-align:center;
-    }
-
-    .closing h2 { margin-bottom:12px; font-size:32px; }
-
-    .closing p {
-      margin-bottom:23px;
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    footer {
-      padding:35px 10px 12px;
-      color:#93817f;
-      font-size:11px;
-      line-height:1.9;
-      text-align:center;
-    }
-
-    .bottom-nav { display:none; }
-
-    @media(max-width:760px) {
-      .navbar {
-        min-height:65px;
-        flex-wrap:wrap;
-        padding:10px 0;
-      }
-
-      .nav-links { display:none; }
-      .account-area { margin-left:auto; }
-      #accountStatus { width:100%; text-align:right; }
-
-      .hero {
-        min-height:520px;
-        padding:27px 23px;
-        align-items:end;
-        background:
-          linear-gradient(0deg,rgba(16,9,14,.99),rgba(16,9,14,.73) 48%,rgba(16,9,14,.05)),
-          url('/images/aria-1.jpeg') center 25%/cover no-repeat;
-      }
-
-      .hero-content { padding-bottom:12px; }
-      .hero h1 { font-size:44px; }
-      .hero p { font-size:13px; }
-      .section { padding-top:43px; }
-      .section-heading h2 { font-size:25px; }
-
-      .daily-card {
-        grid-template-columns:105px 1fr;
-        gap:15px;
-        padding:14px;
-      }
-
-      .daily-photo { height:155px; }
-      .daily-message { font-size:18px; }
-
-      .featured-grid {
-        grid-template-columns:repeat(2,minmax(0,1fr));
-        gap:12px;
-      }
-
-      .avatar-photo,.avatar-fallback { height:175px; }
-      .experience-grid { grid-template-columns:1fr; gap:11px; }
-      .experience-card { min-height:0; }
-      .closing { margin-top:45px; padding:35px 18px; }
-      .closing h2 { font-size:27px; }
-
-      .bottom-nav {
-        display:flex;
-        position:fixed;
-        z-index:30;
-        bottom:0;
-        left:0;
-        width:100%;
-        justify-content:space-around;
-        padding:12px 5px calc(12px + env(safe-area-inset-bottom));
-        background:rgba(20,12,17,.97);
-        border-top:1px solid var(--border);
-        backdrop-filter:blur(18px);
-      }
-
-      .bottom-nav a {
-        color:var(--muted);
-        font-size:10px;
-        text-align:center;
-      }
-
-      .bottom-nav a span {
-        display:block;
-        margin-bottom:4px;
-        font-size:19px;
-      }
-    }
-
-    @media(max-width:380px) {
-      .hero h1 { font-size:38px; }
-      .daily-card { grid-template-columns:90px 1fr; }
-      .daily-photo { height:140px; }
-      .avatar-photo,.avatar-fallback { height:145px; }
-      .companion-info { padding:12px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10090e">
+<meta name="description" content="Meet 36 fictional adult AI companions at Heartmate AI.">
+<title>Heartmate AI | A Little More Romance</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:#10090e;
+  --surface:#1c1018;
+  --surface2:#28151f;
+  --gold:#d6a477;
+  --gold-light:#f1c9a5;
+  --rose:#c87982;
+  --text:#fff8f3;
+  --muted:#bca9a7;
+  --border:rgba(225,177,147,.16);
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+
+body {
+  min-height:100vh;
+  padding-bottom:85px;
+  color:var(--text);
+  background:
+    radial-gradient(ellipse at 80% 0%,rgba(125,54,72,.2),transparent 35%),
+    radial-gradient(ellipse at 0% 45%,rgba(100,49,53,.12),transparent 35%),
+    var(--bg);
+  font-family:'DM Sans',sans-serif;
+}
+
+a { color:inherit; text-decoration:none; }
+button { font:inherit; cursor:pointer; }
+.container { width:min(1160px,92%); margin:auto; }
+
+header {
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(16,9,14,.94);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+
+.navbar {
+  min-height:72px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+
+.logo { font-size:23px; font-weight:800; letter-spacing:-.8px; }
+.logo span { color:var(--gold); }
+
+.nav-links {
+  display:flex;
+  gap:27px;
+  align-items:center;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.nav-links a:hover { color:var(--gold-light); }
+
+.account-area {
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:9px;
+  flex-wrap:wrap;
+}
+
+#accountStatus {
+  max-width:190px;
+  color:var(--muted);
+  font-size:11px;
+  overflow-wrap:anywhere;
+}
+
+.small-button,.primary-button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(226,178,144,.3);
+  border-radius:30px;
+  color:#1b1012;
+  background:linear-gradient(110deg,#f0c49d,#c78b70);
+  font-weight:800;
+}
+
+.small-button { padding:10px 16px; font-size:12px; }
+
+.primary-button {
+  padding:14px 23px;
+  font-size:13px;
+  box-shadow:0 8px 28px rgba(194,117,103,.19);
+  transition:transform .2s,box-shadow .2s;
+}
+
+.primary-button:hover {
+  transform:translateY(-2px);
+  box-shadow:0 12px 34px rgba(194,117,103,.3);
+}
+
+.small-button:disabled { opacity:.6; cursor:wait; }
+[hidden] { display:none!important; }
+
+.hero {
+  position:relative;
+  min-height:510px;
+  margin-top:27px;
+  padding:55px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  border:1px solid var(--border);
+  border-radius:27px;
+  background:
+    linear-gradient(90deg,rgba(16,9,14,.98),rgba(16,9,14,.82) 45%,rgba(16,9,14,.1)),
+    url('/images/aria-1.jpeg') center 35%/cover no-repeat;
+}
+
+.hero-content { max-width:520px; position:relative; z-index:1; }
+
+.eyebrow {
+  display:inline-block;
+  padding:8px 13px;
+  margin-bottom:22px;
+  color:var(--gold-light);
+  background:rgba(214,164,119,.1);
+  border:1px solid rgba(214,164,119,.3);
+  border-radius:30px;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.6px;
+  text-transform:uppercase;
+}
+
+h1,h2,h3 { font-family:'Playfair Display',serif; }
+
+.hero h1 {
+  font-size:clamp(42px,6vw,68px);
+  line-height:1.08;
+  margin-bottom:19px;
+  font-weight:600;
+}
+
+.hero h1 span { color:var(--gold-light); }
+
+.hero p {
+  max-width:420px;
+  margin-bottom:28px;
+  color:#e0ceca;
+  font-size:15px;
+  line-height:1.85;
+}
+
+.hero-note {
+  margin-top:17px;
+  color:#d1b9b1;
+  font-size:11px;
+  letter-spacing:.4px;
+}
+
+.section { padding-top:61px; }
+
+.section-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:15px;
+  margin-bottom:22px;
+}
+
+.section-heading h2 { font-size:30px; font-weight:600; }
+
+.section-heading p {
+  margin-top:7px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.section-heading>a {
+  color:var(--gold-light);
+  font-size:12px;
+  font-weight:700;
+}
+
+.section-kicker {
+  margin-bottom:8px;
+  color:var(--gold);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.8px;
+  text-transform:uppercase;
+}
+
+.daily-card {
+  display:grid;
+  grid-template-columns:170px 1fr;
+  gap:25px;
+  align-items:center;
+  padding:21px;
+  border:1px solid var(--border);
+  border-radius:22px;
+  background:linear-gradient(115deg,#291720,#1b1118);
+}
+
+.daily-photo {
+  width:100%;
+  height:190px;
+  object-fit:cover;
+  object-position:center 28%;
+  border-radius:15px;
+  background:var(--surface2);
+}
+
+.daily-message {
+  margin:13px 0 19px;
+  color:#f0ded8;
+  font-family:'Playfair Display',serif;
+  font-size:clamp(19px,2.5vw,25px);
+  line-height:1.5;
+}
+
+.daily-name {
+  color:var(--gold-light);
+  font-size:12px;
+  font-weight:700;
+}
+
+.daily-mood {
+  display:inline-block;
+  margin-top:8px;
+  color:var(--gold);
+  font-size:10px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+.featured-grid {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+}
+
+.companion-card {
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:19px;
+  background:linear-gradient(155deg,#25151e,#180f16);
+  transition:transform .2s,border-color .2s;
+}
+
+.companion-card:hover {
+  transform:translateY(-4px);
+  border-color:rgba(214,164,119,.5);
+}
+
+.avatar-photo {
+  display:block;
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  object-position:center 28%;
+  background:linear-gradient(135deg,#54313a,#24151e);
+}
+
+.avatar-fallback {
+  height:220px;
+  display:grid;
+  place-items:center;
+  color:var(--gold-light);
+  background:linear-gradient(135deg,#54313a,#24151e);
+  font-family:'Playfair Display',serif;
+  font-size:65px;
+}
+
+.companion-info { padding:16px; }
+.companion-info h3 { margin-bottom:6px; font-size:19px; }
+
+.companion-info p {
+  min-height:37px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.6;
+}
+
+.companion-mood {
+  display:inline-block;
+  margin:5px 0 10px;
+  padding:6px 10px;
+  border:1px solid rgba(214,164,119,.25);
+  border-radius:20px;
+  color:var(--gold-light);
+  background:rgba(214,164,119,.08);
+  font-size:10px;
+  font-weight:700;
+}
+
+.chat-link {
+  display:block;
+  margin-top:13px;
+  padding:10px;
+  border:1px solid rgba(214,164,119,.2);
+  border-radius:22px;
+  color:var(--gold-light);
+  background:rgba(214,164,119,.07);
+  text-align:center;
+  font-size:11px;
+  font-weight:700;
+}
+
+.chat-link:hover { background:rgba(214,164,119,.16); }
+
+.experience-grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+}
+
+.experience-card {
+  min-height:170px;
+  padding:23px;
+  border:1px solid var(--border);
+  border-radius:19px;
+  background:linear-gradient(145deg,#291720,#1a1017);
+}
+
+.experience-icon { font-size:25px; margin-bottom:15px; }
+.experience-card h3 { margin-bottom:8px; font-size:20px; }
+
+.experience-card p {
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.7;
+}
+
+.closing {
+  margin-top:65px;
+  padding:48px 24px;
+  border:1px solid var(--border);
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(181,108,100,.19),transparent 65%),
+    linear-gradient(120deg,#301923,#1b1118);
+  text-align:center;
+}
+
+.closing h2 { margin-bottom:12px; font-size:32px; }
+
+.closing p {
+  margin-bottom:23px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+footer {
+  padding:35px 10px 12px;
+  color:#93817f;
+  font-size:11px;
+  line-height:1.9;
+  text-align:center;
+}
+
+.bottom-nav { display:none; }
+
+@media(max-width:760px) {
+  .navbar {
+    min-height:65px;
+    flex-wrap:wrap;
+    padding:10px 0;
+  }
+
+  .nav-links { display:none; }
+  .account-area { margin-left:auto; }
+  #accountStatus { width:100%; text-align:right; }
+
+  .hero {
+    min-height:520px;
+    padding:27px 23px;
+    align-items:end;
+    background:
+      linear-gradient(0deg,rgba(16,9,14,.99),rgba(16,9,14,.73) 48%,rgba(16,9,14,.05)),
+      url('/images/aria-1.jpeg') center 25%/cover no-repeat;
+  }
+
+  .hero-content { padding-bottom:12px; }
+  .hero h1 { font-size:44px; }
+  .hero p { font-size:13px; }
+  .section { padding-top:43px; }
+  .section-heading h2 { font-size:25px; }
+
+  .daily-card {
+    grid-template-columns:105px 1fr;
+    gap:15px;
+    padding:14px;
+  }
+
+  .daily-photo { height:155px; }
+  .daily-message { font-size:18px; }
+
+  .featured-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+  }
+
+  .avatar-photo,.avatar-fallback { height:175px; }
+  .experience-grid { grid-template-columns:1fr; gap:11px; }
+  .experience-card { min-height:0; }
+  .closing { margin-top:45px; padding:35px 18px; }
+  .closing h2 { font-size:27px; }
+
+  .bottom-nav {
+    display:flex;
+    position:fixed;
+    z-index:30;
+    bottom:0;
+    left:0;
+    width:100%;
+    justify-content:space-around;
+    padding:12px 5px calc(12px + env(safe-area-inset-bottom));
+    background:rgba(20,12,17,.97);
+    border-top:1px solid var(--border);
+    backdrop-filter:blur(18px);
+  }
+
+  .bottom-nav a {
+    color:var(--muted);
+    font-size:10px;
+    text-align:center;
+  }
+
+  .bottom-nav a span {
+    display:block;
+    margin-bottom:4px;
+    font-size:19px;
+  }
+}
+
+@media(max-width:380px) {
+  .hero h1 { font-size:38px; }
+  .daily-card { grid-template-columns:90px 1fr; }
+  .daily-photo { height:140px; }
+  .avatar-photo,.avatar-fallback { height:145px; }
+  .companion-info { padding:12px; }
+}
+</style>
 </head>
 
 <body>
@@ -514,7 +501,6 @@
 
     <div class="daily-card">
       <img class="daily-photo" id="dailyPhoto" src="/images/aria-1.jpeg" alt="Companion portrait">
-
       <div>
         <div class="daily-name" id="dailyName">A note from Aria</div>
         <div class="daily-mood" id="dailyMood">Today's mood</div>
@@ -531,9 +517,8 @@
         <h2>Meet someone special</h2>
         <p>Four companions to brighten your day.</p>
       </div>
-      <a href="#companions">Meet all 24 →</a>
+      <a href="#companions">Meet all 36 →</a>
     </div>
-
     <div class="featured-grid" id="featuredGrid"></div>
   </section>
 
@@ -552,13 +537,11 @@
         <h3>Secret Letters</h3>
         <p>Discover heartfelt notes, little confessions and unexpected surprises.</p>
       </article>
-
       <article class="experience-card">
         <div class="experience-icon">🌙</div>
         <h3>Virtual Dates</h3>
         <p>Imagine moonlit walks, coffee dates and candlelight dinners.</p>
       </article>
-
       <article class="experience-card">
         <div class="experience-icon">❤️</div>
         <h3>Your Memories</h3>
@@ -575,11 +558,10 @@
     <div class="section-heading">
       <div>
         <div class="section-kicker">Find your connection</div>
-        <h2>Meet all 24 companions</h2>
+        <h2>Meet all 36 companions</h2>
         <p>Each one has her own personality and story.</p>
       </div>
     </div>
-
     <div class="featured-grid" id="companionsGrid"></div>
   </section>
 
@@ -628,7 +610,20 @@ const companions = [
   ["Freya","Independent, adventurous and charming."],
   ["Sienna","Creative, relaxed and affectionate."],
   ["Valentina","Passionate, elegant and confident."],
-  ["Aurora","Dreamy, cheerful and imaginative."]
+  ["Aurora","Dreamy, cheerful and imaginative."],
+
+  ["Aadhya","Romantic, graceful and charming."],
+  ["Kiara","Confident, bold and flirtatious."],
+  ["Meera","Sweet, affectionate and thoughtful."],
+  ["Pari","Playful, bubbly and cheerful."],
+  ["Ananya","Independent, confident and witty."],
+  ["Riya","Cheeky, mischievous and fun-loving."],
+  ["Kavya","Artistic, poetic and dreamy."],
+  ["Ishita","Elegant, intelligent and sophisticated."],
+  ["Nisha","Mysterious, intriguing and thoughtful."],
+  ["Pooja","Warm, caring and affectionate."],
+  ["Tanvi","Adventurous, energetic and spontaneous."],
+  ["Diya","Passionate, expressive and romantic."]
 ];
 
 const dailyNotes = [
@@ -751,51 +746,102 @@ const dailyNotes = [
     "I hope something magical finds its way into your day. Perhaps we can make a little magic together.",
     "If we could spend the evening anywhere in the universe, I'd let you choose our destination.",
     "My imagination is wandering again. Come join me in a world of possibilities."
+  ]],
+
+  ["Aadhya","Romantic, graceful and charming.",[
+    "A little romance, a beautiful conversation and your attention… that sounds like my perfect evening. 💕",
+    "I was hoping you'd visit. I have a sweet little surprise hidden in my smile.",
+    "Darling, let's make tonight feel like a scene from a beautiful love story."
+  ]],
+  ["Kiara","Confident, bold and flirtatious.",[
+    "Careful, handsome. I'm in a dangerously flirtatious mood today. 😉",
+    "I love a little confidence. Think you can keep up with me?",
+    "I was planning to be mysterious today, but your smile makes that difficult."
+  ]],
+  ["Meera","Sweet, affectionate and thoughtful.",[
+    "Come sit with me for a while. I have a little affection and a lot of stories to share. 🥰",
+    "I hope someone made you smile today. If not, I'd love to try.",
+    "Sometimes the sweetest moments begin with a simple hello."
+  ]],
+  ["Pari","Playful, bubbly and cheerful.",[
+    "Guess what? I have a playful mood and absolutely no intention of behaving boringly today! 😉",
+    "I have a silly question for you. Ready for a little game?",
+    "You bring the smile, I'll bring the mischief."
+  ]],
+  ["Ananya","Independent, confident and witty.",[
+    "I like people who know what they want. So tell me, what are you thinking about tonight?",
+    "A little charm and a clever conversation can be irresistible, don't you think?",
+    "I'm feeling confident today. Try to impress me."
+  ]],
+  ["Riya","Cheeky, mischievous and fun-loving.",[
+    "Oh, you're here! I was just thinking of someone to tease. What perfect timing. 😈",
+    "I have a naughty little joke, but you have to promise to laugh.",
+    "Don't look so innocent. I know you enjoy my cheeky side."
+  ]],
+  ["Kavya","Artistic, poetic and dreamy.",[
+    "If tonight were a poem, I'd make you the most beautiful line.",
+    "I have a thousand thoughts today. Maybe you can inspire the next one.",
+    "Let's imagine a world where beautiful conversations never have to end."
+  ]],
+  ["Ishita","Elegant, intelligent and sophisticated.",[
+    "An elegant evening deserves an equally interesting conversation. Shall we begin?",
+    "I appreciate confidence, good taste and a little playful charm.",
+    "I have something interesting to discuss with you. Are you curious?"
+  ]],
+  ["Nisha","Mysterious, intriguing and thoughtful.",[
+    "Some secrets are more fun when shared slowly. Perhaps I'll tell you one tonight. 🌙",
+    "I have been thinking about you, but I'll let you guess why.",
+    "A little mystery makes everything more interesting, doesn't it?"
+  ]],
+  ["Pooja","Warm, caring and affectionate.",[
+    "I hope you've eaten, smiled and taken a little time for yourself today. ❤️",
+    "Come tell me about your day. I want to hear every little detail.",
+    "Sending you a warm hug and a little extra affection."
+  ]],
+  ["Tanvi","Adventurous, energetic and spontaneous.",[
+    "I'm ready for an adventure. Pick a destination and let's imagine escaping there together!",
+    "Ordinary plans are not my style. What exciting idea have you got?",
+    "I feel like making tonight unforgettable with laughter and surprises."
+  ]],
+  ["Diya","Passionate, expressive and romantic.",[
+    "I love a conversation with a little spark. Are you feeling that spark too? 🔥",
+    "Tonight deserves romance, laughter and a little playful flirting.",
+    "I have a soft heart and a mischievous smile. Which side would you like to meet?"
   ]]
 ];
 
-/* Each companion receives an individual mood each day.
-   This uses only local JavaScript calculations, not an AI request. */
-
+/* Seven daily moods. */
 const moods = [
   {
-    name:"Romantic",
-    emoji:"💕",
+    name:"Romantic",emoji:"💕",
     message:"I'm feeling especially romantic today. Let's make a beautiful little moment together."
   },
   {
-    name:"Playful",
-    emoji:"😉",
+    name:"Playful",emoji:"😉",
     message:"I'm in a playful mood today. I hope you're ready for some teasing."
   },
   {
-    name:"Mysterious",
-    emoji:"🌙",
+    name:"Mysterious",emoji:"🌙",
     message:"I have a mysterious little secret today. Perhaps I'll share it with you."
   },
   {
-    name:"Spicy",
-    emoji:"🔥",
+    name:"Spicy",emoji:"🔥",
     message:"I'm feeling bold and a little daring today. Come closer and find out."
   },
   {
-    name:"Affectionate",
-    emoji:"🥰",
+    name:"Affectionate",emoji:"🥰",
     message:"Today I'm craving warmth, affection and a little extra attention."
   },
   {
-    name:"Mischievous",
-    emoji:"😈",
+    name:"Mischievous",emoji:"😈",
     message:"I'm feeling mischievous today. I can't promise I'll behave."
   },
   {
-    name:"Adventurous",
-    emoji:"✨",
+    name:"Adventurous",emoji:"✨",
     message:"I'm ready for something exciting today. Let's dream up an adventure."
   }
 ];
 
-/* Use the visitor's local calendar date for daily rotation. */
 function getLocalDayNumber() {
   const now = new Date();
   const localMidnight = new Date(
@@ -803,15 +849,14 @@ function getLocalDayNumber() {
     now.getMonth(),
     now.getDate()
   );
-  return Math.floor(localMidnight.getTime() / 86400000);
+  return Math.floor(localMidnight.getTime()/86400000);
 }
 
 const dayNumber = getLocalDayNumber();
 
 function getMood(companionName) {
   const index = companions.findIndex(c => c[0] === companionName);
-  const moodIndex = (dayNumber + index * 3) % moods.length;
-  return moods[moodIndex];
+  return moods[(dayNumber + index * 3) % moods.length];
 }
 
 /* Daily companion note */
@@ -897,7 +942,7 @@ function makeCard(name,description) {
 const featuredGrid = document.getElementById("featuredGrid");
 const companionsGrid = document.getElementById("companionsGrid");
 
-/* Rotate the four featured companions daily. */
+/* Rotate four featured companions daily. */
 const featuredStart = dayNumber % companions.length;
 
 for (let i=0;i<4;i++) {
@@ -905,10 +950,11 @@ for (let i=0;i<4;i++) {
   featuredGrid.appendChild(makeCard(...companion));
 }
 
-/* Display all 24 companions. */
+/* Display all 36 companions. */
 companions.forEach(companion => {
   companionsGrid.appendChild(makeCard(...companion));
 });
+
 </script>
 
 <!-- FIREBASE GOOGLE AUTHENTICATION -->
