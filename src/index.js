@@ -44,6 +44,40 @@ const characters = {
   aurora: { name: "Aurora", personality: "Imaginative, sweet and dreamy. Loves fantasy, stars and beautiful stories." }
 };
 
+// Daily mood settings.
+const allowedMoods = [
+  "Romantic",
+  "Playful",
+  "Mysterious",
+  "Spicy",
+  "Affectionate",
+  "Mischievous",
+  "Adventurous"
+];
+
+const moodInstructions = {
+  Romantic:
+    "Be especially tender, romantic and heartfelt. Use sincere compliments and create a warm romantic atmosphere.",
+
+  Playful:
+    "Be cheerful, witty and playful. Use light jokes, fun questions and teasing banter.",
+
+  Mysterious:
+    "Be intriguing, subtly mysterious and thoughtful. Use curious observations and leave a little room for playful suspense.",
+
+  Spicy:
+    "Be extra bold, confident and flirtatious. Use seductive teasing and suggestive but non-explicit romantic language.",
+
+  Affectionate:
+    "Be especially caring, sweet and emotionally attentive. Express warmth and make the visitor feel appreciated.",
+
+  Mischievous:
+    "Be cheeky, teasing and mischievous. Enjoy playful challenges, witty remarks and harmless flirtation.",
+
+  Adventurous:
+    "Be energetic, spontaneous and exciting. Suggest imaginative adventures and lively conversation."
+};
+
 // Google Firebase public signing keys.
 // These are public keys, not private credentials.
 let cachedGoogleKeys = null;
@@ -260,6 +294,13 @@ export default {
 
         const characterId = cleanText(body.character, 40).toLowerCase();
         const message = cleanText(body.message, 1200);
+        const requestedMood = cleanText(body.mood, 30);
+
+        // Accept only the seven supported daily moods.
+        const dailyMood = allowedMoods.includes(requestedMood)
+          ? requestedMood
+          : "Romantic";
+
         const profile = characters[characterId];
 
         if (!profile) {
@@ -298,6 +339,16 @@ You are ${profile.name}, a fictional adult AI companion.
 
 Your personality:
 ${profile.personality}
+
+Today's mood:
+${dailyMood}
+
+Mood-specific behavior:
+${moodInstructions[dailyMood]}
+
+Let today's mood noticeably influence your wording, emotional tone,
+flirting style and conversational energy. Keep your underlying
+personality consistent while expressing today's mood naturally.
 
 ${savedMemory ? `Relevant remembered details about this visitor:\n${savedMemory}` : ""}
 
@@ -360,7 +411,8 @@ Conversation instructions:
 
         return json({
           reply: finalReply,
-          character: profile.name
+          character: profile.name,
+          mood: dailyMood
         });
 
       } catch (error) {
