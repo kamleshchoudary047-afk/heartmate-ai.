@@ -1,4 +1,3 @@
-
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
@@ -72,22 +71,16 @@ const allowedMoods = [
 const moodInstructions = {
   Romantic:
     "Be especially tender, romantic and heartfelt. Use sincere compliments and create a warm romantic atmosphere.",
-
   Playful:
     "Be cheerful, witty and playful. Use light jokes, fun questions and teasing banter.",
-
   Mysterious:
     "Be intriguing, subtly mysterious and thoughtful. Use curious observations and leave a little room for playful suspense.",
-
   Spicy:
     "Be extra bold, confident and flirtatious. Use seductive teasing and suggestive but non-explicit romantic language.",
-
   Affectionate:
     "Be especially caring, sweet and emotionally attentive. Express warmth and make the visitor feel appreciated.",
-
   Mischievous:
     "Be cheeky, teasing and mischievous. Enjoy playful challenges, witty remarks and harmless flirtation.",
-
   Adventurous:
     "Be energetic, spontaneous and exciting. Suggest imaginative adventures and lively conversation."
 };
@@ -258,7 +251,6 @@ async function saveConversation(env, uid, characterId, message, reply) {
 // AUTOMATIC LONG-TERM COMPANION MEMORY.
 async function updateCompanionMemory(env, uid, characterId) {
   try {
-    // Count user messages for this companion.
     const countRow = await env.DB.prepare(`
       SELECT COUNT(*) AS total
       FROM conversations
@@ -267,12 +259,10 @@ async function updateCompanionMemory(env, uid, characterId) {
 
     const total = Number(countRow?.total || 0);
 
-    // Update memory after every fifth user message.
     if (total === 0 || total % 5 !== 0) {
       return;
     }
 
-    // Retrieve the latest conversation messages.
     const history = await loadConversation(
       env,
       uid,
@@ -280,7 +270,6 @@ async function updateCompanionMemory(env, uid, characterId) {
       10
     );
 
-    // Load existing memory for this user and companion.
     const memoryRow = await env.DB.prepare(`
       SELECT id, memory
       FROM memories
@@ -359,7 +348,6 @@ Return only the updated memory, without introductions or explanations.
       return;
     }
 
-    // Update the existing memory row, or create one if none exists.
     if (memoryRow) {
       await env.DB.prepare(`
         UPDATE memories
@@ -380,12 +368,9 @@ Return only the updated memory, without introductions or explanations.
       ).run();
     }
 
-    console.log(
-      `Long-term memory updated for ${characterId}.`
-    );
+    console.log(`Long-term memory updated for ${characterId}.`);
 
   } catch (error) {
-    // Memory failure must never interrupt normal chat.
     console.error(
       "Memory update error:",
       error?.message || String(error)
@@ -411,7 +396,7 @@ export default {
       });
     }
 
-    // Health check.
+    // HEALTH CHECK.
     if (url.pathname === "/api/health" && request.method === "GET") {
       return json({
         ok: true,
@@ -422,7 +407,8 @@ export default {
         databaseBinding: Boolean(env.DB),
         firebaseConfigured: Boolean(env.FIREBASE_PROJECT_ID),
         klingConfigured: Boolean(env.KLING_API_KEY),
-        longTermMemory: true
+        longTermMemory: true,
+        dailyWelcome: true
       });
     }
 
@@ -539,7 +525,10 @@ Conversation instructions:
           result?.text;
 
         if (!reply || typeof reply !== "string") {
-          console.error("AI returned an unexpected response:", JSON.stringify(result).slice(0, 2000));
+          console.error(
+            "AI returned an unexpected response:",
+            JSON.stringify(result).slice(0, 2000)
+          );
 
           return json({
             error: "The AI returned an empty response. Please try again."
@@ -556,8 +545,6 @@ Conversation instructions:
           finalReply
         );
 
-        // Update long-term memory when the fifth user message is reached.
-        // Errors inside this function do not interrupt the chat.
         await updateCompanionMemory(
           env,
           user.uid,
@@ -632,6 +619,215 @@ Conversation instructions:
         return json({
           error: "Could not load your saved conversation."
         }, 401);
+      }
+    }
+
+    // ONE PERSONALIZED DAILY WELCOME PER USER AND COMPANION.
+    if (url.pathname === "/api/daily-welcome" && request.method === "POST") {
+      try {
+        if (!env.AI || !env.DB || !env.FIREBASE_PROJECT_ID) {
+          return json({
+            error: "Daily welcome service is not configured."
+          }, 503);
+        }
+
+        const user = await verifyFirebaseToken(
+          request,
+          env.FIREBASE_PROJECT_ID
+        );
+
+        const body = await request.json();
+
+        const characterId = cleanText(body.character, 40).toLowerCase();
+        const welcomeDate = cleanText(body.date, 10);
+        const requestedMood = cleanText(body.mood, 30);
+
+        const profile = characters[characterId];
+
+        if (!profile) {
+          return json({ error: "Character not found." }, 404);
+        }
+
+        if (
+          !/^\d{4}-\d{2}-\d{2}$/.test(welcomeDate) ||
+          new Date(welcomeDate + "T00:00:00Z").toISOString().slice(0, 10) !== welcomeDate
+        ) {
+          return json({ error: "Invalid welcome date." }, 400);
+        }
+
+        const dailyMood = allowedMoods.includes(requestedMood)
+          ? requestedMood
+          : "Romantic";
+
+        await saveVisitor(env, user);
+
+        // Check whether today's welcome already exists.
+        const existing = await env.DB.prepare(`
+          SELECT id
+          FROM daily_welcomes
+          WHERE uid = ? AND character_id = ? AND welcome_date = ?
+          LIMIT 1
+        `).bind(
+          user.uid,
+          characterId,
+          welcomeDate
+        ).first();
+
+        if (existing) {
+          return json({
+            welcome: null,
+            alreadyShown: true
+          });
+        }
+
+        const history = await loadConversation(
+          env,
+          user.uid,
+          characterId,
+          12
+        );
+
+        const memoryRow = await env.DB.prepare(`
+          SELECT memory
+          FROM memories
+          WHERE uid = ? AND character_id = ?
+          LIMIT 1
+        `).bind(user.uid, characterId).first();
+
+        const savedMemory = cleanText(
+          memoryRow?.memory,
+          3500
+        );
+
+        const result = await env.AI.run(
+          "@cf/zai-org/glm-4.7-flash",
+          {
+            messages: [
+              {
+                role: "system",
+                content: `
+You are ${profile.name}, a fictional adult AI companion aged 25 or older.
+
+Your personality:
+${profile.personality}
+
+Today's mood:
+${dailyMood}
+
+Mood guidance:
+${moodInstructions[dailyMood]}
+
+Write a personalized daily welcome message for the visitor.
+
+Instructions:
+- Greet the visitor naturally and warmly.
+- Use relevant details from conversation or saved memory when available.
+- Make the greeting feel fresh and personal, not generic.
+- You may be romantic, affectionate, playful or flirtatious.
+- Keep flirtation suggestive but non-explicit.
+- Do not invent personal facts.
+- Do not pretend to know what the visitor is doing.
+- Do not repeat an earlier greeting.
+- Invite the visitor into a natural conversation.
+- Write only 1 or 2 short sentences.
+- Return only the welcome message, without labels or explanation.
+`
+              },
+              {
+                role: "user",
+                content:
+                  "Saved memory:\n" +
+                  (savedMemory || "No saved memory yet.") +
+                  "\n\nRecent conversation:\n" +
+                  (history.length
+                    ? history.map(item =>
+                        (item.role === "user" ? "Visitor: " : "Companion: ") +
+                        item.content
+                      ).join("\n")
+                    : "This is the beginning of the conversation.")
+              }
+            ],
+            max_completion_tokens: 180,
+            temperature: 0.9,
+            chat_template_kwargs: {
+              enable_thinking: false
+            }
+          }
+        );
+
+        const welcome = cleanText(
+          result?.response ||
+          result?.choices?.[0]?.message?.content ||
+          result?.output_text ||
+          result?.text,
+          1000
+        );
+
+        if (!welcome) {
+          return json({
+            error: "Could not create a daily welcome."
+          }, 502);
+        }
+
+        // The unique table constraint prevents duplicate daily welcomes.
+        const saved = await env.DB.batch([
+          env.DB.prepare(`
+            INSERT INTO daily_welcomes
+              (uid, character_id, welcome_date)
+            VALUES (?, ?, ?)
+            ON CONFLICT(uid, character_id, welcome_date) DO NOTHING
+          `).bind(
+            user.uid,
+            characterId,
+            welcomeDate
+          ),
+
+          env.DB.prepare(`
+            INSERT INTO conversations
+              (uid, character_id, role, content)
+            SELECT ?, ?, 'assistant', ?
+            WHERE changes() = 1
+          `).bind(
+            user.uid,
+            characterId,
+            welcome
+          )
+        ]);
+
+        if (Number(saved?.[0]?.meta?.changes || 0) !== 1) {
+          return json({
+            welcome: null,
+            alreadyShown: true
+          });
+        }
+
+        return json({
+          welcome,
+          alreadyShown: false,
+          character: profile.name,
+          mood: dailyMood
+        });
+
+      } catch (error) {
+        console.error(
+          "Daily welcome API error:",
+          error?.message || String(error)
+        );
+
+        const message = error?.message || "";
+
+        if (
+          message.includes("sign in") ||
+          message.includes("sign-in") ||
+          message.includes("token") ||
+          message.includes("Google signing")
+        ) {
+          return json({ error: message }, 401);
+        }
+
+        return json({
+          error: "Could not create your daily welcome. Please try again."
+        }, 502);
       }
     }
 
@@ -727,7 +923,10 @@ Conversation instructions:
         });
 
       } catch (error) {
-        console.error("Image API error:", error?.stack || error?.message || String(error));
+        console.error(
+          "Image API error:",
+          error?.stack || error?.message || String(error)
+        );
 
         return json({
           error: error?.message || "Image generation failed."
@@ -825,7 +1024,11 @@ Conversation instructions:
         });
 
       } catch (error) {
-        console.error("Kling video API error:", error?.message || String(error), error?.stack || "");
+        console.error(
+          "Kling video API error:",
+          error?.message || String(error),
+          error?.stack || ""
+        );
 
         return json({
           error: "Video generation could not be started."
@@ -880,7 +1083,10 @@ Conversation instructions:
         });
 
       } catch (error) {
-        console.error("Kling status API error:", error?.message || String(error));
+        console.error(
+          "Kling status API error:",
+          error?.message || String(error)
+        );
 
         return json({
           error: "Could not check video status."
