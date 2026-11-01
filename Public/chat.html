@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -119,13 +118,11 @@ button:disabled{opacity:.48;cursor:wait}
     <span id="chatAccountStatus" aria-live="polite">Checking…</span>
   </div>
 </header>
-
 <div id="relationshipText">💗 Relationship: loading…</div>
 <main id="messages">
   <div class="welcome">A little space for good conversations, sweet moments and creativity ✨</div>
 </main>
 <div id="typing">Your Heartmate is typing… 💗</div>
-
 <div class="footer">
   <div class="feature-strip">
     <button type="button" onclick="loadDailyPhoto()">🌅 Daily photo</button>
@@ -148,7 +145,6 @@ button:disabled{opacity:.48;cursor:wait}
     <button class="send-button" id="sendButton" type="button">Send</button>
   </div>
 </div>
-
 <div class="modal-backdrop" id="mediaModal" role="dialog" aria-modal="true">
   <div class="modal">
     <h3 id="modalTitle">Create something lovely ✨</h3>
@@ -160,7 +156,6 @@ button:disabled{opacity:.48;cursor:wait}
     </div>
   </div>
 </div>
-
 <div class="panel-backdrop" id="profilePanel">
  <section class="panel">
   <h3>👤 Your companion profile</h3>
@@ -180,7 +175,6 @@ button:disabled{opacity:.48;cursor:wait}
   <p class="panel-note" id="profileStatus"></p>
  </section>
 </div>
-
 <div class="panel-backdrop" id="relationshipPanel">
  <section class="panel">
   <h3>💞 Your relationship</h3>
@@ -191,7 +185,6 @@ button:disabled{opacity:.48;cursor:wait}
   <div class="modal-actions"><button type="button" onclick="closePanels()">Close</button></div>
  </section>
 </div>
-
 <div class="panel-backdrop" id="settingsPanel">
  <section class="panel">
   <h3>⚙️ Companion settings</h3>
@@ -207,7 +200,6 @@ button:disabled{opacity:.48;cursor:wait}
   <p class="panel-note" id="settingsStatus"></p>
  </section>
 </div>
-
 <div class="gallery-overlay" id="galleryOverlay">
  <div class="gallery-top">
   <h2 id="galleryTitle">Photos 💗</h2>
@@ -220,7 +212,6 @@ button:disabled{opacity:.48;cursor:wait}
  <button class="viewer-close" type="button" onclick="closeViewer()">×</button>
  <img id="viewerImage" src="" alt="Full-size photo" onclick="event.stopPropagation()">
 </div>
-
 <script>
 const chatHistory = [];
 let resolveAuthReady;
@@ -232,7 +223,6 @@ window.heartmateAuth = {
   return await this.user.getIdToken();
  }
 };
-
 const params = new URLSearchParams(location.search);
 const names = {
  aria:"Aria",maya:"Maya",luna:"Luna",sofia:"Sofia",ella:"Ella",
@@ -257,11 +247,9 @@ const companionIndex = Object.keys(names).indexOf(character);
 const now = new Date();
 const dayNumber = Math.floor(new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime()/86400000);
 const dailyMood = moods[(dayNumber + companionIndex * 3) % moods.length];
-
 document.getElementById("girlName").textContent = girlName;
 document.getElementById("dailyMood").textContent = dailyMood.emoji + " Today's mood: " + dailyMood.name;
 document.getElementById("typing").textContent = girlName + " is typing… 💗";
-
 const $ = id => document.getElementById(id);
 const messages = $("messages"), input = $("messageInput"), sendButton = $("sendButton");
 const typing = $("typing"), photoStatus = $("photoStatus"), videoStatus = $("videoStatus");
@@ -271,7 +259,6 @@ let busy = false, mediaChoice = "image", voiceReplies = true, mediaRecorder = nu
 let historyLoadPromise = Promise.resolve(), historyLoadedForUid = "";
 let dailyWelcomeLoadForUid = "", dailyWelcomePromise = null;
 let voiceSettingsLoadedForUid = "", currentAudio = null;
-
 function scrollToBottom(){messages.scrollTop=messages.scrollHeight}
 function resetChatDisplay(){
  chatHistory.length=0;
@@ -302,8 +289,7 @@ function addVideo(url,description){
  video.src=url;video.controls=true;video.playsInline=true;video.preload="metadata";
  box.append(caption,video);messages.appendChild(box);scrollToBottom();
 }
-
-/* UPDATED: LOAD EACH PANEL WHEN OPENED */
+/* LOAD EACH PANEL WHEN OPENED */
 function openPanel(id){
  $(id).classList.add("open");
  if(id==="profilePanel")loadProfile();
@@ -312,7 +298,6 @@ function openPanel(id){
 }
 function closePanels(){document.querySelectorAll(".panel-backdrop").forEach(p=>p.classList.remove("open"))}
 document.querySelectorAll(".panel-backdrop").forEach(p=>p.addEventListener("click",e=>{if(e.target===p)p.classList.remove("open")}));
-
 /* SAVED CONVERSATION RESTORATION */
 async function loadSavedHistory(user){
  if(!user){
@@ -351,7 +336,6 @@ async function loadSavedHistory(user){
  }
 }
 window.heartmateLoadHistory=loadSavedHistory;
-
 async function loadDailyWelcome(user){
  if(!user)return;
  if(dailyWelcomeLoadForUid===user.uid)return dailyWelcomePromise;
@@ -378,7 +362,6 @@ async function loadDailyWelcome(user){
  return dailyWelcomePromise;
 }
 window.heartmateLoadDailyWelcome=loadDailyWelcome;
-
 async function api(path,options={}){
  const token=await authToken();
  const headers={...(options.headers||{}),"Authorization":"Bearer "+token};
@@ -391,7 +374,6 @@ async function api(path,options={}){
  }
  return response;
 }
-
 /* COMPANION PROFILE */
 async function loadProfile(){
  $("profileStatus").textContent="Loading profile…";
@@ -405,6 +387,7 @@ async function loadProfile(){
   $("profileStatus").textContent="Profile loaded.";
  }catch(error){$("profileStatus").textContent=error.message}
 }
+/* FIXED: SEND INTERESTS AS A STRING, NOT AN ARRAY */
 async function saveProfile(){
  $("profileStatus").textContent="Saving…";
  try{
@@ -413,15 +396,15 @@ async function saveProfile(){
    body:JSON.stringify({
     character,
     bio:$("profileBio").value.trim(),
-    interests:$("profileInterests").value.split(",").map(x=>x.trim()).filter(Boolean),
+    interests:$("profileInterests").value.trim(),
     preferences:$("profilePreferences").value.trim()
    })
   });
-  await response.json().catch(()=>({}));
+  const data=await response.json().catch(()=>({}));
+  if(data.success===false)throw new Error(data.error||"Profile could not be saved.");
   $("profileStatus").textContent="Profile saved. 💗";
  }catch(error){$("profileStatus").textContent=error.message}
 }
-
 /* RELATIONSHIP LEVELS */
 async function loadRelationship(){
  try{
@@ -440,7 +423,6 @@ async function loadRelationship(){
   $("relationshipDetails").textContent=error.message;
  }
 }
-
 /* DAILY COMPANION PHOTO */
 async function loadDailyPhoto(){
  photoStatus.style.display="block";
@@ -459,7 +441,6 @@ async function loadDailyPhoto(){
   setTimeout(()=>{photoStatus.style.display="none"},3500);
  }
 }
-
 /* VOICE SETTINGS */
 async function loadSettings(){
  try{
@@ -510,7 +491,6 @@ async function toggleVoiceReplies(){
   addMessage("I couldn't change voice settings: "+error.message,"bot");
  }
 }
-
 /* SPEAK AI REPLIES */
 async function speakReply(text){
  if(!voiceReplies||!text)return;
@@ -535,7 +515,6 @@ async function speakReply(text){
   voiceStatus.style.display="none";
  }
 }
-
 /* RECORD AND TRANSCRIBE VOICE INPUT */
 async function startVoiceRecording(){
  if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
@@ -610,7 +589,6 @@ $("recordButton").addEventListener("click",()=>{
  }
  startVoiceRecording();
 });
-
 /* PHOTO GALLERY */
 const photoCounts={
  aria:4,zara:4,ivy:6,ruby:10,nina:4,lila:5,amber:8,violet:10,
@@ -642,7 +620,6 @@ function openGallery(){
 function closeGallery(){$("galleryOverlay").classList.remove("open")}
 function showViewer(src){$("viewerImage").src=src;$("photoViewer").classList.add("open")}
 function closeViewer(){$("photoViewer").classList.remove("open")}
-
 /* MEDIA CREATION */
 function detectMediaRequest(message){
  const text=message.toLowerCase();
@@ -674,7 +651,6 @@ confirmMedia.addEventListener("click",async()=>{
  addMessage((mediaChoice==="video"?"Create a video of ":"Create a picture of ")+girlName+": "+scene,"user");
  if(mediaChoice==="video")await generateVideo(scene);else await generateImage(scene);
 });
-
 /* CHAT */
 async function sendChat(message){
  if(!message||busy)return;
@@ -730,7 +706,6 @@ input.addEventListener("keydown",event=>{
   sendChat(input.value.trim());
  }
 });
-
 /* IMAGE GENERATION */
 async function generateImage(scene){
  if(busy)return;
@@ -760,7 +735,6 @@ async function generateImage(scene){
   photoStatus.style.display="none";
  }
 }
-
 /* VIDEO GENERATION */
 async function generateVideo(scene){
  if(busy)return;
@@ -801,7 +775,6 @@ async function generateVideo(scene){
   videoStatus.style.display="none";
  }
 }
-
 /* KEYBOARD AND PANEL CONTROLS */
 document.addEventListener("keydown",event=>{
  if(event.key==="Escape"){
@@ -811,14 +784,11 @@ document.addEventListener("keydown",event=>{
   closePanels();
  }
 });
-
 /* FIREBASE SIGN-IN */
 </script>
-
 <script type="module">
 import {initializeApp,getApps}
  from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-
 import {
  getAuth,
  GoogleAuthProvider,
@@ -826,7 +796,6 @@ import {
  signOut,
  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-
 const firebaseConfig={
  apiKey:"AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",
  authDomain:"heartmate-ai-bd441.firebaseapp.com",
@@ -836,15 +805,12 @@ const firebaseConfig={
  appId:"1:929844208432:web:0afdab16bd82f11240def5",
  measurementId:"G-L0Z6XE8R8B"
 };
-
 const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const provider=new GoogleAuthProvider();
-
 const login=document.getElementById("chatSignIn");
 const logout=document.getElementById("chatSignOut");
 const accountStatus=document.getElementById("chatAccountStatus");
-
 login.addEventListener("click",async()=>{
  login.disabled=true;
  accountStatus.textContent="Opening Google…";
@@ -858,7 +824,6 @@ login.addEventListener("click",async()=>{
   login.disabled=false;
  }
 });
-
 logout.addEventListener("click",async()=>{
  logout.disabled=true;
  try{
@@ -870,10 +835,8 @@ logout.addEventListener("click",async()=>{
   logout.disabled=false;
  }
 });
-
 onAuthStateChanged(auth,user=>{
  window.heartmateAuth.user=user;
-
  if(user){
   login.hidden=true;
   logout.hidden=false;
@@ -883,9 +846,7 @@ onAuthStateChanged(auth,user=>{
   logout.hidden=true;
   accountStatus.textContent="Not signed in";
  }
-
  historyLoadPromise=window.heartmateLoadHistory(user);
-
  if(user){
   historyLoadPromise=historyLoadPromise.then(async()=>{
    if(window.heartmateAuth.user?.uid!==user.uid)return;
@@ -898,7 +859,6 @@ onAuthStateChanged(auth,user=>{
  }else{
   $("relationshipText").textContent="💗 Sign in to see relationship progress";
  }
-
  if(resolveAuthReady){
   resolveAuthReady(user);
   resolveAuthReady=null;
