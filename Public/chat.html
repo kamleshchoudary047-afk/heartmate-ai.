@@ -1,868 +1,671 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#100d1b">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#100b1b">
 <title>Heartmate AI — Chat</title>
 <style>
 :root {
-  --bg:#100d1b; --panel:#191426; --panel2:#211a30; --line:rgba(255,255,255,.09);
-  --pink:#ff6fae; --pink2:#d94f9d; --lav:#a88bff; --muted:#b9afc9; --white:#fff9ff;
+  --bg:#100b1b;
+  --panel:#1d152b;
+  --panel2:#291d39;
+  --pink:#ff83bd;
+  --lav:#b69aff;
+  --text:#fff8ff;
+  --muted:#c5b5d5;
 }
 *{box-sizing:border-box}
-body{margin:0;min-height:100dvh;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--white);
-background:radial-gradient(ellipse at 12% 0%,rgba(151,83,190,.22),transparent 38%),radial-gradient(ellipse at 95% 35%,rgba(226,76,148,.13),transparent 34%),var(--bg)}
-header{min-height:78px;padding:12px 17px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:5;background:rgba(20,15,31,.9);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
-.back{width:38px;height:38px;border:1px solid var(--line);border-radius:14px;display:grid;place-items:center;color:white;text-decoration:none;font-size:25px;background:rgba(255,255,255,.04);flex-shrink:0}
-.avatar{width:43px;height:43px;border-radius:15px;display:grid;place-items:center;font-size:22px;background:linear-gradient(145deg,#ff8abb,#9a70f3);flex-shrink:0}
-.profile{min-width:0}.profile h3{margin:0 0 4px;font-size:15px}.profile small{color:#a8e6c0;font-size:11px}
-.profile small:before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#68e5a0;margin-right:6px}
-#dailyMood{display:block;color:#ffb6d7;font-size:11px;margin-top:3px}
-.header-actions{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.header-actions button,.account-controls button{border:1px solid rgba(255,255,255,.15);border-radius:11px;padding:8px 9px;background:rgba(255,255,255,.07);color:white;font-size:11px;cursor:pointer}
-.account-controls{display:flex;align-items:center;gap:6px}
-.account-controls button:first-child{background:linear-gradient(135deg,#e967aa,#9863d7)}
-#chatAccountStatus{color:var(--muted);font-size:9px;max-width:90px;overflow-wrap:anywhere;text-align:right}
-[hidden]{display:none!important}
-#messages{height:calc(100dvh - 178px);min-height:300px;overflow-y:auto;padding:22px 16px 26px;display:flex;flex-direction:column;gap:13px;scroll-behavior:smooth}
-.welcome{align-self:center;text-align:center;max-width:300px;margin:5px auto 12px;color:var(--muted);font-size:12px;line-height:1.5}
-.message{max-width:min(84%,440px);padding:12px 15px;border-radius:19px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;box-shadow:0 5px 18px rgba(0,0,0,.12)}
-.bot{align-self:flex-start;background:linear-gradient(145deg,#292139,#241d32);border:1px solid rgba(196,160,255,.12);border-bottom-left-radius:6px}
-.user{align-self:flex-end;background:linear-gradient(135deg,#e85eaa,#9c63d7);border-bottom-right-radius:6px;color:white}
-.image-message{max-width:min(86%,340px);padding:10px;background:#241d32;border:1px solid var(--line);border-radius:18px;align-self:flex-start}
-.image-message img,.image-message video{display:block;width:100%;max-width:320px;border-radius:12px}
-.media-caption{font-size:12px;color:#e8d7f7;margin:2px 3px 9px}
-#typing{display:none;padding:0 18px 8px;color:#cbb9df;font-size:12px}
-.footer{position:fixed;bottom:0;left:0;right:0;z-index:6;padding:9px 12px calc(9px + env(safe-area-inset-bottom));background:rgba(24,19,36,.96);backdrop-filter:blur(20px);border-top:1px solid var(--line)}
-.composer{display:flex;align-items:center;gap:7px;max-width:760px;margin:auto}
-#messageInput{flex:1;min-width:0;height:46px;border:1px solid rgba(198,169,235,.2);border-radius:15px;padding:0 13px;background:#241e32;color:white;font-size:14px;outline:none}
-#messageInput:focus,.scene-input:focus,.panel-input:focus{border-color:#c17cda;box-shadow:0 0 0 3px rgba(193,124,218,.12)}
-#messageInput::placeholder,.scene-input::placeholder,.panel-input::placeholder{color:#9f93b0}
-.icon-button,.send-button{height:44px;border:0;cursor:pointer;color:white}
-.icon-button{width:43px;border-radius:14px;background:linear-gradient(145deg,#8058bd,#ba5d9e);font-size:21px}
-.send-button{padding:0 15px;border-radius:14px;background:linear-gradient(135deg,#ff75b4,#b45fe0);font-weight:700}
-button:disabled{opacity:.48;cursor:wait}
-.create-wrap{position:relative}
-.create-menu{display:none;position:absolute;bottom:55px;left:0;width:184px;padding:8px;border:1px solid rgba(216,183,255,.2);border-radius:18px;background:#241c32}
-.create-menu.open{display:grid;gap:6px}
-.create-option{width:100%;border:0;border-radius:12px;padding:12px;text-align:left;background:rgba(255,255,255,.06);color:white;font-size:13px}
-.status{display:none;max-width:760px;margin:0 auto 8px;padding:0 5px;color:#d9bde9;font-size:12px}
-.modal-backdrop,.panel-backdrop{display:none;position:fixed;inset:0;z-index:10;background:rgba(5,3,10,.76);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;padding:12px}
-.modal-backdrop.open,.panel-backdrop.open{display:flex}
-.modal,.panel{width:100%;max-width:480px;max-height:85dvh;overflow:auto;padding:20px;border:1px solid rgba(219,178,255,.2);border-radius:24px;background:linear-gradient(145deg,#2b203b,#191426);box-shadow:0 20px 70px rgba(0,0,0,.5)}
-.modal h3,.panel h3{margin:0 0 8px;font-size:18px}
-.modal p,.panel p{margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.5}
-.scene-input,.panel-input{width:100%;min-height:75px;resize:vertical;border:1px solid rgba(198,169,235,.2);border-radius:14px;padding:12px;background:#171222;color:white;font:14px Arial,sans-serif;outline:none;margin:5px 0}
-.panel-input{min-height:42px}
-.modal-actions{display:flex;gap:9px;margin-top:13px}
-.modal-actions button,.panel-action{flex:1;border:0;border-radius:13px;padding:12px;color:white;font-weight:700;background:linear-gradient(135deg,#e967aa,#9863d7)}
-.modal-actions .cancel,.panel-action.secondary{background:rgba(255,255,255,.09)}
-.panel-section{padding:12px 0;border-top:1px solid var(--line)}
-.panel-section label{display:block;color:#eadcf7;font-size:12px;margin:8px 0 5px}
-.panel-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.panel-row button{border:0;border-radius:11px;padding:9px 12px;background:#8058bd;color:white}
-.panel-note{font-size:11px;color:var(--muted);line-height:1.5}
-.gallery-overlay{display:none;position:fixed;inset:0;z-index:20;background:#100d1b;overflow-y:auto;padding:18px}
-.gallery-overlay.open{display:block}
-.gallery-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
-.gallery-top h2{font-size:19px;margin:0}
-.gallery-close,.viewer-close{border:0;border-radius:12px;background:#292139;color:white;font-size:23px;width:42px;height:42px}
-.gallery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:800px;margin:auto}
-.gallery-grid img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:13px;background:#292139;cursor:pointer}
-.gallery-empty{display:none;color:#cbb9df;text-align:center;padding:35px 12px;line-height:1.6}
-.photo-viewer{display:none;position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.96);align-items:center;justify-content:center;padding:16px}
-.photo-viewer.open{display:flex}
-.photo-viewer img{max-width:100%;max-height:85dvh;object-fit:contain;border-radius:10px}
-.viewer-close{position:absolute;top:18px;right:18px;border-radius:50%}
-.feature-strip{display:flex;gap:6px;overflow-x:auto;padding:7px 0 9px;max-width:760px;margin:auto}
-.feature-strip button{white-space:nowrap;border:1px solid rgba(255,255,255,.13);border-radius:11px;padding:7px 10px;background:#292139;color:#f8eafa;font-size:11px}
-#relationshipText{font-size:11px;color:#ffc2df;padding:0 5px 5px;max-width:760px;margin:auto}
-#recordButton.recording{background:#c83c65;animation:pulse 1s infinite}
-@keyframes pulse{50%{opacity:.55}}
-@media(min-width:700px){
- #messages{padding-left:max(22px,calc((100vw - 720px)/2));padding-right:max(22px,calc((100vw - 720px)/2))}
- .footer{padding-left:22px;padding-right:22px}
- .gallery-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+body {
+  margin:0;
+  min-height:100dvh;
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(ellipse at 10% 0%,#512d6a66,transparent 45%),
+    radial-gradient(ellipse at 100% 40%,#a33e7550,transparent 40%),
+    var(--bg);
 }
-@media(max-width:480px){
- header{gap:7px;padding:9px}
- .avatar{width:36px;height:36px;font-size:19px}
- .profile h3{font-size:13px}
- .header-actions{gap:4px}
- .header-actions button{padding:7px;font-size:10px}
- .account-controls{max-width:100px}
- #chatAccountStatus{display:none}
- .send-button{padding:0 11px}
+header {
+  position:sticky;
+  top:0;
+  z-index:5;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  padding-top:max(14px,env(safe-area-inset-top));
+  background:#160f23eF;
+  border-bottom:1px solid #ffffff18;
+  backdrop-filter:blur(18px);
+}
+.back {
+  color:white;
+  text-decoration:none;
+  font-size:27px;
+}
+.avatar {
+  width:43px;
+  height:43px;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  background:linear-gradient(135deg,#ff83bd,#9669db);
+  font-size:23px;
+}
+.profile h3{margin:0 0 4px;font-size:15px}
+.profile small{color:#8ce5ae;font-size:11px}
+#account {
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+button {
+  border:0;
+  color:white;
+  cursor:pointer;
+  font:inherit;
+}
+.small-button {
+  padding:9px 11px;
+  border:1px solid #ffffff22;
+  border-radius:11px;
+  background:#ffffff10;
+  font-size:11px;
+}
+#messages {
+  height:calc(100dvh - 190px);
+  min-height:300px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  padding:22px 15px 30px;
+  scroll-behavior:smooth;
+}
+.welcome {
+  max-width:320px;
+  margin:12px auto;
+  padding:15px;
+  border:1px solid #ffffff15;
+  border-radius:18px;
+  background:#ffffff08;
+  color:var(--muted);
+  text-align:center;
+  line-height:1.6;
+  font-size:13px;
+}
+.message {
+  max-width:88%;
+  padding:13px 16px;
+  border-radius:20px;
+  font-size:14px;
+  line-height:1.6;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  animation:appear .2s ease;
+}
+.bot {
+  align-self:flex-start;
+  background:linear-gradient(145deg,#302440,#21192e);
+  border:1px solid #c6a0ff25;
+  border-bottom-left-radius:6px;
+}
+.user {
+  align-self:flex-end;
+  background:linear-gradient(135deg,#ed75b4,#a276e6);
+  border-bottom-right-radius:6px;
+}
+.media {
+  max-width:88%;
+  padding:9px;
+  border-radius:17px;
+  background:var(--panel2);
+}
+.media img,.media video {
+  display:block;
+  width:100%;
+  max-width:320px;
+  border-radius:12px;
+}
+#typing {
+  display:none;
+  padding:0 18px 10px;
+  color:#e8bce0;
+  font-size:12px;
+}
+.footer {
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:6;
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+  background:#160f23f2;
+  border-top:1px solid #ffffff19;
+  backdrop-filter:blur(20px);
+}
+.tools {
+  display:flex;
+  gap:7px;
+  max-width:760px;
+  margin:0 auto 10px;
+  overflow-x:auto;
+}
+.tools button {
+  white-space:nowrap;
+  padding:8px 11px;
+  border:1px solid #ffffff20;
+  border-radius:12px;
+  background:#2b203b;
+  font-size:11px;
+}
+.composer {
+  display:flex;
+  gap:8px;
+  max-width:760px;
+  margin:auto;
+}
+#messageInput {
+  flex:1;
+  min-width:0;
+  height:48px;
+  padding:0 14px;
+  border:1px solid #c9a5ed40;
+  border-radius:15px;
+  outline:none;
+  background:#281f36;
+  color:white;
+  font-size:16px;
+}
+#messageInput:focus {
+  border-color:var(--pink);
+  box-shadow:0 0 0 3px #ff83bd20;
+}
+.action {
+  min-width:45px;
+  height:46px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#a16cdb,#d65eaa);
+  font-size:19px;
+}
+#sendButton {
+  padding:0 17px;
+  background:linear-gradient(135deg,#ff83bd,#a477e9);
+  font-size:13px;
+  font-weight:700;
+}
+#status {
+  max-width:760px;
+  margin:0 auto 8px;
+  color:#e8bce0;
+  font-size:12px;
+}
+.modal {
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:10;
+  align-items:flex-end;
+  justify-content:center;
+  padding:12px;
+  background:#000b;
+}
+.modal.open{display:flex}
+.modal-card {
+  width:100%;
+  max-width:480px;
+  padding:20px;
+  border:1px solid #d5b1f944;
+  border-radius:24px;
+  background:linear-gradient(145deg,#30213f,#171020);
+}
+.modal-card h3{margin:0 0 8px}
+.modal-card p{color:var(--muted);font-size:13px;line-height:1.5}
+#sceneInput {
+  width:100%;
+  min-height:100px;
+  padding:13px;
+  border:1px solid #ffffff25;
+  border-radius:14px;
+  background:#171020;
+  color:white;
+  font:14px inherit;
+}
+.modal-actions{display:flex;gap:9px;margin-top:13px}
+.modal-actions button {
+  flex:1;
+  padding:13px;
+  border-radius:13px;
+  background:linear-gradient(135deg,#ed75b4,#9d6cdb);
+}
+.modal-actions .cancel{background:#ffffff15}
+@keyframes appear {
+  from{opacity:0;transform:translateY(7px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@media(min-width:700px) {
+  #messages {
+    padding-left:max(20px,calc((100vw - 720px)/2));
+    padding-right:max(20px,calc((100vw - 720px)/2));
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    animation-duration:.01ms!important;
+    transition-duration:.01ms!important;
+  }
 }
 </style>
 </head>
 <body>
+
 <header>
-  <a class="back" href="index.html" aria-label="Back">‹</a>
+  <a class="back" href="index.html">‹</a>
   <div class="avatar">💗</div>
   <div class="profile">
     <h3 id="girlName">Your Heartmate</h3>
-    <small>Here with you</small>
-    <span id="dailyMood"></span>
+    <small>● Here with you</small>
   </div>
-  <div class="header-actions">
-    <button type="button" onclick="openGallery()">📸</button>
-    <button type="button" onclick="openPanel('profilePanel')">👤</button>
-    <button type="button" onclick="openPanel('relationshipPanel')">💞</button>
-    <button type="button" onclick="openPanel('settingsPanel')">⚙️</button>
-  </div>
-  <div class="account-controls">
-    <button id="chatSignIn" type="button">Sign in</button>
-    <button id="chatSignOut" type="button" hidden>Sign out</button>
-    <span id="chatAccountStatus" aria-live="polite">Checking…</span>
+  <div id="account">
+    <button class="small-button" id="signIn">Sign in</button>
+    <button class="small-button" id="signOut" hidden>Sign out</button>
   </div>
 </header>
-<div id="relationshipText">💗 Relationship: loading…</div>
+
 <main id="messages">
-  <div class="welcome">A little space for good conversations, sweet moments and creativity ✨</div>
+  <div class="welcome">
+    Welcome to Heartmate AI 💗<br>
+    A little space for conversations, sweet moments and creativity.
+  </div>
 </main>
+
 <div id="typing">Your Heartmate is typing… 💗</div>
-<div class="footer">
-  <div class="feature-strip">
-    <button type="button" onclick="loadDailyPhoto()">🌅 Daily photo</button>
-    <button type="button" onclick="toggleVoiceReplies()">🔊 Voice replies</button>
-    <button type="button" onclick="openPanel('settingsPanel')">🔔 Reminders</button>
+
+<footer class="footer">
+  <div class="tools">
+    <button onclick="openMedia('image')">📸 Create image</button>
+    <button onclick="openMedia('video')">🎬 Create video</button>
+    <button onclick="toggleVoice()">🔊 Voice replies</button>
+    <button onclick="recordVoice()">🎙️ Voice input</button>
   </div>
-  <div class="status" id="photoStatus">Creating your picture… Please wait.</div>
-  <div class="status" id="videoStatus">Creating your video… This may take a few minutes.</div>
-  <div class="status" id="voiceStatus">Preparing voice…</div>
+  <div id="status"></div>
   <div class="composer">
-    <div class="create-wrap">
-      <button class="icon-button" id="createButton" type="button" aria-label="Create image or video">＋</button>
-      <div class="create-menu" id="createMenu">
-        <button class="create-option" id="openImage" type="button">📸 Create image</button>
-        <button class="create-option" id="openVideo" type="button">🎬 Create video</button>
-      </div>
-    </div>
-    <button class="icon-button" id="recordButton" type="button" aria-label="Record voice message">🎙️</button>
-    <input id="messageInput" type="text" placeholder="Write something sweet…" autocomplete="off">
-    <button class="send-button" id="sendButton" type="button">Send</button>
+    <input id="messageInput" placeholder="Write something sweet…" autocomplete="off">
+    <button class="action" onclick="recordVoice()" aria-label="Voice input">🎙️</button>
+    <button class="action" id="sendButton">➤</button>
   </div>
-</div>
-<div class="modal-backdrop" id="mediaModal" role="dialog" aria-modal="true">
-  <div class="modal">
+</footer>
+
+<div class="modal" id="mediaModal">
+  <div class="modal-card">
     <h3 id="modalTitle">Create something lovely ✨</h3>
-    <p id="modalDescription">Describe the scene you'd like your Heartmate to create.</p>
-    <textarea class="scene-input" id="sceneInput" placeholder="A beautiful sunset, elegant outfit, warm cinematic lighting…"></textarea>
+    <p id="modalDescription">Describe what you want to create.</p>
+    <textarea id="sceneInput" placeholder="Describe your scene…"></textarea>
     <div class="modal-actions">
-      <button class="cancel" id="cancelModal" type="button">Cancel</button>
-      <button id="confirmMedia" type="button">Create image</button>
+      <button class="cancel" onclick="closeMedia()">Cancel</button>
+      <button id="createMediaButton">Create</button>
     </div>
   </div>
 </div>
-<div class="panel-backdrop" id="profilePanel">
- <section class="panel">
-  <h3>👤 Your companion profile</h3>
-  <p>Share details that help your Heartmate personalize conversations.</p>
-  <div class="panel-section">
-   <label for="profileBio">About you</label>
-   <textarea class="panel-input" id="profileBio" placeholder="A little about yourself…"></textarea>
-   <label for="profileInterests">Your interests</label>
-   <input class="panel-input" id="profileInterests" placeholder="Music, travel, movies…">
-   <label for="profilePreferences">Conversation preferences</label>
-   <textarea class="panel-input" id="profilePreferences" placeholder="Topics and conversation style you enjoy…"></textarea>
-  </div>
-  <div class="modal-actions">
-   <button class="cancel" type="button" onclick="closePanels()">Close</button>
-   <button type="button" onclick="saveProfile()">Save profile</button>
-  </div>
-  <p class="panel-note" id="profileStatus"></p>
- </section>
-</div>
-<div class="panel-backdrop" id="relationshipPanel">
- <section class="panel">
-  <h3>💞 Your relationship</h3>
-  <p id="relationshipDetails">Loading your relationship progress…</p>
-  <div class="panel-section">
-   <div class="panel-note">Keep chatting to build affection and reach new milestones. Levels are progress indicators; they do not unlock paid features.</div>
-  </div>
-  <div class="modal-actions"><button type="button" onclick="closePanels()">Close</button></div>
- </section>
-</div>
-<div class="panel-backdrop" id="settingsPanel">
- <section class="panel">
-  <h3>⚙️ Companion settings</h3>
-  <div class="panel-section">
-   <label><input type="checkbox" id="voiceEnabled" checked> Speak AI replies aloud</label>
-   <label><input type="checkbox" id="notificationsEnabled"> Enable reminder preference</label>
-   <p class="panel-note">Reminder settings are saved as preferences only. Background push notifications are not enabled yet.</p>
-  </div>
-  <div class="modal-actions">
-   <button class="cancel" type="button" onclick="closePanels()">Close</button>
-   <button type="button" onclick="saveSettings()">Save settings</button>
-  </div>
-  <p class="panel-note" id="settingsStatus"></p>
- </section>
-</div>
-<div class="gallery-overlay" id="galleryOverlay">
- <div class="gallery-top">
-  <h2 id="galleryTitle">Photos 💗</h2>
-  <button class="gallery-close" type="button" onclick="closeGallery()">×</button>
- </div>
- <div class="gallery-grid" id="galleryGrid"></div>
- <div class="gallery-empty" id="galleryEmpty">No photos could be loaded. Please check the uploaded photo filenames.</div>
-</div>
-<div class="photo-viewer" id="photoViewer" onclick="closeViewer()">
- <button class="viewer-close" type="button" onclick="closeViewer()">×</button>
- <img id="viewerImage" src="" alt="Full-size photo" onclick="event.stopPropagation()">
-</div>
+
 <script>
-const chatHistory = [];
-let resolveAuthReady;
-window.heartmateAuthReady = new Promise(resolve => { resolveAuthReady = resolve; });
-window.heartmateAuth = {
- user:null,
- async getToken() {
-  if (!this.user) throw new Error("Please sign in with Google to chat.");
-  return await this.user.getIdToken();
- }
-};
 const params = new URLSearchParams(location.search);
 const names = {
- aria:"Aria",maya:"Maya",luna:"Luna",sofia:"Sofia",ella:"Ella",
- nova:"Nova",zara:"Zara",ivy:"Ivy",ruby:"Ruby",chloe:"Chloe",
- nina:"Nina",lila:"Lila",amber:"Amber",violet:"Violet",
- scarlett:"Scarlett",jade:"Jade",rose:"Rose",stella:"Stella",
- kira:"Kira",diana:"Diana",freya:"Freya",sienna:"Sienna",
- valentina:"Valentina",aurora:"Aurora",ananya:"Ananya",aadhya:"Aadhya",
- meera:"Meera",kiara:"Kiara",ishita:"Ishita",kavya:"Kavya",
- diya:"Diya",riya:"Riya",nisha:"Nisha",pooja:"Pooja",tara:"Tara",priya:"Priya"
+  aria:"Aria",maya:"Maya",luna:"Luna",sofia:"Sofia",
+  ella:"Ella",nova:"Nova",zara:"Zara",ivy:"Ivy",
+  ruby:"Ruby",chloe:"Chloe",nina:"Nina",rose:"Rose"
 };
-const requestedCharacter = (params.get("girl") || "aria").toLowerCase();
-const character = names[requestedCharacter] ? requestedCharacter : "aria";
+const requested = (params.get("girl") || "aria").toLowerCase();
+const character = names[requested] ? requested : "aria";
 const girlName = names[character];
-const moods = [
- {name:"Romantic",emoji:"💕"},{name:"Playful",emoji:"😉"},
- {name:"Mysterious",emoji:"🌙"},{name:"Spicy",emoji:"🔥"},
- {name:"Affectionate",emoji:"🥰"},{name:"Mischievous",emoji:"😈"},
- {name:"Adventurous",emoji:"✨"}
-];
-const companionIndex = Object.keys(names).indexOf(character);
-const now = new Date();
-const dayNumber = Math.floor(new Date(now.getFullYear(),now.getMonth(),now.getDate()).getTime()/86400000);
-const dailyMood = moods[(dayNumber + companionIndex * 3) % moods.length];
+
 document.getElementById("girlName").textContent = girlName;
-document.getElementById("dailyMood").textContent = dailyMood.emoji + " Today's mood: " + dailyMood.name;
-document.getElementById("typing").textContent = girlName + " is typing… 💗";
+
 const $ = id => document.getElementById(id);
-const messages = $("messages"), input = $("messageInput"), sendButton = $("sendButton");
-const typing = $("typing"), photoStatus = $("photoStatus"), videoStatus = $("videoStatus");
-const createButton = $("createButton"), createMenu = $("createMenu"), modal = $("mediaModal");
-const sceneInput = $("sceneInput"), confirmMedia = $("confirmMedia");
-let busy = false, mediaChoice = "image", voiceReplies = true, mediaRecorder = null;
-let historyLoadPromise = Promise.resolve(), historyLoadedForUid = "";
-let dailyWelcomeLoadForUid = "", dailyWelcomePromise = null;
-let voiceSettingsLoadedForUid = "", currentAudio = null;
-function scrollToBottom(){messages.scrollTop=messages.scrollHeight}
-function resetChatDisplay(){
- chatHistory.length=0;
- messages.innerHTML='<div class="welcome">A little space for good conversations, sweet moments and creativity ✨</div>';
- scrollToBottom();
+const messages = $("messages");
+const input = $("messageInput");
+const sendButton = $("sendButton");
+const typing = $("typing");
+const status = $("status");
+
+let user = null;
+let busy = false;
+let voiceReplies = true;
+let mediaType = "image";
+let chatHistory = [];
+let recorder = null;
+
+function addMessage(text, sender) {
+  const div = document.createElement("div");
+  div.className = "message " + sender;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
 }
-function accountStatusForHistory(text){$("chatAccountStatus").textContent=text}
-async function authToken(){
- await window.heartmateAuthReady;
- return await window.heartmateAuth.getToken();
+
+function addImage(url) {
+  const box = document.createElement("div");
+  box.className = "media";
+  const img = document.createElement("img");
+  img.src = url;
+  img.alt = girlName + " generated image";
+  box.appendChild(img);
+  messages.appendChild(box);
+  messages.scrollTop = messages.scrollHeight;
 }
-function addMessage(text,sender){
- const div=document.createElement("div");
- div.className="message "+sender;
- div.textContent=text;
- messages.appendChild(div);
- scrollToBottom();
+
+function addVideo(url) {
+  const box = document.createElement("div");
+  box.className = "media";
+  const video = document.createElement("video");
+  video.src = url;
+  video.controls = true;
+  video.playsInline = true;
+  box.appendChild(video);
+  messages.appendChild(box);
+  messages.scrollTop = messages.scrollHeight;
 }
-function addImage(url,description){
- const box=document.createElement("div"),caption=document.createElement("div"),image=document.createElement("img");
- box.className="image-message";caption.className="media-caption";
- caption.textContent="💕 "+description;image.src=url;image.alt=girlName+" picture";image.loading="lazy";
- box.append(caption,image);messages.appendChild(box);scrollToBottom();
+
+async function authToken() {
+  if (!user) throw new Error("Please sign in with Google first.");
+  return user.getIdToken();
 }
-function addVideo(url,description){
- const box=document.createElement("div"),caption=document.createElement("div"),video=document.createElement("video");
- box.className="image-message";caption.className="media-caption";caption.textContent="💕 "+description;
- video.src=url;video.controls=true;video.playsInline=true;video.preload="metadata";
- box.append(caption,video);messages.appendChild(box);scrollToBottom();
-}
-/* LOAD EACH PANEL WHEN OPENED */
-function openPanel(id){
- $(id).classList.add("open");
- if(id==="profilePanel")loadProfile();
- if(id==="relationshipPanel")loadRelationship();
- if(id==="settingsPanel")loadSettings();
-}
-function closePanels(){document.querySelectorAll(".panel-backdrop").forEach(p=>p.classList.remove("open"))}
-document.querySelectorAll(".panel-backdrop").forEach(p=>p.addEventListener("click",e=>{if(e.target===p)p.classList.remove("open")}));
-/* SAVED CONVERSATION RESTORATION */
-async function loadSavedHistory(user){
- if(!user){
-  historyLoadedForUid="";
-  dailyWelcomeLoadForUid="";
-  dailyWelcomePromise=null;
-  resetChatDisplay();
-  return;
- }
- if(historyLoadedForUid===user.uid)return;
- historyLoadedForUid=user.uid;
- resetChatDisplay();
- accountStatusForHistory("Loading chats…");
- try{
-  const token=await user.getIdToken();
-  const response=await fetch("/api/history?character="+encodeURIComponent(character),{
-   headers:{"Authorization":"Bearer "+token},cache:"no-store"
-  });
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(data.error||"Could not load saved chats.");
-  if(!window.heartmateAuth.user||window.heartmateAuth.user.uid!==user.uid)return;
-  if(Array.isArray(data.messages)&&data.messages.length){
-   messages.innerHTML="";
-   chatHistory.length=0;
-   for(const item of data.messages){
-    if(!["user","assistant"].includes(item.role)||typeof item.content!=="string")continue;
-    chatHistory.push({role:item.role,content:item.content});
-    addMessage(item.content,item.role==="user"?"user":"bot");
-   }
-  }
-  accountStatusForHistory(user.displayName||user.email||"Signed in");
- }catch(error){
-  console.error("History error:",error);
-  historyLoadedForUid="";
-  accountStatusForHistory("History unavailable");
- }
-}
-window.heartmateLoadHistory=loadSavedHistory;
-async function loadDailyWelcome(user){
- if(!user)return;
- if(dailyWelcomeLoadForUid===user.uid)return dailyWelcomePromise;
- dailyWelcomeLoadForUid=user.uid;
- dailyWelcomePromise=(async()=>{
-  try{
-   const date=new Date();
-   const localDate=[date.getFullYear(),String(date.getMonth()+1).padStart(2,"0"),String(date.getDate()).padStart(2,"0")].join("-");
-   const token=await user.getIdToken();
-   const response=await fetch("/api/daily-welcome",{
-    method:"POST",
-    headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
-    body:JSON.stringify({character,date:localDate,mood:dailyMood.name})
-   });
-   const data=await response.json().catch(()=>({}));
-   if(!response.ok)throw new Error(data.error||"Daily welcome unavailable.");
-   if(window.heartmateAuth.user?.uid!==user.uid)return;
-   if(data.welcome&&!data.alreadyShown){
-    addMessage(data.welcome,"bot");
-    chatHistory.push({role:"assistant",content:data.welcome});
-   }
-  }catch(error){console.error("Daily welcome:",error)}
- })();
- return dailyWelcomePromise;
-}
-window.heartmateLoadDailyWelcome=loadDailyWelcome;
-async function api(path,options={}){
- const token=await authToken();
- const headers={...(options.headers||{}),"Authorization":"Bearer "+token};
- if(options.body&&!headers["Content-Type"])headers["Content-Type"]="application/json";
- const response=await fetch(path,{...options,headers});
- const type=response.headers.get("content-type")||"";
- if(!response.ok){
-  const data=type.includes("application/json")?await response.json().catch(()=>({})): {};
-  throw new Error(data.error||"Request failed ("+response.status+").");
- }
- return response;
-}
-/* COMPANION PROFILE */
-async function loadProfile(){
- $("profileStatus").textContent="Loading profile…";
- try{
-  const response=await api("/api/profile?character="+encodeURIComponent(character));
-  const data=await response.json();
-  const profile=data.profile||data;
-  $("profileBio").value=profile.bio||"";
-  $("profileInterests").value=Array.isArray(profile.interests)?profile.interests.join(", "):(profile.interests||"");
-  $("profilePreferences").value=profile.preferences||"";
-  $("profileStatus").textContent="Profile loaded.";
- }catch(error){$("profileStatus").textContent=error.message}
-}
-/* FIXED: SEND INTERESTS AS A STRING, NOT AN ARRAY */
-async function saveProfile(){
- $("profileStatus").textContent="Saving…";
- try{
-  const response=await api("/api/profile",{
-   method:"POST",
-   body:JSON.stringify({
-    character,
-    bio:$("profileBio").value.trim(),
-    interests:$("profileInterests").value.trim(),
-    preferences:$("profilePreferences").value.trim()
-   })
-  });
-  const data=await response.json().catch(()=>({}));
-  if(data.success===false)throw new Error(data.error||"Profile could not be saved.");
-  $("profileStatus").textContent="Profile saved. 💗";
- }catch(error){$("profileStatus").textContent=error.message}
-}
-/* RELATIONSHIP LEVELS */
-async function loadRelationship(){
- try{
-  const response=await api("/api/relationship?character="+encodeURIComponent(character));
-  const data=await response.json();
-  const level=Number(data.level||1);
-  const points=Number(data.affection_points??data.affectionPoints??0);
-  const thresholds=[0,40,100,180,300,500];
-  const next=thresholds[level]??null;
-  const progress=next===null?100:Math.min(100,Math.round(points/next*100));
-  const summary="Level "+level+" · "+points+" affection points"+(next===null?" · Maximum level reached":" · "+Math.max(0,next-points)+" points to next level");
-  $("relationshipText").textContent="💗 "+girlName+" · "+summary;
-  $("relationshipDetails").textContent=summary+". Progress: "+progress+"%.";
- }catch(error){
-  $("relationshipText").textContent="💗 Relationship progress unavailable";
-  $("relationshipDetails").textContent=error.message;
- }
-}
-/* DAILY COMPANION PHOTO */
-async function loadDailyPhoto(){
- photoStatus.style.display="block";
- photoStatus.textContent="Loading today's photo…";
- try{
-  const response=await api("/api/daily-photo?character="+encodeURIComponent(character));
-  const data=await response.json();
-  const url=data.photo_url||data.photoUrl||data.url;
-  if(!url)throw new Error("No daily photo was returned.");
-  addImage(url,"Today's photo of "+girlName);
-  photoStatus.textContent="Today's photo is ready 💗";
- }catch(error){
-  addMessage("I couldn't load today's photo. "+error.message,"bot");
-  photoStatus.textContent="Daily photo unavailable.";
- }finally{
-  setTimeout(()=>{photoStatus.style.display="none"},3500);
- }
-}
-/* VOICE SETTINGS */
-async function loadSettings(){
- try{
-  const [voiceResponse,notificationResponse]=await Promise.all([
-   api("/api/voice-settings?character="+encodeURIComponent(character)),
-   api("/api/notifications")
-  ]);
-  const voiceData=await voiceResponse.json();
-  const notificationData=await notificationResponse.json();
-  const voice=voiceData.settings||voiceData;
-  const notifications=notificationData.settings||notificationData;
-  voiceReplies=voice.voice_enabled!==false&&voice.voice_enabled!==0;
-  $("voiceEnabled").checked=voiceReplies;
-  $("notificationsEnabled").checked=!!(notifications.enabled===true||notifications.enabled===1);
- }catch(error){
-  console.warn("Settings could not be loaded:",error);
- }
-}
-async function saveSettings(){
- $("settingsStatus").textContent="Saving…";
- try{
-  const voiceEnabled=$("voiceEnabled").checked;
-  const notificationsEnabled=$("notificationsEnabled").checked;
-  await api("/api/voice-settings",{
-   method:"POST",
-   body:JSON.stringify({character,voice_enabled:voiceEnabled})
-  });
-  await api("/api/notifications",{
-   method:"POST",
-   body:JSON.stringify({enabled:notificationsEnabled})
-  });
-  voiceReplies=voiceEnabled;
-  $("settingsStatus").textContent="Settings saved.";
- }catch(error){$("settingsStatus").textContent=error.message}
-}
-async function toggleVoiceReplies(){
- $("voiceEnabled").checked=!voiceReplies;
- voiceReplies=$("voiceEnabled").checked;
- try{
-  await api("/api/voice-settings",{
-   method:"POST",
-   body:JSON.stringify({character,voice_enabled:voiceReplies})
-  });
-  addMessage("Voice replies "+(voiceReplies?"enabled. 🔊":"disabled."),"bot");
- }catch(error){
-  voiceReplies=!voiceReplies;
-  $("voiceEnabled").checked=voiceReplies;
-  addMessage("I couldn't change voice settings: "+error.message,"bot");
- }
-}
-/* SPEAK AI REPLIES */
-async function speakReply(text){
- if(!voiceReplies||!text)return;
- try{
-  voiceStatus.style.display="block";
-  voiceStatus.textContent="Speaking reply…";
-  const response=await api("/api/speech",{
-   method:"POST",
-   body:JSON.stringify({text})
-  });
-  const blob=await response.blob();
-  if(!blob.type.startsWith("audio/"))throw new Error("Audio response was not valid.");
-  if(currentAudio){currentAudio.pause();URL.revokeObjectURL(currentAudio.src)}
-  const url=URL.createObjectURL(blob);
-  currentAudio=new Audio(url);
-  currentAudio.onended=()=>{URL.revokeObjectURL(url);currentAudio=null};
-  currentAudio.onerror=()=>{URL.revokeObjectURL(url);currentAudio=null};
-  await currentAudio.play();
- }catch(error){
-  console.warn("Speech playback unavailable:",error);
- }finally{
-  voiceStatus.style.display="none";
- }
-}
-/* RECORD AND TRANSCRIBE VOICE INPUT */
-async function startVoiceRecording(){
- if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
-  addMessage("Voice recording is not supported by this browser. You can type your message instead.","bot");
-  return;
- }
- let stream;
- try{
-  stream=await navigator.mediaDevices.getUserMedia({audio:true});
-  const preferred=["audio/webm;codecs=opus","audio/mp4","audio/webm"];
-  const mimeType=preferred.find(type=>MediaRecorder.isTypeSupported(type));
-  mediaRecorder=mimeType?new MediaRecorder(stream,{mimeType}):new MediaRecorder(stream);
-  const chunks=[];
-  mediaRecorder.ondataavailable=event=>{if(event.data.size)chunks.push(event.data)};
-  mediaRecorder.onstop=async()=>{
-   stream.getTracks().forEach(track=>track.stop());
-   $("recordButton").classList.remove("recording");
-   $("recordButton").textContent="🎙️";
-   $("recordButton").disabled=false;
-   const audioBlob=new Blob(chunks,{type:mediaRecorder.mimeType||"audio/webm"});
-   if(!audioBlob.size)return;
-   if(audioBlob.size>2*1024*1024){
-    addMessage("That recording is too large. Please try a shorter voice message.","bot");
-    return;
-   }
-   await transcribeAudio(audioBlob);
+
+async function api(path, options = {}) {
+  const token = await authToken();
+  const headers = {
+    ...(options.headers || {}),
+    Authorization: "Bearer " + token
   };
-  mediaRecorder.start();
-  $("recordButton").classList.add("recording");
-  $("recordButton").textContent="■";
-  $("recordButton").disabled=false;
-  voiceStatus.style.display="block";
-  voiceStatus.textContent="Recording… tap ■ to finish (max 30 seconds).";
-  setTimeout(()=>{
-   if(mediaRecorder&&mediaRecorder.state==="recording")mediaRecorder.stop();
-  },30000);
- }catch(error){
-  if(stream)stream.getTracks().forEach(track=>track.stop());
-  addMessage("Microphone access failed. Please allow microphone access or type your message.","bot");
- }
-}
-async function transcribeAudio(blob){
- voiceStatus.style.display="block";
- voiceStatus.textContent="Transcribing your voice…";
- try{
-  const token=await authToken();
-  const response=await fetch("/api/transcribe",{
-   method:"POST",
-   headers:{
-    "Authorization":"Bearer "+token,
-    "Content-Type":blob.type||"application/octet-stream"
-   },
-   body:blob
-  });
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(data.error||"Transcription failed.");
-  const transcript=data.text||data.transcript;
-  if(!transcript)throw new Error("No speech was detected.");
-  input.value=transcript;
-  input.focus();
- }catch(error){
-  addMessage("I couldn't understand that recording. "+error.message,"bot");
- }finally{
-  voiceStatus.style.display="none";
- }
-}
-$("recordButton").addEventListener("click",()=>{
- if(mediaRecorder&&mediaRecorder.state==="recording"){
-  mediaRecorder.stop();
-  $("recordButton").textContent="🎙️";
-  return;
- }
- startVoiceRecording();
-});
-/* PHOTO GALLERY */
-const photoCounts={
- aria:4,zara:4,ivy:6,ruby:10,nina:4,lila:5,amber:8,violet:10,
- jade:15,scarlett:5,stella:8,kira:10,diana:8,freya:10,
- sienna:10,valentina:8,aurora:10,chloe:8,ella:10,rose:3,
- nova:5,sofia:6,luna:4,maya:5,
- ananya:1,aadhya:1,meera:1,kiara:1,ishita:1,kavya:1,
- diya:1,riya:1,nisha:1,pooja:1,tara:1,priya:1
-};
-function photoPath(index){
- return character==="aria"?`images/aria-${index}.jpeg`:`images/${character}/${character}-${index}.jpeg`;
-}
-function openGallery(){
- const overlay=$("galleryOverlay"),grid=$("galleryGrid"),empty=$("galleryEmpty");
- $("galleryTitle").textContent=girlName+"'s Photos 💗";
- grid.innerHTML="";empty.style.display="none";overlay.classList.add("open");
- const count=photoCounts[character]||0;
- let loaded=0,finished=0;
- for(let i=1;i<=count;i++){
-  const image=document.createElement("img"),src=photoPath(i);
-  image.alt=girlName+" photo "+i;image.loading="lazy";
-  image.onload=()=>{loaded++;finished++;if(finished===count&&loaded===0)empty.style.display="block"};
-  image.onerror=()=>{finished++;image.style.display="none";if(finished===count&&loaded===0)empty.style.display="block"};
-  image.addEventListener("click",()=>showViewer(src));
-  grid.appendChild(image);image.src=src;
- }
- if(!count)empty.style.display="block";
-}
-function closeGallery(){$("galleryOverlay").classList.remove("open")}
-function showViewer(src){$("viewerImage").src=src;$("photoViewer").classList.add("open")}
-function closeViewer(){$("photoViewer").classList.remove("open")}
-/* MEDIA CREATION */
-function detectMediaRequest(message){
- const text=message.toLowerCase();
- const videoWords=/\b(video|clip|movie|animation)\b/.test(text);
- const imageWords=/\b(photo|picture|image|selfie|portrait)\b/.test(text);
- const requestWords=/\b(send|show|make|create|generate|give|share|want|need|draw)\b/.test(text);
- if(videoWords&&requestWords)return "video";
- if(imageWords&&requestWords)return "image";
- return "";
-}
-function openMediaModal(type,prompt=""){
- mediaChoice=type;createMenu.classList.remove("open");
- $("modalTitle").textContent=type==="video"?"Create a video of "+girlName+" 🎬":"Create an image of "+girlName+" 📸";
- $("modalDescription").textContent=type==="video"?"Describe the video scene. Video generation may use paid Kling credits.":"Describe the picture you'd like created.";
- confirmMedia.textContent=type==="video"?"Continue to video":"Create image";
- sceneInput.value=prompt;modal.classList.add("open");
-}
-function closeMediaModal(){modal.classList.remove("open")}
-$("createButton").addEventListener("click",()=>createMenu.classList.toggle("open"));
-$("openImage").addEventListener("click",()=>openMediaModal("image"));
-$("openVideo").addEventListener("click",()=>openMediaModal("video"));
-$("cancelModal").addEventListener("click",closeMediaModal);
-modal.addEventListener("click",event=>{if(event.target===modal)closeMediaModal()});
-confirmMedia.addEventListener("click",async()=>{
- const scene=sceneInput.value.trim();
- if(!scene||busy)return;
- if(mediaChoice==="video"&&!confirm("Video generation may use paid Kling credits. Continue?"))return;
- closeMediaModal();
- addMessage((mediaChoice==="video"?"Create a video of ":"Create a picture of ")+girlName+": "+scene,"user");
- if(mediaChoice==="video")await generateVideo(scene);else await generateImage(scene);
-});
-/* CHAT */
-async function sendChat(message){
- if(!message||busy)return;
- const mediaType=detectMediaRequest(message);
- if(mediaType){openMediaModal(mediaType,message);return}
- let token;
- try{token=await authToken()}
- catch(error){
-  addMessage("Please sign in with Google before chatting. 💗","bot");
-  return;
- }
- await historyLoadPromise;
- addMessage(message,"user");
- chatHistory.push({role:"user",content:message});
- input.value="";
- busy=true;
- sendButton.disabled=true;
- typing.style.display="block";
- try{
-  const response=await fetch("/api/chat",{
-   method:"POST",
-   headers:{
-    "Content-Type":"application/json",
-    "Authorization":"Bearer "+token
-   },
-   body:JSON.stringify({
-    character,
-    message,
-    history:chatHistory,
-    mood:dailyMood.name
-   })
-  });
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error(data.error||"Chat unavailable.");
-  if(!data.reply)throw new Error("Empty AI response.");
-  addMessage(data.reply,"bot");
-  chatHistory.push({role:"assistant",content:data.reply});
-  speakReply(data.reply);
-  loadRelationship();
- }catch(error){
-  addMessage("Sorry, I'm having trouble connecting. "+error.message,"bot");
- }finally{
-  busy=false;
-  sendButton.disabled=false;
-  typing.style.display="none";
-  input.focus();
- }
-}
-$("sendButton").addEventListener("click",()=>sendChat(input.value.trim()));
-input.addEventListener("keydown",event=>{
- if(event.key==="Enter"){
-  event.preventDefault();
-  sendChat(input.value.trim());
- }
-});
-/* IMAGE GENERATION */
-async function generateImage(scene){
- if(busy)return;
- busy=true;
- sendButton.disabled=true;
- createButton.disabled=true;
- photoStatus.style.display="block";
- try{
-  const response=await fetch("/api/image",{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({character,scene})
-  });
-  if(!response.ok){
-   const data=await response.json().catch(()=>({}));
-   throw new Error(data.error||"Image generation failed.");
+  if (options.body && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
   }
-  const blob=await response.blob();
-  if(!blob.type.startsWith("image/"))throw new Error("Invalid image returned.");
-  addImage(URL.createObjectURL(blob),"A new picture of "+girlName);
- }catch(error){
-  addMessage("I couldn't create that picture. "+error.message,"bot");
- }finally{
-  busy=false;
-  sendButton.disabled=false;
-  createButton.disabled=false;
-  photoStatus.style.display="none";
- }
+  const response = await fetch(path, {...options, headers});
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || "Request failed.");
+  return data;
 }
-/* VIDEO GENERATION */
-async function generateVideo(scene){
- if(busy)return;
- busy=true;
- sendButton.disabled=true;
- createButton.disabled=true;
- videoStatus.style.display="block";
- try{
-  addMessage("🎬 "+girlName+" is preparing your video. Please wait…","bot");
-  const response=await fetch("/api/video",{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({character,scene})
-  });
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok||!data.taskId)throw new Error(data.error||"Kling could not start the video.");
-  addMessage("Your video is being generated. This may take a few minutes. 💗","bot");
-  let completed=false;
-  for(let attempt=0;attempt<60;attempt++){
-   await new Promise(resolve=>setTimeout(resolve,5000));
-   const statusResponse=await fetch("/api/video/status?taskId="+encodeURIComponent(data.taskId));
-   const statusData=await statusResponse.json().catch(()=>({}));
-   if(!statusResponse.ok)throw new Error(statusData.error||"Could not check video progress.");
-   if(statusData.status==="succeeded"&&statusData.videoUrl){
-    addVideo(statusData.videoUrl,"Your new video of "+girlName);
-    completed=true;
-    break;
-   }
-   if(statusData.status==="failed")throw new Error(statusData.message||"Video generation failed.");
+
+async function sendChat() {
+  const message = input.value.trim();
+  if (!message || busy) return;
+
+  if (!user) {
+    addMessage("Please sign in with Google before chatting. 💗", "bot");
+    return;
   }
-  if(!completed)addMessage("The video is taking longer than expected. It may still be processing.","bot");
- }catch(error){
-  addMessage("I couldn't create the video. "+error.message,"bot");
- }finally{
-  busy=false;
-  sendButton.disabled=false;
-  createButton.disabled=false;
-  videoStatus.style.display="none";
- }
+
+  busy = true;
+  sendButton.disabled = true;
+  addMessage(message, "user");
+  chatHistory.push({role:"user", content:message});
+  input.value = "";
+  typing.style.display = "block";
+
+  try {
+    const data = await api("/api/chat", {
+      method:"POST",
+      body:JSON.stringify({
+        character,
+        message,
+        history:chatHistory
+      })
+    });
+
+    if (!data.reply) throw new Error("The AI returned an empty reply.");
+
+    addMessage(data.reply, "bot");
+    chatHistory.push({role:"assistant", content:data.reply});
+    if (voiceReplies) speak(data.reply);
+  } catch (error) {
+    addMessage("Sorry, I couldn't connect. " + error.message, "bot");
+  } finally {
+    busy = false;
+    sendButton.disabled = false;
+    typing.style.display = "none";
+    input.focus();
+  }
 }
-/* KEYBOARD AND PANEL CONTROLS */
-document.addEventListener("keydown",event=>{
- if(event.key==="Escape"){
-  closeViewer();
-  closeGallery();
-  closeMediaModal();
-  closePanels();
- }
+
+sendButton.addEventListener("click", sendChat);
+input.addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    sendChat();
+  }
 });
-/* FIREBASE SIGN-IN */
+
+function openMedia(type) {
+  mediaType = type;
+  $("modalTitle").textContent =
+    type === "video" ? "Create a video 🎬" : "Create an image 📸";
+  $("modalDescription").textContent =
+    "Describe the scene you want for " + girlName + ".";
+  $("sceneInput").value = "";
+  $("mediaModal").classList.add("open");
+}
+
+function closeMedia() {
+  $("mediaModal").classList.remove("open");
+}
+
+$("createMediaButton").addEventListener("click", async () => {
+  const scene = $("sceneInput").value.trim();
+  if (!scene || busy) return;
+
+  closeMedia();
+  if (mediaType === "video") {
+    if (!confirm("Video generation may use paid credits. Continue?")) return;
+    await generateVideo(scene);
+  } else {
+    await generateImage(scene);
+  }
+});
+
+async function generateImage(scene) {
+  if (busy) return;
+  busy = true;
+  status.textContent = "Creating your image…";
+
+  try {
+    const token = await authToken();
+    const response = await fetch("/api/image", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        Authorization:"Bearer " + token
+      },
+      body:JSON.stringify({character, scene})
+    });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data.error || "Image creation failed.");
+    }
+    const blob = await response.blob();
+    if (!blob.type.startsWith("image/")) {
+      throw new Error("The server did not return an image.");
+    }
+    addImage(URL.createObjectURL(blob));
+  } catch (error) {
+    addMessage("Image creation failed: " + error.message, "bot");
+  } finally {
+    busy = false;
+    status.textContent = "";
+  }
+}
+
+async function generateVideo(scene) {
+  if (busy) return;
+  busy = true;
+  status.textContent = "Preparing your video…";
+
+  try {
+    const token = await authToken();
+    const response = await fetch("/api/video", {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        Authorization:"Bearer " + token
+      },
+      body:JSON.stringify({character, scene})
+    });
+    const data = await response.json();
+    if (!response.ok || !data.taskId) {
+      throw new Error(data.error || "Video generation could not start.");
+    }
+
+    addMessage("Your video is being created. Please wait… 💗", "bot");
+
+    for (let i = 0; i < 60; i++) {
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      const result = await fetch(
+        "/api/video/status?taskId=" + encodeURIComponent(data.taskId),
+        {headers:{Authorization:"Bearer " + token}}
+      );
+      const progress = await result.json();
+
+      if (progress.status === "succeeded" && progress.videoUrl) {
+        addVideo(progress.videoUrl);
+        return;
+      }
+      if (progress.status === "failed") {
+        throw new Error(progress.message || "Video generation failed.");
+      }
+    }
+    addMessage("The video is taking longer than expected.", "bot");
+  } catch (error) {
+    addMessage("Video creation failed: " + error.message, "bot");
+  } finally {
+    busy = false;
+    status.textContent = "";
+  }
+}
+
+function toggleVoice() {
+  voiceReplies = !voiceReplies;
+  addMessage("Voice replies " + (voiceReplies ? "enabled 🔊" : "disabled"), "bot");
+}
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 1;
+  utterance.pitch = 1.05;
+  window.speechSynthesis.speak(utterance);
+}
+
+async function recordVoice() {
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) {
+    addMessage("Voice recording isn't supported in this browser.", "bot");
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    recorder = new MediaRecorder(stream);
+    const chunks = [];
+
+    recorder.ondataavailable = event => {
+      if (event.data.size) chunks.push(event.data);
+    };
+
+    recorder.onstop = async () => {
+      stream.getTracks().forEach(track => track.stop());
+      const blob = new Blob(chunks, {type:recorder.mimeType || "audio/webm"});
+      if (!blob.size) return;
+
+      try {
+        const token = await authToken();
+        const response = await fetch("/api/transcribe", {
+          method:"POST",
+          headers:{
+            Authorization:"Bearer " + token,
+            "Content-Type":blob.type
+          },
+          body:blob
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Transcription failed.");
+        input.value = data.text || data.transcript || "";
+        input.focus();
+      } catch (error) {
+        addMessage("Voice transcription failed: " + error.message, "bot");
+      }
+    };
+
+    recorder.start();
+    status.textContent = "Recording… tap the microphone again to finish.";
+    setTimeout(() => {
+      if (recorder && recorder.state === "recording") recorder.stop();
+      status.textContent = "";
+    }, 30000);
+
+    recorder.onstop = recorder.onstop;
+    $("messageInput").placeholder = "Recording…";
+    $("messageInput").onfocus = () => {
+      if (recorder && recorder.state === "recording") recorder.stop();
+    };
+  } catch (error) {
+    addMessage("Please allow microphone access to record.", "bot");
+  }
+}
 </script>
+
 <script type="module">
-import {initializeApp,getApps}
- from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import {initializeApp, getApps}
+  from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
 import {
- getAuth,
- GoogleAuthProvider,
- signInWithPopup,
- signOut,
- onAuthStateChanged
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
-const firebaseConfig={
- apiKey:"AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",
- authDomain:"heartmate-ai-bd441.firebaseapp.com",
- projectId:"heartmate-ai-bd441",
- storageBucket:"heartmate-ai-bd441.firebasestorage.app",
- messagingSenderId:"929844208432",
- appId:"1:929844208432:web:0afdab16bd82f11240def5",
- measurementId:"G-L0Z6XE8R8B"
+
+const firebaseConfig = {
+  apiKey:"AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",
+  authDomain:"heartmate-ai-bd441.firebaseapp.com",
+  projectId:"heartmate-ai-bd441",
+  storageBucket:"heartmate-ai-bd441.firebasestorage.app",
+  messagingSenderId:"929844208432",
+  appId:"1:929844208432:web:0afdab16bd82f11240def5",
+  measurementId:"G-L0Z6XE8R8B"
 };
-const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const provider=new GoogleAuthProvider();
-const login=document.getElementById("chatSignIn");
-const logout=document.getElementById("chatSignOut");
-const accountStatus=document.getElementById("chatAccountStatus");
-login.addEventListener("click",async()=>{
- login.disabled=true;
- accountStatus.textContent="Opening Google…";
- try{
-  await signInWithPopup(auth,provider);
- }catch(error){
-  console.error("Sign-in error:",error);
-  accountStatus.textContent=error.code==="auth/popup-closed-by-user"
-   ?"Sign-in cancelled.":"Sign-in failed.";
- }finally{
-  login.disabled=false;
- }
+
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+const login = document.getElementById("signIn");
+const logout = document.getElementById("signOut");
+
+login.addEventListener("click", async () => {
+  login.disabled = true;
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (error) {
+    alert("Google sign-in failed: " + error.message);
+  } finally {
+    login.disabled = false;
+  }
 });
-logout.addEventListener("click",async()=>{
- logout.disabled=true;
- try{
-  await signOut(auth);
- }catch(error){
-  console.error("Sign-out error:",error);
-  accountStatus.textContent="Sign-out failed.";
- }finally{
-  logout.disabled=false;
- }
+
+logout.addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    alert("Sign-out failed: " + error.message);
+  }
 });
-onAuthStateChanged(auth,user=>{
- window.heartmateAuth.user=user;
- if(user){
-  login.hidden=true;
-  logout.hidden=false;
-  accountStatus.textContent=user.displayName||user.email||"Signed in";
- }else{
-  login.hidden=false;
-  logout.hidden=true;
-  accountStatus.textContent="Not signed in";
- }
- historyLoadPromise=window.heartmateLoadHistory(user);
- if(user){
-  historyLoadPromise=historyLoadPromise.then(async()=>{
-   if(window.heartmateAuth.user?.uid!==user.uid)return;
-   await window.heartmateLoadDailyWelcome(user);
-   await Promise.allSettled([
-    loadRelationship(),
-    loadSettings()
-   ]);
-  });
- }else{
-  $("relationshipText").textContent="💗 Sign in to see relationship progress";
- }
- if(resolveAuthReady){
-  resolveAuthReady(user);
-  resolveAuthReady=null;
- }
+
+onAuthStateChanged(auth, currentUser => {
+  window.user = currentUser;
+  login.hidden = !!currentUser;
+  logout.hidden = !currentUser;
 });
 </script>
 </body>
