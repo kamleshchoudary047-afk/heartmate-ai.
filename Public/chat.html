@@ -132,9 +132,30 @@ button {
 }
 #typing {
   display:none;
+  align-items:center;
+  gap:4px;
   padding:0 18px 10px;
   color:#e8bce0;
   font-size:12px;
+}
+.typing-dots {
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  margin-left:3px;
+}
+.typing-dots span {
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#ff9dcc;
+  animation:typingBounce 1s infinite ease-in-out;
+}
+.typing-dots span:nth-child(2){animation-delay:.15s}
+.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes typingBounce {
+  0%,60%,100%{transform:translateY(0);opacity:.45}
+  30%{transform:translateY(-4px);opacity:1}
 }
 .footer {
   position:fixed;
@@ -284,7 +305,7 @@ button:disabled{opacity:.5;cursor:wait}
   </div>
 </main>
 
-<div id="typing">Your Heartmate is typing… 💗</div>
+<div id="typing"><span id="typingName">Your Heartmate</span> is typing <span class="typing-dots" aria-label="typing"><span></span><span></span><span></span></span> 💗</div>
 
 <footer class="footer">
   <div class="tools">
@@ -326,7 +347,7 @@ const girlName = names[character];
 
 const $ = id => document.getElementById(id);
 $("girlName").textContent = girlName;
-$("typing").textContent = girlName + " is typing… 💗";
+$("typingName").textContent = girlName;
 
 const messages = $("messages");
 const input = $("messageInput");
