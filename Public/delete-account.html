@@ -6,31 +6,90 @@
 <meta name="theme-color" content="#10090e">
 <title>Delete Account Data | Heartmate AI</title>
 <style>
-:root{color-scheme:dark;--bg:#10090e;--panel:#1c1018;--gold:#f1c9a5;--text:#fff8f3;--muted:#c8b6b2}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 system-ui,sans-serif}
-main{width:min(760px,92%);margin:42px auto 80px}a{color:var(--gold)}h1{font-size:clamp(32px,6vw,48px);line-height:1.2}.panel{padding:clamp(20px,5vw,38px);border:1px solid #553b43;border-radius:20px;background:var(--panel)}li{margin:10px 0}.notice{color:var(--muted);font-size:14px}
+:root{color-scheme:dark;--bg:#10090e;--panel:#1c1018;--gold:#f1c9a5;--text:#fff8f3;--muted:#c8b6b2;--danger:#ff9b9b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,sans-serif}
+main{width:min(760px,92%);margin:38px auto 80px}a{color:var(--gold)}h1{font-size:clamp(32px,6vw,46px);line-height:1.2}.panel{padding:clamp(20px,5vw,38px);border:1px solid #553b43;border-radius:20px;background:var(--panel)}button{width:100%;padding:14px 18px;border:0;border-radius:12px;font:700 15px system-ui;cursor:pointer;margin:8px 0}#signIn{background:var(--gold);color:#211319}#delete{background:#6e252d;color:white}button:disabled{opacity:.5;cursor:wait}.notice{color:var(--muted);font-size:14px}#status{min-height:28px;color:var(--gold);overflow-wrap:anywhere}.danger{color:var(--danger)}li{margin:8px 0}
 </style>
 </head>
 <body><main><p><a href="/">← Heartmate AI</a></p><section class="panel">
 <h1>Delete your Heartmate AI data</h1>
-<p>This permanently deletes the Heartmate AI data associated with your signed-in account, including conversations, saved memories, relationship progress, companion profiles, photo records, voice preferences, notification preferences, daily welcomes and video-task records.</p>
-<ol>
-<li>Sign in to Heartmate AI using the Google account whose application data you want to delete.</li>
-<li>Open the chat page while signed in: <a href="/chat.html">Open Heartmate chat</a>.</li>
-<li>In the same browser session, open your browser's developer console and run the request below. It uses your current Firebase sign-in token and requires an explicit confirmation string.</li>
-</ol>
-<pre style="white-space:pre-wrap;overflow-wrap:anywhere;background:#10090e;padding:14px;border-radius:12px">const user = window.heartmateUser;
-if (!user) throw new Error("Please sign in first.");
-const token = await user.getIdToken(true);
-const response = await fetch("/api/account/delete", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer " + token
-  },
-  body: JSON.stringify({ confirm: "DELETE_MY_ACCOUNT" })
-});
-console.log(await response.json());</pre>
-<p class="notice">Important: this endpoint deletes Heartmate AI application records only. It does not delete your Google or Firebase Authentication identity. Remove that identity separately through the account provider. The deletion cannot be undone.</p>
+<p>This permanently deletes the Heartmate AI application data associated with the signed-in account, including conversations, saved memories, relationship progress, companion profiles, photo records, voice preferences, notification preferences, daily welcomes and video-task records.</p>
+<h2>Before you continue</h2>
+<ul><li>This action cannot be undone.</li><li>Only the currently signed-in account's app data is deleted.</li><li>Your separate Google/Firebase sign-in identity is not deleted by this action.</li></ul>
+<p id="account" class="notice">Checking sign-in status…</p>
+<button id="signIn" hidden>Sign in with Google</button>
+<button id="delete" disabled>Delete my Heartmate AI data permanently</button>
+<p id="status" role="status" aria-live="polite"></p>
+<p class="notice">After successful deletion, you will be signed out. To remove your Google account identity itself, use Google's account settings separately.</p>
 <p><a href="/privacy.html">Read the Privacy Policy</a></p>
-</section></main></body></html>
+</section></main>
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",
+  authDomain: "heartmate-ai-bd441.firebaseapp.com",
+  projectId: "heartmate-ai-bd441",
+  storageBucket: "heartmate-ai-bd441.firebasestorage.app",
+  messagingSenderId: "929844208432",
+  appId: "1:929844208432:web:0afdab16bd82f11240def5",
+  measurementId: "G-L0Z6XE8R8B"
+};
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+const signInButton = document.getElementById("signIn");
+const deleteButton = document.getElementById("delete");
+const accountLabel = document.getElementById("account");
+const statusLabel = document.getElementById("status");
+let currentUser = null;
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  signInButton.hidden = Boolean(user);
+  deleteButton.disabled = !user;
+  accountLabel.textContent = user
+    ? "Signed in as " + (user.email || "Google account")
+    : "You must sign in with the account whose data you want to delete.";
+});
+signInButton.addEventListener("click", async () => {
+  signInButton.disabled = true;
+  statusLabel.textContent = "Opening Google sign-in…";
+  try { await signInWithPopup(auth, provider); statusLabel.textContent = ""; }
+  catch (error) { statusLabel.textContent = error.message || "Sign-in failed."; }
+  finally { signInButton.disabled = false; }
+});
+deleteButton.addEventListener("click", async () => {
+  if (!currentUser) return;
+  const first = confirm("Permanently delete all Heartmate AI app data for " + (currentUser.email || "this account") + "? This cannot be undone.");
+  if (!first) return;
+  const second = prompt('Type DELETE to confirm permanent deletion.');
+  if (second !== "DELETE") {
+    statusLabel.textContent = "Deletion cancelled. No data was changed.";
+    return;
+  }
+  deleteButton.disabled = true;
+  signInButton.disabled = true;
+  statusLabel.textContent = "Deleting your Heartmate AI data…";
+  try {
+    const token = await currentUser.getIdToken(true);
+    const response = await fetch("/api/account/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({ confirm: "DELETE_MY_ACCOUNT" })
+    });
+    const result = await response.json();
+    if (!response.ok || !result.ok) throw new Error(result.error || "Deletion failed.");
+    statusLabel.textContent = "Your Heartmate AI application data has been deleted. Signing out…";
+    await signOut(auth);
+    accountLabel.textContent = "Signed out. Your app data deletion is complete.";
+  } catch (error) {
+    statusLabel.textContent = error.message || "Deletion failed. Please try again.";
+    deleteButton.disabled = !currentUser;
+  } finally {
+    signInButton.disabled = false;
+  }
+});
+</script></body></html>
