@@ -323,6 +323,26 @@ button:disabled{opacity:.5;cursor:wait}
   font-size:13px;
   line-height:1.6;
 }
+.gallery-card { min-width:0; }
+.gallery-card img { cursor:zoom-in; }
+.gallery-actions { display:flex; gap:5px; margin-top:6px; }
+.gallery-actions button, .gallery-filter {
+  flex:1; min-width:0; padding:8px 4px; border:1px solid #ffffff20;
+  border-radius:9px; background:#ffffff12; color:inherit; font-size:12px;
+}
+.gallery-actions button:active { opacity:.7; }
+.gallery-filter.active { background:var(--pink); color:#241326; }
+.gallery-viewer {
+  position:fixed; inset:0; z-index:10000; background:#08060deF;
+  display:none; align-items:center; justify-content:center; padding:16px;
+}
+.gallery-viewer.open { display:flex; }
+.gallery-viewer img { max-width:100%; max-height:78dvh; object-fit:contain; border-radius:12px; }
+.gallery-viewer-close {
+  position:absolute; top: max(18px, env(safe-area-inset-top)); right:18px;
+  border:0; border-radius:50%; width:42px; height:42px;
+  background:#ffffff20; color:white; font-size:23px;
+}
 @keyframes appear {
   from{opacity:0;transform:translateY(7px)}
   to{opacity:1;transform:translateY(0)}
@@ -395,11 +415,18 @@ button:disabled{opacity:.5;cursor:wait}
   <div class="modal-card">
     <h3>💎 Your VIP Gallery</h3>
     <p>Your unlocked and created photos for this companion, saved on this device.</p>
+    <button class="gallery-filter active" id="galleryAll">All photos</button>
+    <button class="gallery-filter" id="galleryFavourites">❤️ Favourites</button>
     <div class="gallery-grid" id="galleryGrid"></div>
     <div class="modal-actions">
       <button class="cancel" id="closeGallery">Close</button>
     </div>
   </div>
+</div>
+
+<div class="gallery-viewer" id="galleryViewer">
+  <button class="gallery-viewer-close" id="galleryViewerClose" aria-label="Close full-screen photo">×</button>
+  <img id="galleryViewerImage" alt="Full-screen gallery photo">
 </div>
 
 <div class="modal" id="mediaModal">
@@ -560,6 +587,64 @@ async function saveGalleryPhoto(blob) {
   db.close();
 }
 
+let galleryShowFavourites = false;
+async function getGalleryPhotos() {
+  const db = await openGalleryDB();
+  const photos = await new Promise((resolve, reject) => {
+    const tx = db.transaction("photos", "readonly");
+    const request = tx.objectStore("photos").getAll();
+    request.onsuccess = () => resolve(request.result || []);
+    request.onerror = () => reject(request.error);
+  });
+  db.close();
+  return photos.filter(photo => photo.userId === window.heartmateUser.uid && photo.character === character)
+    .sort((a,b) => b.createdAt - a.createdAt);
+}
+
+async function updateGalleryPhoto(id, action) {
+  const db = await openGalleryDB();
+  await new Promise((resolve, reject) => {
+    const tx = db.transaction("photos", "readwrite");
+    const store = tx.objectStore("photos");
+    const request = store.get(id);
+    request.onsuccess = () => {
+      const photo = request.result;
+      if (!photo) return resolve();
+      if (action === "delete") store.delete(id);
+      else if (action === "favourite") {
+        photo.favourite = !photo.favourite;
+        store.put(photo);
+      }
+    };
+    request.onerror = () => reject(request.error);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
+}
+
+function showGalleryPhoto(blob) {
+  const url = URL.createObjectURL(blob);
+  $("galleryViewerImage").src = url;
+  $("galleryViewer").classList.add("open");
+}
+$("galleryViewerClose").addEventListener("click", () => {
+  $("galleryViewer").classList.remove("open");
+  $("galleryViewerImage").removeAttribute("src");
+});
+$("galleryAll").addEventListener("click", () => {
+  galleryShowFavourites = false;
+  $("galleryAll").classList.add("active");
+  $("galleryFavourites").classList.remove("active");
+  openGallery();
+});
+$("galleryFavourites").addEventListener("click", () => {
+  galleryShowFavourites = true;
+  $("galleryFavourites").classList.add("active");
+  $("galleryAll").classList.remove("active");
+  openGallery();
+});
+
 async function openGallery() {
   $("galleryModal").classList.add("open");
   const grid = $("galleryGrid");
@@ -569,26 +654,54 @@ async function openGallery() {
     return;
   }
   try {
-    const db = await openGalleryDB();
-    const photos = await new Promise((resolve, reject) => {
-      const tx = db.transaction("photos", "readonly");
-      const request = tx.objectStore("photos").getAll();
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => reject(request.error);
-    });
-    db.close();
-    const mine = photos
-      .filter(photo => photo.userId === window.heartmateUser.uid && photo.character === character)
-      .sort((a,b) => b.createdAt - a.createdAt);
-    if (!mine.length) {
-      grid.innerHTML = '<div class="gallery-empty">No saved photos yet. Reach a relationship milestone or create an image to start your collection. ✨</div>';
+    const mine = await getGalleryPhotos();
+    const shown = galleryShowFavourites ? mine.filter(photo => photo.favourite) : mine;
+    if (!shown.length) {
+      grid.innerHTML = galleryShowFavourites
+        ? '<div class="gallery-empty">No favourites yet. Tap ❤️ on a photo to save it here.</div>'
+        : '<div class="gallery-empty">No saved photos yet. Reach a relationship milestone or create an image to start your collection. ✨</div>';
       return;
     }
-    mine.forEach(photo => {
+    shown.forEach(photo => {
+      const card = document.createElement("div");
+      card.className = "gallery-card";
       const img = document.createElement("img");
-      img.src = URL.createObjectURL(photo.blob);
+      const imageUrl = URL.createObjectURL(photo.blob);
+      img.src = imageUrl;
       img.alt = girlName + " VIP gallery photo";
-      grid.appendChild(img);
+      img.addEventListener("click", () => showGalleryPhoto(photo.blob));
+      card.appendChild(img);
+
+      const actions = document.createElement("div");
+      actions.className = "gallery-actions";
+      const favourite = document.createElement("button");
+      favourite.textContent = photo.favourite ? "💖 Saved" : "♡ Favourite";
+      favourite.addEventListener("click", async () => {
+        await updateGalleryPhoto(photo.id, "favourite");
+        openGallery();
+      });
+      const download = document.createElement("button");
+      download.textContent = "↓ Save";
+      download.addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(photo.blob);
+        link.download = "heartmate-" + character + "-" + photo.createdAt + ".jpg";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      });
+      const remove = document.createElement("button");
+      remove.textContent = "🗑";
+      remove.setAttribute("aria-label", "Delete photo");
+      remove.addEventListener("click", async () => {
+        if (confirm("Delete this photo from your VIP Gallery?")) {
+          await updateGalleryPhoto(photo.id, "delete");
+          openGallery();
+        }
+      });
+      actions.append(favourite, download, remove);
+      card.appendChild(actions);
+      grid.appendChild(card);
     });
   } catch (error) {
     grid.innerHTML = '<div class="gallery-empty">Gallery could not be opened in this browser.</div>';
