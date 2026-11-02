@@ -359,6 +359,113 @@ button:disabled{opacity:.5;cursor:wait}
     transition-duration:.01ms!important;
   }
 }
+
+/* Heartmate intimate chat redesign */
+:root {
+  --bg:#10070e; --panel:#21121d; --pink:#f08caf;
+  --lav:#c3a0e8; --text:#fff8f5; --muted:#d0b9c3;
+}
+body {
+  background:
+    radial-gradient(ellipse at 12% 0%,rgba(126,55,83,.32),transparent 42%),
+    radial-gradient(ellipse at 100% 45%,rgba(125,61,103,.19),transparent 38%),
+    linear-gradient(180deg,#10070e,#160b15 65%,#10070e);
+}
+header {
+  padding-left:max(16px,calc((100vw - 920px)/2));
+  padding-right:max(16px,calc((100vw - 920px)/2));
+  background:rgba(20,9,17,.91);
+  border-bottom-color:rgba(240,140,175,.18);
+}
+.avatar {
+  width:47px;height:47px;border-radius:17px;
+  box-shadow:0 5px 22px rgba(240,140,175,.2);
+}
+.profile h3 { font-size:16px; letter-spacing:.1px; }
+.profile small { color:#a8e9bb; }
+.relationship-card {
+  width:min(888px,calc(100% - 28px));
+  margin:13px auto 0; padding:14px 17px;
+  border-color:rgba(240,140,175,.28);
+  border-radius:18px;
+  background:linear-gradient(110deg,rgba(66,31,52,.92),rgba(34,19,38,.96));
+  box-shadow:0 10px 30px rgba(0,0,0,.14);
+}
+.relationship-fill { background:linear-gradient(90deg,#f08caf,#e9b57f,#c3a0e8); }
+#messages {
+  width:min(920px,100%); margin:0 auto;
+  height:calc(100dvh - 205px);
+  padding:24px 22px 34px;
+  gap:16px;
+}
+.welcome {
+  max-width:390px; padding:18px 22px;
+  border-color:rgba(240,140,175,.2);
+  border-radius:20px;
+  background:linear-gradient(140deg,rgba(71,36,57,.56),rgba(255,255,255,.035));
+}
+.message {
+  max-width:min(76%,570px); padding:14px 17px;
+  border-radius:21px; line-height:1.68;
+  box-shadow:0 7px 22px rgba(0,0,0,.12);
+}
+.bot {
+  background:linear-gradient(145deg,#39243a,#251927);
+  border-color:rgba(195,160,232,.2);
+  border-bottom-left-radius:7px;
+}
+.user {
+  background:linear-gradient(130deg,#e77fa6,#a879d1);
+  border-bottom-right-radius:7px;
+}
+.media { border:1px solid rgba(240,140,175,.18); background:#2a1928; }
+.media img,.media video { border-radius:14px; }
+.footer {
+  background:rgba(19,9,17,.94);
+  border-top-color:rgba(240,140,175,.2);
+  box-shadow:0 -12px 35px rgba(0,0,0,.15);
+}
+.tools { scrollbar-width:none; }
+.tools::-webkit-scrollbar { display:none; }
+.tools button {
+  border-color:rgba(240,140,175,.2);
+  border-radius:20px;
+  background:linear-gradient(120deg,#302034,#261a30);
+  padding:9px 13px;
+}
+#messageInput {
+  border-color:rgba(240,140,175,.28);
+  border-radius:18px;
+  background:#291a2b;
+}
+.action { border-radius:16px; background:linear-gradient(135deg,#b47cdb,#df70a7); }
+#sendButton { background:linear-gradient(130deg,#f09ab7,#b58ae0); color:#241426; }
+.modal-card {
+  border-color:rgba(240,140,175,.34);
+  background:linear-gradient(145deg,#38223a,#1a101d);
+  box-shadow:0 25px 90px #0009;
+}
+@media(max-width:699px) {
+  header { gap:10px; padding-left:13px; padding-right:13px; }
+  .relationship-card { width:calc(100% - 24px); margin-top:10px; }
+  #messages {
+    height:calc(100dvh - 220px);
+    min-height:250px;
+    padding:19px 14px 26px;
+    gap:13px;
+  }
+  .message { max-width:88%; padding:12px 14px; font-size:14px; }
+  .footer { padding:9px 10px calc(9px + env(safe-area-inset-bottom)); }
+  .tools { margin-bottom:8px; gap:6px; }
+  .tools button { padding:8px 11px; font-size:10px; }
+  #messageInput { height:47px; }
+  .action { min-width:43px; height:45px; }
+}
+@media(prefers-reduced-motion:no-preference) {
+  .companion-card,.primary-button,.chat-link,.action { transition:all .22s ease; }
+  .companion-card:hover { box-shadow:0 18px 42px rgba(225,123,145,.12); }
+}
+
 </style>
 </head>
 
