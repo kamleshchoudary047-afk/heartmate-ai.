@@ -441,6 +441,16 @@ async function refreshRelationship() {
             message:"💕 Level 4 unlocked! " + girlName + " has a romantic, dreamy photo surprise for you.",
             scene:"wearing a beautiful formal evening dress in a softly lit romantic setting, warm lighting, tasteful fully clothed portrait"
           });
+        } else if (unlockedLevel === 5) {
+          levelPhotoQueue.push({
+            message:"💎 Level 5 — Deep Connection unlocked! " + girlName + " has an exclusive VIP fashion photo surprise for you.",
+            scene:"wearing a luxurious glamorous designer evening gown with elegant sparkle, upscale VIP fashion editorial, confident graceful pose, fully clothed and tasteful"
+          });
+        } else if (unlockedLevel === 6) {
+          levelPhotoQueue.push({
+            message:"💞 Level 6 — Soulmate unlocked! " + girlName + " is sharing a special soulmate photo with you. Thank you for building this bond together.",
+            scene:"wearing an elegant romantic flowing evening dress, dreamy sunset garden with soft golden lights, warm affectionate expression, cinematic romantic portrait, fully clothed and tasteful"
+          });
         }
       }
     }
