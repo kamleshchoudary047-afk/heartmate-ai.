@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10090e">
+<title>Delete Account Data | Heartmate AI</title>
+<style>
+:root{color-scheme:dark;--bg:#10090e;--panel:#1c1018;--gold:#f1c9a5;--text:#fff8f3;--muted:#c8b6b2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 system-ui,sans-serif}
+main{width:min(760px,92%);margin:42px auto 80px}a{color:var(--gold)}h1{font-size:clamp(32px,6vw,48px);line-height:1.2}.panel{padding:clamp(20px,5vw,38px);border:1px solid #553b43;border-radius:20px;background:var(--panel)}li{margin:10px 0}.notice{color:var(--muted);font-size:14px}
+</style>
+</head>
+<body><main><p><a href="/">← Heartmate AI</a></p><section class="panel">
+<h1>Delete your Heartmate AI data</h1>
+<p>This permanently deletes the Heartmate AI data associated with your signed-in account, including conversations, saved memories, relationship progress, companion profiles, photo records, voice preferences, notification preferences, daily welcomes and video-task records.</p>
+<ol>
+<li>Sign in to Heartmate AI using the Google account whose application data you want to delete.</li>
+<li>Open the chat page while signed in: <a href="/chat.html">Open Heartmate chat</a>.</li>
+<li>In the same browser session, open your browser's developer console and run the request below. It uses your current Firebase sign-in token and requires an explicit confirmation string.</li>
+</ol>
+<pre style="white-space:pre-wrap;overflow-wrap:anywhere;background:#10090e;padding:14px;border-radius:12px">const user = window.heartmateUser;
+if (!user) throw new Error("Please sign in first.");
+const token = await user.getIdToken(true);
+const response = await fetch("/api/account/delete", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + token
+  },
+  body: JSON.stringify({ confirm: "DELETE_MY_ACCOUNT" })
+});
+console.log(await response.json());</pre>
+<p class="notice">Important: this endpoint deletes Heartmate AI application records only. It does not delete your Google or Firebase Authentication identity. Remove that identity separately through the account provider. The deletion cannot be undone.</p>
+<p><a href="/privacy.html">Read the Privacy Policy</a></p>
+</section></main></body></html>
