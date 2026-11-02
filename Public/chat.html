@@ -639,7 +639,11 @@ let chatHistory = [];
 let recorder = null;
 let recordingStream = null;
 let recordingChunks = [];
-let userReady = Promise.resolve();
+let resolveUserReady;
+let userReady = new Promise(resolve => {
+  resolveUserReady = resolve;
+});
+window.heartmateResolveUserReady = resolveUserReady;
 
 async function refreshRelationship() {
   if (!window.heartmateUser) return;
@@ -933,6 +937,40 @@ async function api(path, options = {}) {
     throw new Error(data.error || "Request failed.");
   }
   return data;
+}
+
+// Restore this character's account-owned conversation from Cloudflare D1.
+// The API verifies the Firebase ID token and scopes every row to the signed-in user.
+async function loadChatHistory() {
+  if (!window.heartmateUser) return;
+
+  status.textContent = "Restoring your conversation…";
+  try {
+    const data = await api(
+      "/api/history?character=" + encodeURIComponent(character)
+    );
+    const savedMessages = Array.isArray(data.messages) ? data.messages : [];
+
+    chatHistory = savedMessages
+      .filter(item =>
+        (item.role === "user" || item.role === "assistant") &&
+        typeof item.content === "string"
+      )
+      .map(item => ({ role: item.role, content: item.content }));
+
+    if (chatHistory.length) {
+      messages.innerHTML = "";
+      chatHistory.forEach(item => {
+        addMessage(item.content, item.role === "user" ? "user" : "bot");
+      });
+      messages.scrollTop = messages.scrollHeight;
+    }
+  } catch (error) {
+    status.textContent = "Your saved conversation could not be restored. " + error.message;
+    return;
+  }
+
+  status.textContent = "";
 }
 
 /* CHAT */
@@ -1311,17 +1349,28 @@ logout.addEventListener("click", async () => {
   }
 });
 
-onAuthStateChanged(auth, currentUser => {
+onAuthStateChanged(auth, async currentUser => {
   window.heartmateUser = currentUser;
+
+  // Resolve pending API calls only after Firebase has restored the auth state.
+  if (window.heartmateResolveUserReady) {
+    window.heartmateResolveUserReady();
+    window.heartmateResolveUserReady = null;
+  }
 
   login.hidden = !!currentUser;
   logout.hidden = !currentUser;
 
   if (currentUser) {
-    refreshRelationship();
     document.querySelector(".profile small").textContent =
       "● Signed in · Here with you";
+    await loadChatHistory();
+    await refreshRelationship();
   } else {
+    chatHistory = [];
+    messages.innerHTML =
+      '<div class="welcome">Sign in to continue your private conversations with ' +
+      girlName + '. Your saved chat will appear here.</div>';
     document.querySelector(".profile small").textContent =
       "● Here with you";
   }
