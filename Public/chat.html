@@ -298,6 +298,31 @@ button:disabled{opacity:.5;cursor:wait}
   background:linear-gradient(135deg,#ed75b4,#9d6cdb);
 }
 .modal-actions .cancel{background:#ffffff15}
+.gallery-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  max-height:55dvh;
+  overflow-y:auto;
+  margin-top:14px;
+}
+.gallery-grid img {
+  display:block;
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:12px;
+  background:#ffffff12;
+}
+.gallery-empty {
+  padding:24px 12px;
+  border:1px dashed #ffffff30;
+  border-radius:14px;
+  color:var(--muted);
+  text-align:center;
+  font-size:13px;
+  line-height:1.6;
+}
 @keyframes appear {
   from{opacity:0;transform:translateY(7px)}
   to{opacity:1;transform:translateY(0)}
@@ -352,6 +377,7 @@ button:disabled{opacity:.5;cursor:wait}
 
 <footer class="footer">
   <div class="tools">
+    <button onclick="openGallery()">💎 VIP Gallery</button>
     <button onclick="openMedia('image')">📸 Create image</button>
     <button onclick="openMedia('video')">🎬 Create video</button>
     <button onclick="toggleVoice()">🔊 Voice replies</button>
@@ -364,6 +390,17 @@ button:disabled{opacity:.5;cursor:wait}
     <button class="action" id="sendButton">➤</button>
   </div>
 </footer>
+
+<div class="modal" id="galleryModal">
+  <div class="modal-card">
+    <h3>💎 Your VIP Gallery</h3>
+    <p>Your unlocked and created photos for this companion, saved on this device.</p>
+    <div class="gallery-grid" id="galleryGrid"></div>
+    <div class="modal-actions">
+      <button class="cancel" id="closeGallery">Close</button>
+    </div>
+  </div>
+</div>
 
 <div class="modal" id="mediaModal">
   <div class="modal-card">
@@ -488,6 +525,77 @@ function addImage(url) {
   messages.appendChild(box);
   messages.scrollTop = messages.scrollHeight;
 }
+
+const galleryDBName = "heartmate-vip-gallery";
+function openGalleryDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(galleryDBName, 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains("photos")) {
+        db.createObjectStore("photos", {keyPath:"id"});
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+async function saveGalleryPhoto(blob) {
+  const userId = window.heartmateUser?.uid;
+  if (!userId) return;
+  const db = await openGalleryDB();
+  await new Promise((resolve, reject) => {
+    const tx = db.transaction("photos", "readwrite");
+    tx.objectStore("photos").put({
+      id:userId + ":" + character + ":" + Date.now() + ":" + Math.random(),
+      userId,
+      character,
+      createdAt:Date.now(),
+      blob
+    });
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
+}
+
+async function openGallery() {
+  $("galleryModal").classList.add("open");
+  const grid = $("galleryGrid");
+  grid.replaceChildren();
+  if (!window.heartmateUser) {
+    grid.innerHTML = '<div class="gallery-empty">Please sign in to view your VIP Gallery. 💗</div>';
+    return;
+  }
+  try {
+    const db = await openGalleryDB();
+    const photos = await new Promise((resolve, reject) => {
+      const tx = db.transaction("photos", "readonly");
+      const request = tx.objectStore("photos").getAll();
+      request.onsuccess = () => resolve(request.result || []);
+      request.onerror = () => reject(request.error);
+    });
+    db.close();
+    const mine = photos
+      .filter(photo => photo.userId === window.heartmateUser.uid && photo.character === character)
+      .sort((a,b) => b.createdAt - a.createdAt);
+    if (!mine.length) {
+      grid.innerHTML = '<div class="gallery-empty">No saved photos yet. Reach a relationship milestone or create an image to start your collection. ✨</div>';
+      return;
+    }
+    mine.forEach(photo => {
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(photo.blob);
+      img.alt = girlName + " VIP gallery photo";
+      grid.appendChild(img);
+    });
+  } catch (error) {
+    grid.innerHTML = '<div class="gallery-empty">Gallery could not be opened in this browser.</div>';
+  }
+}
+
+$("closeGallery").addEventListener("click", () => $("galleryModal").classList.remove("open"));
 
 function addVideo(url) {
   const box = document.createElement("div");
@@ -651,6 +759,11 @@ async function generateImage(scene) {
     }
 
     addImage(URL.createObjectURL(blob));
+    try {
+      await saveGalleryPhoto(blob);
+    } catch (saveError) {
+      addMessage("This photo was created, but couldn't be saved to your VIP Gallery on this device.", "bot");
+    }
   } catch (error) {
     addMessage("Image creation failed: " + error.message, "bot");
   } finally {
