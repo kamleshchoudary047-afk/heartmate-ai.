@@ -431,7 +431,7 @@ async function refreshRelationship() {
     $("relationshipFill").style.width = progress + "%";
     $("relationshipNext").textContent = next
       ? (data.pointsToNextLevel + " points to " + next.name + " ✨")
-      : "最高 level reached — Soulmate! 💗";
+      : "You've reached Soulmate level! 💗";
   } catch (error) {
     $("relationshipNext").textContent = "Sign in and chat to track your bond.";
   }
