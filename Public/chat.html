@@ -407,6 +407,8 @@ const status = $("status");
 
 let busy = false;
 let voiceReplies = true;
+let lastRelationshipLevel = null;
+let bikiniUnlockPending = false;
 let mediaType = "image";
 let chatHistory = [];
 let recorder = null;
@@ -422,6 +424,12 @@ async function refreshRelationship() {
     const level = Number(data.level || 1);
     const levelName = data.levelName || "New Friend";
     const next = data.nextLevel;
+
+    if (lastRelationshipLevel !== null && lastRelationshipLevel < 2 && level >= 2) {
+      bikiniUnlockPending = true;
+      addMessage("🎉 You reached Level 2! " + girlName + " unlocked a special bikini beach photo. 💗", "bot");
+    }
+    lastRelationshipLevel = level;
     $("relationshipName").textContent = "💗 " + levelName + " · Level " + level;
     $("relationshipPoints").textContent = points + " affection point" + (points === 1 ? "" : "s");
 
@@ -538,6 +546,11 @@ async function sendChat() {
     sendButton.disabled = false;
     typing.style.display = "none";
     input.focus();
+
+    if (bikiniUnlockPending) {
+      bikiniUnlockPending = false;
+      generateImage("wearing a stylish, tasteful bikini at a sunny beach, full-body fashion editorial, confident relaxed pose, non-explicit swimwear portrait");
+    }
   }
 }
 
