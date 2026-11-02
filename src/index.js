@@ -1562,6 +1562,68 @@ Instructions:
       }
     }
 
+    // Account data deletion. This removes Heartmate app data for the
+    // authenticated Firebase user; it does not delete the Firebase identity.
+    if (url.pathname === "/api/account/delete") {
+      if (request.method !== "POST") {
+        return json({ error: "Method not allowed." }, 405);
+      }
+
+      try {
+        if (!env.DB || !env.FIREBASE_PROJECT_ID) {
+          return json({ error: "Account deletion is not configured." }, 503);
+        }
+
+        const user = await verifyFirebaseToken(
+          request,
+          env.FIREBASE_PROJECT_ID
+        );
+
+        let body;
+        try {
+          body = await request.json();
+        } catch {
+          return json({ error: "Invalid JSON request." }, 400);
+        }
+
+        if (body.confirm !== "DELETE_MY_ACCOUNT") {
+          return json({
+            error: "Explicit confirmation is required.",
+            requiredConfirmation: "DELETE_MY_ACCOUNT"
+          }, 400);
+        }
+
+        // Delete child records first. All statements run as one D1 batch.
+        await env.DB.batch([
+          env.DB.prepare("DELETE FROM conversations WHERE uid = ?").bind(user.uid),
+          env.DB.prepare("DELETE FROM memories WHERE uid = ?").bind(user.uid),
+          env.DB.prepare("DELETE FROM relationship_levels WHERE uid = ?").bind(user.uid),
+          env.DB.prepare("DELETE FROM companion_profiles WHERE uid = ?").bind(user.uid),
+          env.DB.prepare("DELETE FROM daily_photos WHERE uid = ?").bind(user.uid),
+          env.DB.prepare("DELETE FROM voice_settings WHERE uid = ?").bind(user.uid),
+          env.DB.prepare("DELETE FROM notification_settings WHERE uid = ?").bind(user.uid),
+          env.DB.prepare("DELETE FROM daily_welcomes WHERE uid = ?").bind(user.uid),
+          env.DB.prepare("DELETE FROM video_tasks WHERE uid = ?").bind(user.uid),
+          env.DB.prepare("DELETE FROM visitors WHERE uid = ?").bind(user.uid)
+        ]);
+
+        return json({
+          ok: true,
+          message: "Your Heartmate AI application data has been deleted.",
+          firebaseAccountDeleted: false,
+          note: "Your Google/Firebase sign-in identity is separate and must be deleted through the account provider."
+        });
+      } catch (error) {
+        console.error("Account deletion error:", error?.message || String(error));
+        if (isAuthError(error)) {
+          return json({ error: error.message }, 401);
+        }
+        return json({
+          error: "Account data could not be deleted. Please try again."
+        }, 500);
+      }
+    }
+
     if (url.pathname.startsWith("/api/")) {
       return json({ error: "API endpoint not found." }, 404);
     }
