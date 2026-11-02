@@ -4,8 +4,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#100b1b">
-<title>Heartmate AI — Chat</title>
+<meta name="theme-color" content="#0b0710">
+<title>Heartmate AI — After Dark Chat</title>
 
 <style>
 :root {
@@ -520,6 +520,25 @@ header,.footer{background:rgba(12,10,18,.94);border-color:#ffffff17;backdrop-fil
 .gallery-filter.active{background:#ff80b8;color:#190d19}
 @media(max-width:699px){header{padding-left:12px;padding-right:12px}#messages{height:calc(100dvh - 220px);padding:18px 13px 26px}.message{max-width:90%}.footer{padding-left:9px;padding-right:9px}.tools button{font-size:10px}}
 </style>
+<style id="heartmate-after-dark-chat">
+:root{--bg:#0b0710;--panel:#1b101d;--pink:#ff69a8;--lav:#b18aff;--text:#fff6fb;--muted:#d0b5c5}
+body{background:radial-gradient(ellipse at 10% 0%,#92234e55,transparent 43%),radial-gradient(ellipse at 100% 42%,#5c2b8650,transparent 42%),#0b0710}
+header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#ff9bc5}
+.avatar{background:linear-gradient(135deg,#ff68a8,#a47bff);box-shadow:0 5px 24px #ff4f9a55}
+.relationship-card{border-color:#ff72ad66;background:linear-gradient(115deg,#35152c,#1a1021);box-shadow:0 12px 34px #0006}
+.relationship-name{color:#ffc2df}.relationship-fill{background:linear-gradient(90deg,#ff5fa5,#b18aff)}
+.welcome{border-color:#ff79b544;background:linear-gradient(145deg,#301326,#1b1020);color:#f0d4e2}
+.bot{background:linear-gradient(145deg,#32192d,#211426);border:1px solid #ff83b833;border-bottom-left-radius:7px}
+.user{background:linear-gradient(130deg,#e84c91,#8e62d4);border:1px solid #ffc0df66}
+.footer{box-shadow:0 -12px 38px #0007}.tools button{border-color:#ff83b833;background:linear-gradient(120deg,#2c172b,#21172d);color:#ffe1ef}
+#messageInput,#sceneInput{border-color:#ff83b855;background:#1d1422;color:#fff7fb}
+#messageInput:focus,#sceneInput:focus{border-color:#ff69a8;box-shadow:0 0 0 3px #ff69a833}
+.action,#sendButton,.modal-actions button{background:linear-gradient(120deg,#ff6ca9,#a98aff);color:#210e20;box-shadow:0 6px 22px #d83b8b44}
+#voiceToggle[aria-pressed="true"]{border-color:#ff83b8;background:linear-gradient(110deg,#ff6ca9,#a98aff);color:#210e20}
+.message-voice{display:block;margin-top:9px;padding:5px 10px;border:1px solid #ff9bc555;border-radius:20px;background:#ff69a81c;color:#ffd2e7;font-size:11px}
+#status{color:#ffc0dc}.modal-card{border-color:#ff83b855;background:linear-gradient(145deg,#35182e,#160e1c)}
+@media(max-width:699px){.tools button{font-size:10px}.message-voice{padding:6px 11px}}
+</style>
 </head>
 
 <body>
@@ -549,7 +568,7 @@ header,.footer{background:rgba(12,10,18,.94);border-color:#ffffff17;backdrop-fil
 <main id="messages">
   <div class="welcome">
     Welcome to Heartmate AI 💗<br>
-    A little space for conversations, sweet moments and creativity.
+    Your private 18+ fantasy chat with fictional adult companions. Flirt, tease and explore romantic roleplay at your pace.
   </div>
 </main>
 
@@ -560,7 +579,7 @@ header,.footer{background:rgba(12,10,18,.94);border-color:#ffffff17;backdrop-fil
     <button onclick="openGallery()">💎 VIP Gallery</button>
     <button onclick="openMedia('image')">📸 Create image</button>
     <button onclick="openMedia('video')">🎬 Create video</button>
-    <button onclick="toggleVoice()">🔊 Voice replies</button>
+    <button id="voiceToggle" type="button" onclick="toggleVoice()" aria-pressed="false">🔇 Voice off · tap to enable</button>
     <button onclick="toggleRecording()">🎙️ Voice input</button>
   </div>
   <div id="status"></div>
@@ -630,7 +649,7 @@ const typing = $("typing");
 const status = $("status");
 
 let busy = false;
-let voiceReplies = true;
+let voiceReplies = false;
 let lastRelationshipLevel = null;
 let bikiniUnlockPending = false;
 let levelPhotoQueue = [];
@@ -701,7 +720,18 @@ async function refreshRelationship() {
 function addMessage(text, sender) {
   const div = document.createElement("div");
   div.className = "message " + sender;
-  div.textContent = text;
+  const content = document.createElement("span");
+  content.textContent = text;
+  div.appendChild(content);
+  if (sender === "bot") {
+    const play = document.createElement("button");
+    play.type = "button";
+    play.className = "message-voice";
+    play.textContent = "▶ Hear her";
+    play.setAttribute("aria-label", "Play this reply aloud");
+    play.addEventListener("click", () => speak(text));
+    div.appendChild(play);
+  }
   messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
 }
@@ -1163,25 +1193,53 @@ async function generateVideo(scene) {
 
 /* VOICE REPLIES */
 
+function updateVoiceButton() {
+  const button = $("voiceToggle");
+  if (!button) return;
+  button.textContent = voiceReplies ? "🔊 Auto voice on · tap to turn off" : "🔇 Voice off · tap to enable";
+  button.setAttribute("aria-pressed", String(voiceReplies));
+}
+
 function toggleVoice() {
   voiceReplies = !voiceReplies;
-  addMessage(
-    "Voice replies " + (voiceReplies ? "enabled 🔊" : "disabled"),
-    "bot"
-  );
+  if (!voiceReplies && "speechSynthesis" in window) window.speechSynthesis.cancel();
+  updateVoiceButton();
+  status.textContent = voiceReplies
+    ? "Cute voice replies are on. Tap again to turn them off."
+    : "Voice replies are off. Tap “Hear her” on any reply to listen once.";
+}
+
+function chooseCuteFemaleVoice() {
+  if (!("speechSynthesis" in window)) return null;
+  const voices = window.speechSynthesis.getVoices() || [];
+  const preferredNames = /samantha|ava|zoe|tessa|karen|moira|victoria|serena|susan|fiona|female|zira|heera|google.*female|microsoft.*zira/i;
+  const englishVoices = voices.filter(voice => /^en([-_]|$)/i.test(voice.lang));
+  return englishVoices.find(voice => preferredNames.test(voice.name))
+    || voices.find(voice => preferredNames.test(voice.name))
+    || englishVoices.find(voice => /india|united states|united kingdom/i.test(voice.name + " " + voice.lang))
+    || englishVoices[0] || voices[0] || null;
 }
 
 function speak(text) {
-  if (!("speechSynthesis" in window)) return;
-
+  if (!("speechSynthesis" in window)) {
+    status.textContent = "Voice playback is not supported in this browser.";
+    return;
+  }
   window.speechSynthesis.cancel();
-
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.rate = 1;
-  utterance.pitch = 1.05;
-
+  const voice = chooseCuteFemaleVoice();
+  if (voice) utterance.voice = voice;
+  utterance.rate = 0.94;
+  utterance.pitch = 1.2;
+  utterance.volume = 1;
+  utterance.onerror = () => { status.textContent = "Voice playback could not start on this device."; };
   window.speechSynthesis.speak(utterance);
 }
+
+if ("speechSynthesis" in window) {
+  window.speechSynthesis.onvoiceschanged = () => chooseCuteFemaleVoice();
+}
+updateVoiceButton();
 
 /* VOICE RECORDING */
 
