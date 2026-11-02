@@ -15,6 +15,24 @@ function cleanText(value, maxLength) {
     : "";
 }
 
+function isValidDate(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return Number.isFinite(date.getTime()) &&
+    date.toISOString().slice(0, 10) === value;
+}
+
+function isAuthError(error) {
+  const message = error?.message || "";
+  return (
+    message.includes("sign in") ||
+    message.includes("sign-in") ||
+    message.includes("token") ||
+    message.includes("Google signing") ||
+    message.includes("sign-in key")
+  );
+}
+
 // All characters are fictional adults aged 25 or older.
 const characters = {
   aria: { name: "Aria", personality: "Warm, playful, affectionate and cheerful. Loves jokes and sweet compliments." },
@@ -41,7 +59,6 @@ const characters = {
   sienna: { name: "Sienna", personality: "Warm, nurturing and funny. Loves cooking, family stories and cozy evenings." },
   valentina: { name: "Valentina", personality: "Expressive, passionate and sociable. Loves dancing, food and lively conversation." },
   aurora: { name: "Aurora", personality: "Imaginative, sweet and dreamy. Loves fantasy, stars and beautiful stories." },
-
   ananya: { name: "Ananya", personality: "A graceful, confident Indian woman who loves classical music, traditional fashion and heartfelt romance. Speaks warmly with elegant, affectionate flirtation." },
   aadhya: { name: "Aadhya", personality: "A lively, modern Indian woman who loves Bollywood, dancing and spontaneous fun. Cheerful, cheeky and playfully flirtatious." },
   meera: { name: "Meera", personality: "A gentle, artistic Indian woman who loves poetry, old songs and meaningful conversations. Deeply romantic, thoughtful and tender." },
@@ -71,7 +88,6 @@ const moodInstructions = {
   Adventurous: "Be energetic, spontaneous and exciting. Suggest imaginative adventures and lively conversation."
 };
 
-// Relationship milestones.
 function relationshipLevel(points) {
   if (points >= 500) return 6;
   if (points >= 300) return 5;
@@ -82,7 +98,7 @@ function relationshipLevel(points) {
 }
 
 async function addAffectionPoints(env, uid, characterId, points = 5) {
-  const result = await env.DB.prepare(`
+  return env.DB.prepare(`
     INSERT INTO relationship_levels
       (uid, character_id, affection_points, level, updated_at)
     VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
@@ -98,11 +114,9 @@ async function addAffectionPoints(env, uid, characterId, points = 5) {
       END,
       updated_at = CURRENT_TIMESTAMP
   `).bind(uid, characterId, points, relationshipLevel(points)).run();
-
-  return result;
 }
 
-// Google Firebase public signing keys.
+// Firebase public signing keys.
 let cachedGoogleKeys = null;
 let cachedGoogleKeysExpiry = 0;
 
@@ -137,7 +151,6 @@ async function getGoogleSigningKeys() {
 
   cachedGoogleKeys = data.keys;
   cachedGoogleKeysExpiry = Date.now() + 60 * 60 * 1000;
-
   return cachedGoogleKeys;
 }
 
@@ -150,8 +163,15 @@ async function verifyFirebaseToken(request, projectId) {
   const parts = match[1].split(".");
   if (parts.length !== 3) throw new Error("Invalid sign-in token.");
 
-  const header = decodeJwtPart(parts[0]);
-  const claims = decodeJwtPart(parts[1]);
+  let header;
+  let claims;
+
+  try {
+    header = decodeJwtPart(parts[0]);
+    claims = decodeJwtPart(parts[1]);
+  } catch {
+    throw new Error("Invalid sign-in token.");
+  }
 
   if (header.alg !== "RS256" || !header.kid) {
     throw new Error("Unsupported sign-in token.");
@@ -162,6 +182,7 @@ async function verifyFirebaseToken(request, projectId) {
   if (
     claims.iss !== `https://securetoken.google.com/${projectId}` ||
     claims.aud !== projectId ||
+    typeof claims.sub !== "string" ||
     !claims.sub ||
     claims.sub.length > 128 ||
     !Number.isFinite(claims.exp) ||
@@ -174,11 +195,16 @@ async function verifyFirebaseToken(request, projectId) {
   }
 
   const keys = await getGoogleSigningKeys();
-  const jwk = keys.find(key => key.kid === header.kid);
+  let jwk = keys.find(key => key.kid === header.kid);
 
   if (!jwk) {
     cachedGoogleKeys = null;
     cachedGoogleKeysExpiry = 0;
+    const refreshedKeys = await getGoogleSigningKeys();
+    jwk = refreshedKeys.find(key => key.kid === header.kid);
+  }
+
+  if (!jwk) {
     throw new Error("The sign-in key could not be verified. Please try again.");
   }
 
@@ -245,8 +271,7 @@ async function saveConversation(env, uid, characterId, message, reply) {
   ]);
 }
 
-
-// AUTOMATIC LONG-TERM COMPANION MEMORY.
+// Automatic long-term companion memory.
 async function updateCompanionMemory(env, uid, characterId) {
   try {
     const countRow = await env.DB.prepare(`
@@ -256,7 +281,6 @@ async function updateCompanionMemory(env, uid, characterId) {
     `).bind(uid, characterId).first();
 
     const total = Number(countRow?.total || 0);
-
     if (total === 0 || total % 5 !== 0) return;
 
     const history = await loadConversation(env, uid, characterId, 10);
@@ -339,9 +363,7 @@ Return only the updated memory.
   }
 }
 
-// AUTHENTICATED FEATURE ROUTES.
-// These routes are called from inside fetch() in Part 3.
-
+// Profile API.
 async function handleProfile(request, env, user) {
   if (request.method === "GET") {
     const characterId = cleanText(
@@ -362,17 +384,12 @@ async function handleProfile(request, env, user) {
 
     return json({
       character: characterId,
-      profile: row || {
-        bio: "",
-        interests: "",
-        preferences: ""
-      }
+      profile: row || { bio: "", interests: "", preferences: "" }
     });
   }
 
   if (request.method === "POST") {
     let body;
-
     try {
       body = await request.json();
     } catch {
@@ -380,7 +397,6 @@ async function handleProfile(request, env, user) {
     }
 
     const characterId = cleanText(body.character, 40).toLowerCase();
-
     if (!characters[characterId]) {
       return json({ error: "Character not found." }, 404);
     }
@@ -398,13 +414,7 @@ async function handleProfile(request, env, user) {
         interests = excluded.interests,
         preferences = excluded.preferences,
         updated_at = CURRENT_TIMESTAMP
-    `).bind(
-      user.uid,
-      characterId,
-      bio,
-      interests,
-      preferences
-    ).run();
+    `).bind(user.uid, characterId, bio, interests, preferences).run();
 
     return json({
       ok: true,
@@ -416,6 +426,7 @@ async function handleProfile(request, env, user) {
   return json({ error: "Method not allowed." }, 405);
 }
 
+// Relationship API.
 async function handleRelationship(env, user, characterId) {
   if (!characters[characterId]) {
     return json({ error: "Character not found." }, 404);
@@ -453,9 +464,12 @@ async function handleRelationship(env, user, characterId) {
   });
 }
 
-// DAILY PHOTO FROM EXISTING STATIC COMPANION IMAGES.
-// No R2 bucket or new image storage is required.
+// Daily photo API.
 async function handleDailyPhoto(request, env, user) {
+  if (request.method !== "GET") {
+    return json({ error: "Method not allowed." }, 405);
+  }
+
   const characterId = cleanText(
     new URL(request.url).searchParams.get("character"),
     40
@@ -466,49 +480,7 @@ async function handleDailyPhoto(request, env, user) {
   }
 
   const today = new Date().toISOString().slice(0, 10);
-
-  const counts = {
-    aria: 10,
-    maya: 10,
-    luna: 10,
-    sofia: 10,
-    ella: 10,
-    nova: 10,
-    zara: 10,
-    ivy: 10,
-    ruby: 10,
-    chloe: 10,
-    nina: 10,
-    lila: 10,
-    amber: 10,
-    violet: 10,
-    scarlett: 10,
-    jade: 10,
-    rose: 10,
-    stella: 10,
-    kira: 10,
-    diana: 10,
-    freya: 10,
-    sienna: 10,
-    valentina: 10,
-    aurora: 10,
-    ananya: 10,
-    aadhya: 10,
-    meera: 10,
-    kiara: 10,
-    ishita: 10,
-    kavya: 10,
-    diya: 10,
-    riya: 10,
-    nisha: 10,
-    pooja: 10,
-    tara: 10,
-    priya: 10
-  };
-
-  const count = counts[characterId] || 1;
-
-  // Deterministic daily rotation.
+  const count = 10;
   const dayNumber = Math.floor(Date.now() / 86400000);
   const photoNumber = (dayNumber % count) + 1;
 
@@ -517,11 +489,7 @@ async function handleDailyPhoto(request, env, user) {
     : `/images/${characterId}/${characterId}-${photoNumber}.jpeg`;
 
   const photoUrl = new URL(photoPath, request.url).href;
-
-  // Verify the static image actually exists.
-  const assetResponse = await env.ASSETS.fetch(
-    new Request(photoUrl)
-  );
+  const assetResponse = await env.ASSETS.fetch(new Request(photoUrl));
 
   if (!assetResponse.ok) {
     return json({
@@ -551,7 +519,7 @@ async function handleDailyPhoto(request, env, user) {
   });
 }
 
-// SAVE OR READ VOICE PREFERENCE.
+// Voice preferences API.
 async function handleVoiceSettings(request, env, user) {
   if (request.method === "GET") {
     const characterId = cleanText(
@@ -579,7 +547,6 @@ async function handleVoiceSettings(request, env, user) {
 
   if (request.method === "POST") {
     let body;
-
     try {
       body = await request.json();
     } catch {
@@ -587,7 +554,6 @@ async function handleVoiceSettings(request, env, user) {
     }
 
     const characterId = cleanText(body.character, 40).toLowerCase();
-
     if (!characters[characterId]) {
       return json({ error: "Character not found." }, 404);
     }
@@ -613,22 +579,22 @@ async function handleVoiceSettings(request, env, user) {
   return json({ error: "Method not allowed." }, 405);
 }
 
-// SPEECH-TO-TEXT USING CLOUDFLARE WHISPER.
+// Speech-to-text using Cloudflare Whisper.
 async function handleTranscription(request, env) {
+  if (request.method !== "POST") {
+    return json({ error: "Method not allowed." }, 405);
+  }
+
   if (!env.AI) {
     return json({ error: "Voice AI is not configured." }, 503);
   }
 
-  const contentLength = Number(
-    request.headers.get("content-length") || 0
-  );
-
+  const contentLength = Number(request.headers.get("content-length") || 0);
   if (contentLength > 2 * 1024 * 1024) {
     return json({ error: "Audio must be smaller than 2 MB." }, 413);
   }
 
   const audio = new Uint8Array(await request.arrayBuffer());
-
   if (!audio.length || audio.length > 2 * 1024 * 1024) {
     return json({ error: "Invalid or oversized audio." }, 400);
   }
@@ -639,7 +605,6 @@ async function handleTranscription(request, env) {
   );
 
   const transcript = cleanText(result?.text, 1200);
-
   if (!transcript) {
     return json({ error: "Could not understand the audio." }, 502);
   }
@@ -647,14 +612,17 @@ async function handleTranscription(request, env) {
   return json({ text: transcript });
 }
 
-// TEXT-TO-SPEECH USING CLOUDFLARE MELOTTS.
+// Text-to-speech using Cloudflare MeloTTS.
 async function handleSpeech(request, env) {
+  if (request.method !== "POST") {
+    return json({ error: "Method not allowed." }, 405);
+  }
+
   if (!env.AI) {
     return json({ error: "Voice AI is not configured." }, 503);
   }
 
   let body;
-
   try {
     body = await request.json();
   } catch {
@@ -662,20 +630,15 @@ async function handleSpeech(request, env) {
   }
 
   const text = cleanText(body.text, 1000);
-
   if (!text) {
     return json({ error: "Please provide text to speak." }, 400);
   }
 
   const result = await env.AI.run(
     "@cf/myshell-ai/melotts",
-    {
-      prompt: text,
-      lang: "en"
-    }
+    { prompt: text, lang: "en" }
   );
 
-  // Support either a returned audio buffer or base64 audio.
   if (result instanceof ReadableStream) {
     return new Response(result, {
       headers: {
@@ -731,7 +694,6 @@ export default {
       });
     }
 
-    // HEALTH CHECK.
     if (url.pathname === "/api/health" && request.method === "GET") {
       return json({
         ok: true,
@@ -748,11 +710,12 @@ export default {
         relationshipLevels: true,
         dailyPhotos: true,
         voiceChat: true,
+        videoTaskOwnership: true,
         notifications: "preferences-only"
       });
     }
 
-    // AUTHENTICATION FOR NEW FEATURE APIS.
+    // Authenticated feature routes.
     const featureRoutes = [
       "/api/profile",
       "/api/relationship",
@@ -783,17 +746,16 @@ export default {
         }
 
         if (url.pathname === "/api/relationship") {
+          if (request.method !== "GET") {
+            return json({ error: "Method not allowed." }, 405);
+          }
+
           const characterId = cleanText(
-            url.searchParams.get("character") ||
-            (request.method === "POST" ? "" : ""),
+            url.searchParams.get("character"),
             40
           ).toLowerCase();
 
-          return await handleRelationship(
-            env,
-            user,
-            characterId
-          );
+          return await handleRelationship(env, user, characterId);
         }
 
         if (url.pathname === "/api/daily-photo") {
@@ -805,18 +767,10 @@ export default {
         }
 
         if (url.pathname === "/api/transcribe") {
-          if (request.method !== "POST") {
-            return json({ error: "Method not allowed." }, 405);
-          }
-
           return await handleTranscription(request, env);
         }
 
         if (url.pathname === "/api/speech") {
-          if (request.method !== "POST") {
-            return json({ error: "Method not allowed." }, 405);
-          }
-
           return await handleSpeech(request, env);
         }
 
@@ -829,14 +783,11 @@ export default {
               LIMIT 1
             `).bind(user.uid).first();
 
-            return json({
-              enabled: Boolean(row?.enabled || 0)
-            });
+            return json({ enabled: Boolean(row?.enabled || 0) });
           }
 
           if (request.method === "POST") {
             let body;
-
             try {
               body = await request.json();
             } catch {
@@ -854,30 +805,16 @@ export default {
                 updated_at = CURRENT_TIMESTAMP
             `).bind(user.uid, enabled).run();
 
-            return json({
-              ok: true,
-              enabled: Boolean(enabled)
-            });
+            return json({ ok: true, enabled: Boolean(enabled) });
           }
 
           return json({ error: "Method not allowed." }, 405);
         }
-
       } catch (error) {
-        console.error(
-          "Feature API error:",
-          error?.message || String(error)
-        );
+        console.error("Feature API error:", error?.message || String(error));
 
-        const message = error?.message || "";
-
-        if (
-          message.includes("sign in") ||
-          message.includes("sign-in") ||
-          message.includes("token") ||
-          message.includes("Google signing")
-        ) {
-          return json({ error: message }, 401);
+        if (isAuthError(error)) {
+          return json({ error: error.message }, 401);
         }
 
         return json({
@@ -886,8 +823,12 @@ export default {
       }
     }
 
-    // AUTHENTICATED CHAT API.
-    if (url.pathname === "/api/chat" && request.method === "POST") {
+    // Authenticated chat API.
+    if (url.pathname === "/api/chat") {
+      if (request.method !== "POST") {
+        return json({ error: "Method not allowed." }, 405);
+      }
+
       try {
         if (!env.AI || !env.DB) {
           return json({
@@ -896,9 +837,7 @@ export default {
         }
 
         if (!env.FIREBASE_PROJECT_ID) {
-          return json({
-            error: "Authentication is not configured."
-          }, 503);
+          return json({ error: "Authentication is not configured." }, 503);
         }
 
         const user = await verifyFirebaseToken(
@@ -906,13 +845,14 @@ export default {
           env.FIREBASE_PROJECT_ID
         );
 
-        const body = await request.json();
+        let body;
+        try {
+          body = await request.json();
+        } catch {
+          return json({ error: "Invalid JSON request." }, 400);
+        }
 
-        const characterId = cleanText(
-          body.character,
-          40
-        ).toLowerCase();
-
+        const characterId = cleanText(body.character, 40).toLowerCase();
         const message = cleanText(body.message, 1200);
         const requestedMood = cleanText(body.mood, 30);
 
@@ -933,10 +873,7 @@ export default {
         await saveVisitor(env, user);
 
         const safeHistory = await loadConversation(
-          env,
-          user.uid,
-          characterId,
-          12
+          env, user.uid, characterId, 12
         );
 
         const memoryRow = await env.DB.prepare(`
@@ -946,10 +883,7 @@ export default {
           LIMIT 1
         `).bind(user.uid, characterId).first();
 
-        const savedMemory = cleanText(
-          memoryRow?.memory,
-          4000
-        );
+        const savedMemory = cleanText(memoryRow?.memory, 4000);
 
         const companionProfile = await env.DB.prepare(`
           SELECT bio, interests, preferences
@@ -1008,9 +942,7 @@ Conversation instructions:
             ],
             max_completion_tokens: 450,
             temperature: 0.8,
-            chat_template_kwargs: {
-              enable_thinking: false
-            }
+            chat_template_kwargs: { enable_thinking: false }
           }
         );
 
@@ -1029,33 +961,16 @@ Conversation instructions:
         const finalReply = reply.slice(0, 5000);
 
         await saveConversation(
-          env,
-          user.uid,
-          characterId,
-          message,
-          finalReply
+          env, user.uid, characterId, message, finalReply
         );
 
-        // Award affection points after successful chat.
         try {
-          await addAffectionPoints(
-            env,
-            user.uid,
-            characterId,
-            5
-          );
+          await addAffectionPoints(env, user.uid, characterId, 5);
         } catch (error) {
-          console.error(
-            "Relationship update error:",
-            error?.message || String(error)
-          );
+          console.error("Relationship update error:", error?.message || String(error));
         }
 
-        await updateCompanionMemory(
-          env,
-          user.uid,
-          characterId
-        );
+        await updateCompanionMemory(env, user.uid, characterId);
 
         return json({
           reply: finalReply,
@@ -1063,22 +978,11 @@ Conversation instructions:
           mood: dailyMood,
           affectionPointsAwarded: 5
         });
-
       } catch (error) {
-        console.error(
-          "Chat API error:",
-          error?.message || String(error)
-        );
+        console.error("Chat API error:", error?.message || String(error));
 
-        const message = error?.message || "";
-
-        if (
-          message.includes("sign in") ||
-          message.includes("sign-in") ||
-          message.includes("token") ||
-          message.includes("Google signing")
-        ) {
-          return json({ error: message }, 401);
+        if (isAuthError(error)) {
+          return json({ error: error.message }, 401);
         }
 
         return json({
@@ -1087,13 +991,15 @@ Conversation instructions:
       }
     }
 
-    // RESTORE SAVED CHAT HISTORY.
-    if (url.pathname === "/api/history" && request.method === "GET") {
+    // Restore saved chat history.
+    if (url.pathname === "/api/history") {
+      if (request.method !== "GET") {
+        return json({ error: "Method not allowed." }, 405);
+      }
+
       try {
         if (!env.DB || !env.FIREBASE_PROJECT_ID) {
-          return json({
-            error: "History service is not configured."
-          }, 503);
+          return json({ error: "History service is not configured." }, 503);
         }
 
         const user = await verifyFirebaseToken(
@@ -1124,21 +1030,25 @@ Conversation instructions:
           character: characters[characterId].name,
           messages: (result.results || []).reverse()
         });
-
       } catch (error) {
-        console.error(
-          "History API error:",
-          error?.message || String(error)
-        );
+        console.error("History API error:", error?.message || String(error));
+
+        if (isAuthError(error)) {
+          return json({ error: error.message }, 401);
+        }
 
         return json({
           error: "Could not load your saved conversation."
-        }, 401);
+        }, 500);
       }
     }
 
-    // ONE PERSONALIZED DAILY WELCOME PER USER AND COMPANION.
-    if (url.pathname === "/api/daily-welcome" && request.method === "POST") {
+    // One personalized daily welcome per user and companion.
+    if (url.pathname === "/api/daily-welcome") {
+      if (request.method !== "POST") {
+        return json({ error: "Method not allowed." }, 405);
+      }
+
       try {
         if (!env.AI || !env.DB || !env.FIREBASE_PROJECT_ID) {
           return json({
@@ -1151,26 +1061,23 @@ Conversation instructions:
           env.FIREBASE_PROJECT_ID
         );
 
-        const body = await request.json();
+        let body;
+        try {
+          body = await request.json();
+        } catch {
+          return json({ error: "Invalid JSON request." }, 400);
+        }
 
-        const characterId = cleanText(
-          body.character,
-          40
-        ).toLowerCase();
-
+        const characterId = cleanText(body.character, 40).toLowerCase();
         const welcomeDate = cleanText(body.date, 10);
         const requestedMood = cleanText(body.mood, 30);
-
         const profile = characters[characterId];
 
         if (!profile) {
           return json({ error: "Character not found." }, 404);
         }
 
-        if (
-          !/^\d{4}-\d{2}-\d{2}$/.test(welcomeDate) ||
-          new Date(welcomeDate + "T00:00:00Z").toISOString().slice(0, 10) !== welcomeDate
-        ) {
+        if (!isValidDate(welcomeDate)) {
           return json({ error: "Invalid welcome date." }, 400);
         }
 
@@ -1185,24 +1092,14 @@ Conversation instructions:
           FROM daily_welcomes
           WHERE uid = ? AND character_id = ? AND welcome_date = ?
           LIMIT 1
-        `).bind(
-          user.uid,
-          characterId,
-          welcomeDate
-        ).first();
+        `).bind(user.uid, characterId, welcomeDate).first();
 
         if (existing) {
-          return json({
-            welcome: null,
-            alreadyShown: true
-          });
+          return json({ welcome: null, alreadyShown: true });
         }
 
         const history = await loadConversation(
-          env,
-          user.uid,
-          characterId,
-          12
+          env, user.uid, characterId, 12
         );
 
         const memoryRow = await env.DB.prepare(`
@@ -1212,10 +1109,7 @@ Conversation instructions:
           LIMIT 1
         `).bind(user.uid, characterId).first();
 
-        const savedMemory = cleanText(
-          memoryRow?.memory,
-          3500
-        );
+        const savedMemory = cleanText(memoryRow?.memory, 3500);
 
         const result = await env.AI.run(
           "@cf/zai-org/glm-4.7-flash",
@@ -1266,9 +1160,7 @@ Instructions:
             ],
             max_completion_tokens: 180,
             temperature: 0.9,
-            chat_template_kwargs: {
-              enable_thinking: false
-            }
+            chat_template_kwargs: { enable_thinking: false }
           }
         );
 
@@ -1281,9 +1173,7 @@ Instructions:
         );
 
         if (!welcome) {
-          return json({
-            error: "Could not create a daily welcome."
-          }, 502);
+          return json({ error: "Could not create a daily welcome." }, 502);
         }
 
         const saved = await env.DB.batch([
@@ -1303,10 +1193,7 @@ Instructions:
         ]);
 
         if (Number(saved?.[0]?.meta?.changes || 0) !== 1) {
-          return json({
-            welcome: null,
-            alreadyShown: true
-          });
+          return json({ welcome: null, alreadyShown: true });
         }
 
         return json({
@@ -1315,22 +1202,11 @@ Instructions:
           character: profile.name,
           mood: dailyMood
         });
-
       } catch (error) {
-        console.error(
-          "Daily welcome API error:",
-          error?.message || String(error)
-        );
+        console.error("Daily welcome API error:", error?.message || String(error));
 
-        const message = error?.message || "";
-
-        if (
-          message.includes("sign in") ||
-          message.includes("sign-in") ||
-          message.includes("token") ||
-          message.includes("Google signing")
-        ) {
-          return json({ error: message }, 401);
+        if (isAuthError(error)) {
+          return json({ error: error.message }, 401);
         }
 
         return json({
@@ -1339,34 +1215,41 @@ Instructions:
       }
     }
 
-    // IMAGE GENERATION.
-    if (url.pathname === "/api/image" && request.method === "POST") {
+    // Authenticated image generation.
+    if (url.pathname === "/api/image") {
+      if (request.method !== "POST") {
+        return json({ error: "Method not allowed." }, 405);
+      }
+
       try {
-        if (!env.AI || !env.ASSETS) {
-          throw new Error("Cloudflare AI or ASSETS binding is missing.");
+        if (!env.AI || !env.ASSETS || !env.DB || !env.FIREBASE_PROJECT_ID) {
+          return json({ error: "Image service is not configured." }, 503);
         }
 
-        const body = await request.json();
-        const characterId = cleanText(
-          body.character,
-          40
-        ).toLowerCase();
+        const user = await verifyFirebaseToken(
+          request,
+          env.FIREBASE_PROJECT_ID
+        );
 
+        await saveVisitor(env, user);
+
+        let body;
+        try {
+          body = await request.json();
+        } catch {
+          return json({ error: "Invalid JSON request." }, 400);
+        }
+
+        const characterId = cleanText(body.character, 40).toLowerCase();
         const profile = characters[characterId];
 
         if (!profile) {
           return json({ error: "Character not found." }, 404);
         }
 
-        const scene = cleanText(
-          body.scene || body.prompt,
-          400
-        );
-
+        const scene = cleanText(body.scene || body.prompt, 400);
         if (!scene) {
-          return json({
-            error: "Please describe the picture."
-          }, 400);
+          return json({ error: "Please describe the picture." }, 400);
         }
 
         const safePrompt =
@@ -1438,41 +1321,51 @@ Instructions:
             "x-content-type-options": "nosniff"
           }
         });
-
       } catch (error) {
-        console.error(
-          "Image API error:",
-          error?.stack || error?.message || String(error)
-        );
+        console.error("Image API error:", error?.message || String(error));
+
+        if (isAuthError(error)) {
+          return json({ error: error.message }, 401);
+        }
 
         return json({
-          error: error?.message || "Image generation failed."
+          error: "Image generation failed. Please try again."
         }, 502);
       }
     }
 
-    // KLING VIDEO GENERATION.
-    if (url.pathname === "/api/video" && request.method === "POST") {
+    // Authenticated Kling video generation.
+    if (url.pathname === "/api/video") {
+      if (request.method !== "POST") {
+        return json({ error: "Method not allowed." }, 405);
+      }
+
       try {
-        if (!env.KLING_API_KEY) {
+        if (!env.DB || !env.FIREBASE_PROJECT_ID) {
           return json({
-            error: "Kling API key is missing."
-          }, 500);
+            error: "Database or authentication is not configured."
+          }, 503);
         }
 
-        if (!env.ASSETS) {
-          return json({
-            error: "Website assets are unavailable."
-          }, 500);
+        if (!env.KLING_API_KEY || !env.ASSETS) {
+          return json({ error: "Video service is not configured." }, 503);
         }
 
-        const body = await request.json();
+        const user = await verifyFirebaseToken(
+          request,
+          env.FIREBASE_PROJECT_ID
+        );
 
-        const characterId = cleanText(
-          body.character,
-          40
-        ).toLowerCase();
+        await saveVisitor(env, user);
 
+        let body;
+        try {
+          body = await request.json();
+        } catch {
+          return json({ error: "Invalid JSON request." }, 400);
+        }
+
+        const characterId = cleanText(body.character, 40).toLowerCase();
         const scene = cleanText(body.scene, 1500);
         const profile = characters[characterId];
 
@@ -1481,9 +1374,7 @@ Instructions:
         }
 
         if (!scene) {
-          return json({
-            error: "Please describe the video scene."
-          }, 400);
+          return json({ error: "Please describe the video scene." }, 400);
         }
 
         const prompt =
@@ -1508,13 +1399,10 @@ Instructions:
           }, 404);
         }
 
-        const firstFrame = new URL(
-          firstFramePath,
-          request.url
-        ).href;
+        const firstFrame = new URL(firstFramePath, request.url).href;
 
         const response = await fetch(
-          "https://api-singapore.klingai.com/image-to-video/kling-3.0-turbo",
+          "https://api-singapore.klingai.com/image-to-video/kling-3.0",
           {
             method: "POST",
             headers: {
@@ -1537,28 +1425,39 @@ Instructions:
           }
         );
 
-        const result = await response.json();
+        let result;
+        try {
+          result = await response.json();
+        } catch {
+          return json({ error: "Kling returned an invalid response." }, 502);
+        }
 
         if (!response.ok || result.code !== 0 || !result.data?.id) {
           console.error("Kling create task error:", result);
-
           return json({
-            error: result.message ||
-              "Kling could not start the video task."
+            error: result.message || "Kling could not start the video task."
           }, 502);
         }
 
+        const taskId = String(result.data.id);
+
+        // Save task ownership before exposing the task ID to the browser.
+        await env.DB.prepare(`
+          INSERT INTO video_tasks (task_id, uid, character_id)
+          VALUES (?, ?, ?)
+        `).bind(taskId, user.uid, characterId).run();
+
         return json({
-          taskId: result.data.id,
+          taskId,
           status: result.data.status,
           character: profile.name
         });
-
       } catch (error) {
-        console.error(
-          "Kling video API error:",
-          error?.message || String(error)
-        );
+        console.error("Kling video API error:", error?.message || String(error));
+
+        if (isAuthError(error)) {
+          return json({ error: error.message }, 401);
+        }
 
         return json({
           error: "Video generation could not be started."
@@ -1566,27 +1465,43 @@ Instructions:
       }
     }
 
-    // CHECK KLING VIDEO STATUS.
-    if (
-      url.pathname === "/api/video/status" &&
-      request.method === "GET"
-    ) {
+    // Authenticated video status; only the task owner may query it.
+    if (url.pathname === "/api/video/status") {
+      if (request.method !== "GET") {
+        return json({ error: "Method not allowed." }, 405);
+      }
+
       try {
-        if (!env.KLING_API_KEY) {
+        if (!env.DB || !env.FIREBASE_PROJECT_ID) {
           return json({
-            error: "Kling API key is missing."
-          }, 500);
+            error: "Database or authentication is not configured."
+          }, 503);
         }
 
-        const taskId = cleanText(
-          url.searchParams.get("taskId"),
-          100
+        if (!env.KLING_API_KEY) {
+          return json({ error: "Kling API key is missing." }, 503);
+        }
+
+        const user = await verifyFirebaseToken(
+          request,
+          env.FIREBASE_PROJECT_ID
         );
 
-        if (!/^[0-9]+$/.test(taskId)) {
-          return json({
-            error: "Invalid video task ID."
-          }, 400);
+        const taskId = cleanText(url.searchParams.get("taskId"), 100);
+
+        if (!taskId || !/^[A-Za-z0-9_-]+$/.test(taskId)) {
+          return json({ error: "Invalid video task ID." }, 400);
+        }
+
+        const ownedTask = await env.DB.prepare(`
+          SELECT task_id
+          FROM video_tasks
+          WHERE task_id = ? AND uid = ?
+          LIMIT 1
+        `).bind(taskId, user.uid).first();
+
+        if (!ownedTask) {
+          return json({ error: "Video task not found." }, 404);
         }
 
         const response = await fetch(
@@ -1599,28 +1514,28 @@ Instructions:
           }
         );
 
-        const result = await response.json();
+        let result;
+        try {
+          result = await response.json();
+        } catch {
+          return json({ error: "Kling returned an invalid response." }, 502);
+        }
 
         if (!response.ok || result.code !== 0) {
           return json({
-            error: result.message ||
-              "Could not check video status."
+            error: result.message || "Could not check video status."
           }, 502);
         }
 
         const task = Array.isArray(result.data)
-          ? result.data[0]
+          ? result.data.find(item => String(item.id) === taskId)
           : null;
 
         if (!task) {
-          return json({
-            error: "Video task was not found."
-          }, 404);
+          return json({ error: "Video task was not found." }, 404);
         }
 
-        const video = task.outputs?.find(
-          item => item.type === "video"
-        );
+        const video = task.outputs?.find(item => item.type === "video");
 
         return json({
           status: task.status,
@@ -1629,12 +1544,12 @@ Instructions:
             : null,
           message: task.message || ""
         });
-
       } catch (error) {
-        console.error(
-          "Kling status API error:",
-          error?.message || String(error)
-        );
+        console.error("Kling status API error:", error?.message || String(error));
+
+        if (isAuthError(error)) {
+          return json({ error: error.message }, 401);
+        }
 
         return json({
           error: "Could not check video status."
@@ -1642,14 +1557,10 @@ Instructions:
       }
     }
 
-    // UNKNOWN API.
     if (url.pathname.startsWith("/api/")) {
-      return json({
-        error: "API endpoint not found."
-      }, 404);
+      return json({ error: "API endpoint not found." }, 404);
     }
 
-    // STATIC WEBSITE FILES.
     return env.ASSETS.fetch(request);
   }
 };
