@@ -456,6 +456,103 @@ footer {
   .avatar-photo,.avatar-fallback { height:145px; }
   .companion-info { padding:12px; }
 }
+
+/* Heartmate editorial redesign */
+:root {
+  --bg:#10070c; --surface:#1d1018; --surface2:#2b1722;
+  --gold:#e8b982; --gold-light:#ffe0bd; --rose:#e17b91;
+  --text:#fff8f4; --muted:#c7afb0;
+  --border:rgba(232,185,130,.22);
+}
+body {
+  background:
+    radial-gradient(ellipse at 50% -12%,rgba(180,67,94,.25),transparent 48%),
+    radial-gradient(ellipse at 100% 45%,rgba(114,43,67,.13),transparent 36%),
+    var(--bg);
+}
+.container { width:min(1180px,91%); }
+.navbar { min-height:76px; }
+.logo { letter-spacing:-1.1px; }
+.hero {
+  min-height:560px; margin-top:22px; border-radius:30px;
+  border-color:rgba(255,210,177,.25);
+  box-shadow:0 28px 90px rgba(0,0,0,.28),inset 0 0 70px rgba(0,0,0,.12);
+}
+.hero:after {
+  content:""; position:absolute; inset:0; pointer-events:none;
+  border-radius:inherit; background:linear-gradient(115deg,transparent 45%,rgba(230,158,139,.08));
+}
+.hero h1 { letter-spacing:-1.7px; text-shadow:0 5px 30px #0008; }
+.hero p { color:#f0dcda; }
+.eyebrow { background:rgba(232,185,130,.13); }
+.section { padding-top:70px; }
+.section-heading { align-items:center; }
+.section-heading h2 { letter-spacing:-.5px; }
+.daily-card {
+  grid-template-columns:minmax(180px,245px) 1fr; gap:30px;
+  padding:24px; border-radius:25px;
+  background:linear-gradient(125deg,rgba(74,34,48,.88),rgba(27,14,22,.96));
+  box-shadow:0 18px 55px rgba(0,0,0,.18);
+}
+.daily-photo { height:230px; border-radius:19px; }
+.daily-message { max-width:720px; }
+.featured-grid { gap:19px; }
+.companion-card {
+  border-radius:22px;
+  background:linear-gradient(155deg,#2c1722,#170d14);
+  box-shadow:0 12px 35px rgba(0,0,0,.15);
+}
+.avatar-photo,.avatar-fallback { height:260px; }
+.companion-info { padding:18px; }
+.companion-info h3 { font-size:21px; }
+.chat-link {
+  border-color:rgba(232,185,130,.32);
+  color:#ffe0bd;
+  background:linear-gradient(100deg,rgba(232,185,130,.13),rgba(225,123,145,.10));
+}
+.experience-card {
+  border-radius:22px; background:linear-gradient(145deg,#321b27,#1b1018);
+}
+.closing {
+  border-radius:30px; padding:58px 25px;
+  box-shadow:0 22px 65px rgba(0,0,0,.18);
+}
+.primary-button {
+  background:linear-gradient(110deg,#ffe0bd,#dc9b78);
+  box-shadow:0 10px 32px rgba(225,123,145,.22);
+}
+.bottom-nav {
+  background:rgba(17,8,13,.96);
+  border-top-color:rgba(232,185,130,.2);
+}
+@media(max-width:760px) {
+  .container { width:min(100% - 28px,560px); }
+  .navbar { min-height:66px; }
+  .hero {
+    min-height:560px; margin-top:14px; padding:25px 21px;
+    border-radius:24px; background-position:center 23%;
+  }
+  .hero h1 { font-size:clamp(38px,10vw,47px); letter-spacing:-1.2px; }
+  .hero p { font-size:13px; line-height:1.8; }
+  .section { padding-top:48px; }
+  .section-heading { align-items:flex-start; }
+  .section-heading h2 { font-size:24px; }
+  .daily-card { grid-template-columns:112px minmax(0,1fr); gap:14px; padding:13px; border-radius:20px; }
+  .daily-photo { height:160px; border-radius:14px; }
+  .daily-message { font-size:17px; line-height:1.4; }
+  .featured-grid { gap:11px; }
+  .avatar-photo,.avatar-fallback { height:auto; aspect-ratio: .78; }
+  .companion-info { padding:12px; }
+  .companion-info h3 { font-size:17px; }
+  .companion-info p { min-height:48px; }
+  .chat-link { padding:10px 6px; font-size:10px; }
+  .experience-card { padding:19px; }
+  .closing { border-radius:23px; padding:39px 17px; }
+}
+@media(min-width:761px) {
+  .featured-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+}
+
 </style>
 </head>
 
@@ -467,7 +564,8 @@ footer {
     <nav class="nav-links">
       <a href="/">Home</a>
       <a href="#featured">Discover</a>
-      <a href="#experiences">Experiences</<a href="/shorts.html">♥ Shorts</a>
+      <a href="#experiences">Experiences</a>
+      <a href="/shorts.html">♥ Shorts</a>
       <a href="#companions">All Companions</a>
     </nav>
 
@@ -517,7 +615,7 @@ footer {
         <h2>Meet someone special</h2>
         <p>Four companions to brighten your day.</p>
       </div>
-      <a href="#companions">Meet all 36 →</a>
+      <a href="#companions">Meet all 41 →</a>
     </div>
     <div class="featured-grid" id="featuredGrid"></div>
   </section>
