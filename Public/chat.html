@@ -409,6 +409,7 @@ let busy = false;
 let voiceReplies = true;
 let lastRelationshipLevel = null;
 let bikiniUnlockPending = false;
+let levelPhotoQueue = [];
 let mediaType = "image";
 let chatHistory = [];
 let recorder = null;
@@ -425,9 +426,23 @@ async function refreshRelationship() {
     const levelName = data.levelName || "New Friend";
     const next = data.nextLevel;
 
-    if (lastRelationshipLevel !== null && lastRelationshipLevel < 2 && level >= 2) {
-      bikiniUnlockPending = true;
-      addMessage("🎉 You reached Level 2! " + girlName + " unlocked a special bikini beach photo. 💗", "bot");
+    if (lastRelationshipLevel !== null) {
+      for (let unlockedLevel = lastRelationshipLevel + 1; unlockedLevel <= level; unlockedLevel++) {
+        if (unlockedLevel === 2) {
+          bikiniUnlockPending = true;
+          addMessage("🎉 You reached Level 2! " + girlName + " unlocked a special bikini beach photo. 💗", "bot");
+        } else if (unlockedLevel === 3) {
+          levelPhotoQueue.push({
+            message:"✨ Level 3 unlocked! " + girlName + " has a glamorous evening fashion photo surprise for you. 💗",
+            scene:"wearing an elegant fitted evening dress, glamorous fashion editorial portrait, confident pose, tasteful fully clothed styling"
+          });
+        } else if (unlockedLevel === 4) {
+          levelPhotoQueue.push({
+            message:"💕 Level 4 unlocked! " + girlName + " has a romantic, dreamy photo surprise for you.",
+            scene:"wearing a beautiful formal evening dress in a softly lit romantic setting, warm lighting, tasteful fully clothed portrait"
+          });
+        }
+      }
     }
     lastRelationshipLevel = level;
     $("relationshipName").textContent = "💗 " + levelName + " · Level " + level;
@@ -549,7 +564,13 @@ async function sendChat() {
 
     if (bikiniUnlockPending) {
       bikiniUnlockPending = false;
-      generateImage("wearing a stylish, tasteful bikini at a sunny beach, full-body fashion editorial, confident relaxed pose, non-explicit swimwear portrait");
+      await generateImage("wearing a stylish, tasteful bikini at a sunny beach, full-body fashion editorial, confident relaxed pose, non-explicit swimwear portrait");
+    }
+
+    while (levelPhotoQueue.length) {
+      const surprise = levelPhotoQueue.shift();
+      addMessage(surprise.message, "bot");
+      await generateImage(surprise.scene);
     }
   }
 }
