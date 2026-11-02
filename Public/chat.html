@@ -56,6 +56,40 @@ header {
 }
 .profile h3{margin:0 0 4px;font-size:15px}
 .profile small{color:#8ce5ae;font-size:11px}
+.relationship-card {
+  margin:12px 14px 0;
+  padding:12px 14px;
+  border:1px solid #ff83bd35;
+  border-radius:16px;
+  background:linear-gradient(135deg,#2b1d3b,#211629);
+}
+.relationship-top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  font-size:12px;
+}
+.relationship-name {color:#ffd1e8;font-weight:700}
+.relationship-points {color:#cbb9dd;font-size:11px}
+.relationship-track {
+  height:7px;
+  margin:9px 0 6px;
+  overflow:hidden;
+  border-radius:99px;
+  background:#ffffff16;
+}
+.relationship-fill {
+  width:0;
+  height:100%;
+  border-radius:99px;
+  background:linear-gradient(90deg,#ff83bd,#b69aff);
+  transition:width .35s ease;
+}
+.relationship-next {
+  color:#bfaed0;
+  font-size:10px;
+}
 #account {
   margin-left:auto;
   display:flex;
@@ -298,6 +332,15 @@ button:disabled{opacity:.5;cursor:wait}
   </div>
 </header>
 
+<section class="relationship-card" aria-label="Relationship progress">
+  <div class="relationship-top">
+    <span class="relationship-name" id="relationshipName">💗 New Friend · Level 1</span>
+    <span class="relationship-points" id="relationshipPoints">0 affection points</span>
+  </div>
+  <div class="relationship-track"><div class="relationship-fill" id="relationshipFill"></div></div>
+  <div class="relationship-next" id="relationshipNext">Chat to earn affection points 💗</div>
+</section>
+
 <main id="messages">
   <div class="welcome">
     Welcome to Heartmate AI 💗<br>
@@ -337,9 +380,16 @@ button:disabled{opacity:.5;cursor:wait}
 <script>
 const params = new URLSearchParams(location.search);
 const names = {
-  aria:"Aria",maya:"Maya",luna:"Luna",sofia:"Sofia",
-  ella:"Ella",nova:"Nova",zara:"Zara",ivy:"Ivy",
-  ruby:"Ruby",chloe:"Chloe",nina:"Nina",rose:"Rose"
+  aria:"Aria",maya:"Maya",luna:"Luna",sofia:"Sofia",ella:"Ella",
+  nova:"Nova",zara:"Zara",ivy:"Ivy",ruby:"Ruby",chloe:"Chloe",
+  nina:"Nina",lila:"Lila",amber:"Amber",violet:"Violet",
+  scarlett:"Scarlett",jade:"Jade",rose:"Rose",stella:"Stella",
+  kira:"Kira",diana:"Diana",freya:"Freya",sienna:"Sienna",
+  valentina:"Valentina",aurora:"Aurora",ananya:"Ananya",
+  aadhya:"Aadhya",meera:"Meera",kiara:"Kiara",ishita:"Ishita",
+  kavya:"Kavya",diya:"Diya",riya:"Riya",nisha:"Nisha",
+  pooja:"Pooja",tara:"Tara",priya:"Priya",elena:"Elena",
+  amara:"Amara",isabelle:"Isabelle",celeste:"Celeste",layla:"Layla"
 };
 const requested = (params.get("girl") || "aria").toLowerCase();
 const character = names[requested] ? requested : "aria";
@@ -363,6 +413,29 @@ let recorder = null;
 let recordingStream = null;
 let recordingChunks = [];
 let userReady = Promise.resolve();
+
+async function refreshRelationship() {
+  if (!window.heartmateUser) return;
+  try {
+    const data = await api("/api/relationship?character=" + encodeURIComponent(character));
+    const points = Number(data.affectionPoints || 0);
+    const level = Number(data.level || 1);
+    const levelName = data.levelName || "New Friend";
+    const next = data.nextLevel;
+    $("relationshipName").textContent = "💗 " + levelName + " · Level " + level;
+    $("relationshipPoints").textContent = points + " affection point" + (points === 1 ? "" : "s");
+
+    const currentThreshold = level === 1 ? 0 : Number(data.milestones?.[level - 1]?.points || 0);
+    const nextThreshold = next ? Number(next.points) : 500;
+    const progress = next ? Math.max(0, Math.min(100, ((points-currentThreshold)/(nextThreshold-currentThreshold))*100)) : 100;
+    $("relationshipFill").style.width = progress + "%";
+    $("relationshipNext").textContent = next
+      ? (data.pointsToNextLevel + " points to " + next.name + " ✨")
+      : "最高 level reached — Soulmate! 💗";
+  } catch (error) {
+    $("relationshipNext").textContent = "Sign in and chat to track your bond.";
+  }
+}
 
 function addMessage(text, sender) {
   const div = document.createElement("div");
@@ -456,6 +529,7 @@ async function sendChat() {
     addMessage(data.reply, "bot");
     chatHistory.push({role:"assistant", content:data.reply});
 
+    await refreshRelationship();
     if (voiceReplies) speak(data.reply);
   } catch (error) {
     addMessage("Sorry, I couldn't connect. " + error.message, "bot");
@@ -789,6 +863,7 @@ onAuthStateChanged(auth, currentUser => {
   logout.hidden = !currentUser;
 
   if (currentUser) {
+    refreshRelationship();
     document.querySelector(".profile small").textContent =
       "● Signed in · Here with you";
   } else {
