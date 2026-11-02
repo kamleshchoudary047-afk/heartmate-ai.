@@ -22,6 +22,75 @@ function isValidDate(value) {
     date.toISOString().slice(0, 10) === value;
 }
 
+
+// D1-backed per-account rate limits and daily AI usage quotas.
+// The table is created lazily so an additional manual D1 migration is not required.
+let usageSchemaPromise = null;
+
+async function ensureUsageSchema(env) {
+  if (!usageSchemaPromise) {
+    usageSchemaPromise = env.DB.prepare(`
+      CREATE TABLE IF NOT EXISTS usage_counters (
+        uid TEXT NOT NULL,
+        action TEXT NOT NULL,
+        period_key TEXT NOT NULL,
+        count INTEGER NOT NULL DEFAULT 0,
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (uid, action, period_key)
+      )
+    `).run().catch(error => {
+      usageSchemaPromise = null;
+      throw error;
+    });
+  }
+  await usageSchemaPromise;
+}
+
+async function consumeUsage(env, uid, action, dailyLimit, minuteLimit) {
+  await ensureUsageSchema(env);
+  const now = Date.now();
+  const day = new Date(now).toISOString().slice(0, 10);
+  const minute = Math.floor(now / 60000);
+  const windows = [
+    {
+      key: `minute:${minute}`,
+      limit: minuteLimit,
+      message: "You're sending requests too quickly. Please wait a moment.",
+      retryAfter: 60 - Math.floor((now % 60000) / 1000)
+    },
+    {
+      key: `day:${day}`,
+      limit: dailyLimit,
+      message: "You've reached today's free usage limit for this feature. Please try again after the daily reset.",
+      retryAfter: Math.ceil((Date.parse(`${day}T00:00:00.000Z`) + 86400000 - now) / 1000)
+    }
+  ];
+
+  for (const window of windows) {
+    const result = await env.DB.prepare(`
+      INSERT INTO usage_counters (uid, action, period_key, count)
+      VALUES (?, ?, ?, 1)
+      ON CONFLICT(uid, action, period_key) DO UPDATE SET
+        count = usage_counters.count + 1,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE usage_counters.count < ?
+      RETURNING count
+    `).bind(uid, action, window.key, window.limit).first();
+
+    if (!result) {
+      return json({
+        error: window.message,
+        code: window.key.startsWith("minute:") ? "RATE_LIMITED" : "DAILY_LIMIT_REACHED",
+        action,
+        limit: window.limit,
+        retryAfter: window.retryAfter
+      }, 429);
+    }
+  }
+
+  return null;
+}
+
 function isAuthError(error) {
   const message = error?.message || "";
   return (
@@ -772,10 +841,14 @@ export default {
         }
 
         if (url.pathname === "/api/transcribe") {
+          const usageError = await consumeUsage(env, user.uid, "transcribe", 20, 5);
+          if (usageError) return usageError;
           return await handleTranscription(request, env);
         }
 
         if (url.pathname === "/api/speech") {
+          const usageError = await consumeUsage(env, user.uid, "speech", 30, 8);
+          if (usageError) return usageError;
           return await handleSpeech(request, env);
         }
 
@@ -874,6 +947,9 @@ export default {
         if (!message) {
           return json({ error: "Please enter a message." }, 400);
         }
+
+        const usageError = await consumeUsage(env, user.uid, "chat", 30, 8);
+        if (usageError) return usageError;
 
         await saveVisitor(env, user);
 
@@ -1086,6 +1162,9 @@ Conversation instructions:
           return json({ error: "Invalid welcome date." }, 400);
         }
 
+        const usageError = await consumeUsage(env, user.uid, "daily-welcome", 1, 1);
+        if (usageError) return usageError;
+
         const dailyMood = allowedMoods.includes(requestedMood)
           ? requestedMood
           : "Romantic";
@@ -1257,6 +1336,9 @@ Instructions:
           return json({ error: "Please describe the picture." }, 400);
         }
 
+        const usageError = await consumeUsage(env, user.uid, "image", 3, 2);
+        if (usageError) return usageError;
+
         const safePrompt =
           "Create a photorealistic image of " + profile.name +
           ", a fictional adult woman aged 25 or older. " +
@@ -1381,6 +1463,9 @@ Instructions:
         if (!scene) {
           return json({ error: "Please describe the video scene." }, 400);
         }
+
+        const usageError = await consumeUsage(env, user.uid, "video", 1, 1);
+        if (usageError) return usageError;
 
         const prompt =
           "Create a video featuring " + profile.name +
@@ -1604,6 +1689,7 @@ Instructions:
           env.DB.prepare("DELETE FROM notification_settings WHERE uid = ?").bind(user.uid),
           env.DB.prepare("DELETE FROM daily_welcomes WHERE uid = ?").bind(user.uid),
           env.DB.prepare("DELETE FROM video_tasks WHERE uid = ?").bind(user.uid),
+          env.DB.prepare("DELETE FROM usage_counters WHERE uid = ?").bind(user.uid),
           env.DB.prepare("DELETE FROM visitors WHERE uid = ?").bind(user.uid)
         ]);
 
