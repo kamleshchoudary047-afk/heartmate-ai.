@@ -551,6 +551,7 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
     <small>● Here with you</small>
   </div>
   <div id="account">
+    <a class="small-button" href="/membership.html">✦ VIP</a>
     <button class="small-button" id="signIn">Sign in</button>
     <button class="small-button" id="signOut" hidden>Sign out</button>
   </div>
@@ -1040,7 +1041,11 @@ async function sendChat() {
     if (voiceReplies) speak(data.reply);
     await refreshRelationship();
   } catch (error) {
-    addMessage("Sorry, I couldn't connect. " + error.message, "bot");
+    if (error.message.includes("VIP Membership")) {
+      addMessage(error.message + " Open VIP Membership from the top of this chat to unlock her. ✦", "bot");
+    } else {
+      addMessage("Sorry, I couldn't connect. " + error.message, "bot");
+    }
   } finally {
     busy = false;
     sendButton.disabled = false;
