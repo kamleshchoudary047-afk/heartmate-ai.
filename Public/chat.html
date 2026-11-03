@@ -1361,7 +1361,7 @@ function openMedia(type) {
   $("modalTitle").textContent = outfitMode ? "✨ Outfit Studio" :
     type === "video" ? "Create a video 🎬" : "Create an image 📸";
   $("modalDescription").textContent = outfitMode
-    ? "Style " + girlName + " with a new outfit, mood, pose and setting."
+    ? "Create a complete look for " + girlName + ". Choose a quick scene or customise each section below."
     : "Describe the scene you want for " + girlName + ".";
   $("outfitControls").hidden = !outfitMode;
   $("sceneInput").placeholder = outfitMode ? "Optional details (colour, accessories, hairstyle)…" : "Describe your scene…";
@@ -1374,6 +1374,56 @@ function closeMedia() {
 }
 
 let selectedStudioMode = "standard";
+function buildOutfitStudioLayout() {
+  const root = $("outfitControls");
+  const originalGrid = root && root.querySelector(".customizer-grid");
+  if (!originalGrid || root.dataset.organized === "yes") return;
+  const groups = [
+    {title:"👗 Outfit & body styling",hint:"Clothes, swimwear, shape and colours",ids:["outfitChoice","outfitBust","outfitCurves","outfitBody","outfitColor","outfitAccessories"],open:true},
+    {title:"💄 Beauty & finishing touches",hint:"Hair, makeup and expressions",ids:["outfitHair","outfitMakeup","outfitExpression"]},
+    {title:"✨ Mood, pose & scene",hint:"Lighting, atmosphere and background",ids:["outfitMood","outfitPose","outfitLighting","outfitBackground"]}
+  ];
+  const labels = Array.from(originalGrid.querySelectorAll("label.customizer-field"));
+  const wrapper = document.createElement("div");
+  wrapper.className = "studio-accordion";
+  groups.forEach(group => {
+    const section = document.createElement("details");
+    section.className = "studio-section";
+    if (group.open) section.open = true;
+    const summary = document.createElement("summary");
+    summary.textContent = group.title + " — " + group.hint;
+    const grid = document.createElement("div");
+    grid.className = "customizer-grid";
+    group.ids.forEach(id => {
+      const label = labels.find(item => item.querySelector("#" + id));
+      if (label) grid.appendChild(label);
+    });
+    section.append(summary, grid);
+    wrapper.appendChild(section);
+  });
+  originalGrid.replaceWith(wrapper);
+  root.dataset.organized = "yes";
+  const intro = document.createElement("div");
+  intro.className = "studio-intro";
+  const strong = document.createElement("strong");
+  strong.textContent = "✨ Create her next look";
+  intro.append(strong, document.createTextNode("Choose a quick scene or open each section to customise the outfit, beauty, mood and setting. Your choices come together when you tap Create."));
+  root.insertBefore(intro, wrapper);
+  const special = $("specialStudioActions");
+  if (special && !special.dataset.titled) {
+    const heading = document.createElement("h4");
+    heading.className = "studio-subtitle";
+    heading.textContent = "🌙 Special studios & quick scenes";
+    const help = document.createElement("p");
+    help.className = "studio-helper";
+    help.textContent = "Tap a tile to load a creative starting point. You can still change the options above.";
+    special.parentNode.insertBefore(heading, special);
+    special.parentNode.insertBefore(help, special);
+    special.dataset.titled = "yes";
+  }
+}
+buildOutfitStudioLayout();
+
 
 function randomizeOutfitControls() {
   ["outfitChoice","outfitColor","outfitAccessories","outfitHair","outfitMakeup","outfitExpression","outfitLighting","outfitMood","outfitPose","outfitBackground"].forEach(id => {
