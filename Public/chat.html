@@ -622,6 +622,12 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
         <label class="customizer-field">Outfit
           <select id="outfitChoice">
             <option value="elegant satin evening dress">Elegant satin evening dress</option>
+            <option value="fitted nude-beige bodycon evening dress with fully opaque fabric">Nude-beige bodycon dress</option>
+            <option value="champagne skin-tone illusion gown with opaque lining and elegant mesh-look panels">Illusion-sheer lined gown</option>
+            <option value="backless floor-length evening gown with secure full front coverage">Backless evening gown</option>
+            <option value="deep-V fitted evening dress with opaque built-in lining">Deep-V fitted dress</option>
+            <option value="tasteful side-cutout bodycon dress with opaque panels">Side-cutout bodycon dress</option>
+            <option value="fitted ruched mini dress with full intimate coverage">Ruched mini dress</option>
             <option value="glamorous cocktail dress">Glamorous cocktail dress</option>
             <option value="tasteful opaque satin nightwear set">Satin nightwear</option>
             <option value="tasteful opaque lace-trimmed nightwear set with full coverage">Lace-trim nightwear</option>
@@ -643,6 +649,23 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
             <option value="slightly fuller bust silhouette with realistic proportions">Slightly fuller</option>
             <option value="fuller voluptuous bust silhouette with realistic proportions">Fuller silhouette</option>
             <option value="enhanced tasteful cleavage styling while remaining fully covered">Enhanced cleavage styling</option>
+            <option value="dramatically fuller but natural-looking bust proportions, fully covered">Extra-full fashion silhouette</option>
+          </select>
+        </label>
+        <label class="customizer-field">Curves & hips
+          <select id="outfitCurves">
+            <option value="natural balanced hip and curve proportions">Natural curves</option>
+            <option value="gently fuller hips with balanced realistic proportions">Slightly fuller hips</option>
+            <option value="fuller rounded hips and curvy silhouette, realistic anatomy">Fuller hourglass curves</option>
+            <option value="defined waist with softly emphasized hips, realistic anatomy">Defined waist & hips</option>
+          </select>
+        </label>
+        <label class="customizer-field">Body shape
+          <select id="outfitBody">
+            <option value="natural realistic adult body shape">Natural</option>
+            <option value="soft curvy hourglass figure with realistic proportions">Soft hourglass</option>
+            <option value="glamorous curvy figure with a defined waist and balanced proportions">Glamorous curvy</option>
+            <option value="athletic toned figure with realistic proportions">Athletic toned</option>
           </select>
         </label>
         <label class="customizer-field">Outfit colour
@@ -1180,15 +1203,18 @@ $("createMediaButton").addEventListener("click", async () => {
   if (mediaType === "outfit") {
     const outfit = $("outfitChoice").value;
     const bust = $("outfitBust").value;
+    const curves = $("outfitCurves").value;
+    const bodyShape = $("outfitBody").value;
     const color = $("outfitColor").value;
     const accessories = $("outfitAccessories").value;
     const mood = $("outfitMood").value;
     const pose = $("outfitPose").value;
     const background = $("outfitBackground").value;
     scene = "Full-body fashion portrait of " + girlName + ", a fictional adult woman aged 25 or older, wearing a " + color + " " + outfit +
-      ". Figure styling: " + bust + ". Accessories: " + accessories +
+      ". Bust styling: " + bust + ". Curves and hips: " + curves +
+      ". Overall body shape: " + bodyShape + ". Accessories: " + accessories +
       ". Mood: " + mood + ". Pose: " + pose + ". Background: " + background +
-      ". Premium tasteful adult fashion editorial, realistic anatomy, opaque garments with full intimate coverage, no nudity, no exposed genitals, non-explicit.";
+      ". Premium tasteful adult fashion editorial, fictional adult woman aged 25 or older, realistic anatomy, garments must remain opaque or fully lined with full intimate coverage, no nudity, no transparent exposure, no exposed genitals, non-explicit.";
     if ($("sceneInput").value.trim()) scene += " Additional styling: " + $("sceneInput").value.trim();
   }
   if (!scene) {
