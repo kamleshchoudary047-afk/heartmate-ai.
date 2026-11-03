@@ -329,6 +329,7 @@ button:disabled{opacity:.5;cursor:wait}
   background:linear-gradient(135deg,#ed75b4,#9d6cdb);
 }
 .modal-actions .cancel{background:#ffffff15}
+.date-night-card{max-height:88vh;overflow-y:auto}.date-night-card>.customizer-field{display:block;margin:10px 0}.date-night-card input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #ffffff25;border-radius:10px;background:#171020;color:#fff}
 .personality-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.personality-card{max-height:88vh;overflow-y:auto}.personality-grid .customizer-field{min-width:0}@media(max-width:520px){.personality-grid{grid-template-columns:1fr}}.memory-toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin:12px 0 5px;padding:12px;border:1px solid #ffffff20;border-radius:15px;background:#ffffff08}
 .memory-album-label{grid-column:1/-1;color:#f4d9e9;font-size:12px;font-weight:800}
 .memory-toolbar select{min-width:0;width:100%;padding:10px;border:1px solid #ffffff25;border-radius:10px;background:#171020;color:#fff;font-size:13px}
@@ -617,6 +618,7 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
   <div class="tools">
     <button onclick="openGallery()">♡ My Gallery</button>
     <button type="button" onclick="openPersonalityStudio()">💗 Personality Studio</button>
+    <button type="button" onclick="openDateNightStudio()">🌹 Date Night Studio</button>
     <button onclick="openMedia('outfit')">✨ Outfit Studio</button>
     <button onclick="openMedia('image')">📸 Create image</button>
     <button onclick="openMedia('video')">🎬 Create video</button>
@@ -630,6 +632,20 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
     <button class="action" id="sendButton">➤</button>
   </div>
 </footer>
+
+<div class="modal" id="dateNightModal"><div class="modal-card personality-card date-night-card">
+<h3>🌹 Date Night Studio</h3>
+<p>Plan a sweet fictional date with <strong id="dateNightCompanion">your companion</strong>. Choose a scene and start the experience in chat.</p>
+<div class="personality-grid">
+<label class="customizer-field">Date setting<select id="dateSetting"><option value="candlelit rooftop restaurant overlooking the city">Rooftop candlelight dinner</option><option value="moonlit beach with a gentle ocean breeze">Moonlit beach walk</option><option value="cosy private home cinema with blankets and popcorn">Cosy movie night</option><option value="beautiful garden cafe filled with fairy lights">Garden cafe</option><option value="sunset picnic beside a lake">Sunset lakeside picnic</option><option value="elegant city evening with a scenic night drive">Scenic night drive</option><option value="beautiful art gallery followed by dessert">Art gallery and dessert</option><option value="sunny resort poolside lounge">Resort day date</option></select></label>
+<label class="customizer-field">Date activity<select id="dateActivity"><option value="share a delicious dinner and heartfelt conversation">Dinner and heartfelt conversation</option><option value="take a gentle romantic walk and enjoy the view">Romantic walk</option><option value="watch a favourite movie and share popcorn">Movie and popcorn</option><option value="dance together to a soft romantic song">Slow dancing</option><option value="share dessert and playful questions">Dessert and playful questions</option><option value="take cute couple photos and make happy memories">Couple photos</option><option value="play a fun get-to-know-you question game">Get-to-know-you game</option></select></label>
+<label class="customizer-field">Mood<select id="dateMood"><option value="sweet and tender">Sweet & tender</option><option value="playful and flirty">Playful & flirty</option><option value="dreamy and poetic">Dreamy & poetic</option><option value="glamorous and exciting">Glamorous & exciting</option><option value="peaceful and cosy">Peaceful & cosy</option></select></label>
+<label class="customizer-field">Dress code<select id="dateDress"><option value="elegant evening outfits">Elegant evening</option><option value="smart casual outfits">Smart casual</option><option value="comfortable cosy outfits">Cosy comfort</option><option value="stylish resort outfits">Resort style</option><option value="festive glamorous outfits">Festive glamour</option></select></label>
+</div>
+<label class="customizer-field">A little extra (optional)<input id="dateExtra" maxlength="180" placeholder="e.g. her favourite flowers, a surprise dessert…"></label>
+<div class="modal-actions"><button type="button" class="cancel" id="closeDateNight">Close</button><button type="button" class="action" id="startDateNight">Start our date 💗</button></div>
+<p class="memory-hint">A fictional, romantic, non-explicit roleplay. You can guide the story at any time.</p>
+</div></div>
 
 <div class="modal" id="personalityModal"><div class="modal-card personality-card">
 <h3>💗 Personality Studio</h3><p>Shape how <span id="personalityCompanionName">your companion</span> chats with you. Preferences are saved separately for each companion on this device.</p>
@@ -1490,6 +1506,20 @@ async function sendChat() {
     }
   }
 }
+
+function openDateNightStudio(){$("dateNightCompanion").textContent=girlName;$("dateNightModal").classList.add("open");}
+function closeDateNightStudio(){$("dateNightModal").classList.remove("open");}
+function startDateNight(){
+  const setting=$("dateSetting").value, activity=$("dateActivity").value;
+  const mood=$("dateMood").value, dress=$("dateDress").value;
+  const extra=$("dateExtra").value.trim();
+  const prompt="Let's begin a fictional romantic date together. You are "+girlName+", my adult fictional AI companion. Our date is at "+setting+". We are going to "+activity+". The mood is "+mood+" and we are wearing "+dress+" outfits."+(extra?" A special detail: "+extra+".":"")+" Start by warmly setting the scene in a vivid but concise way, speaking in character and inviting me into the first moment. Keep it affectionate, consensual and non-explicit. Let me participate and shape what happens next.";
+  closeDateNightStudio();
+  input.value=prompt;
+  sendChat();
+}
+$("closeDateNight").addEventListener("click",closeDateNightStudio);
+$("startDateNight").addEventListener("click",startDateNight);
 
 const personalityDefaults={romance:"gentle",humour:"light",energy:"balanced",affection:"natural",length:"short",style:"natural"};
 function personalityStorageKey(){return "heartmate-personality-"+character;}
