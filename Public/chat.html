@@ -329,7 +329,7 @@ button:disabled{opacity:.5;cursor:wait}
   background:linear-gradient(135deg,#ed75b4,#9d6cdb);
 }
 .modal-actions .cancel{background:#ffffff15}
-.memory-toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin:12px 0 5px;padding:12px;border:1px solid #ffffff20;border-radius:15px;background:#ffffff08}
+.personality-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.personality-card{max-height:88vh;overflow-y:auto}.personality-grid .customizer-field{min-width:0}@media(max-width:520px){.personality-grid{grid-template-columns:1fr}}.memory-toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin:12px 0 5px;padding:12px;border:1px solid #ffffff20;border-radius:15px;background:#ffffff08}
 .memory-album-label{grid-column:1/-1;color:#f4d9e9;font-size:12px;font-weight:800}
 .memory-toolbar select{min-width:0;width:100%;padding:10px;border:1px solid #ffffff25;border-radius:10px;background:#171020;color:#fff;font-size:13px}
 .memory-toolbar button{padding:10px 12px;border:0;border-radius:10px;background:linear-gradient(135deg,#ed75b4,#9d6cdb);color:#241326;font-size:12px;font-weight:800}
@@ -616,6 +616,7 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
 <footer class="footer">
   <div class="tools">
     <button onclick="openGallery()">♡ My Gallery</button>
+    <button type="button" onclick="openPersonalityStudio()">💗 Personality Studio</button>
     <button onclick="openMedia('outfit')">✨ Outfit Studio</button>
     <button onclick="openMedia('image')">📸 Create image</button>
     <button onclick="openMedia('video')">🎬 Create video</button>
@@ -630,6 +631,17 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
   </div>
 </footer>
 
+<div class="modal" id="personalityModal"><div class="modal-card personality-card">
+<h3>💗 Personality Studio</h3><p>Shape how <span id="personalityCompanionName">your companion</span> chats with you. Preferences are saved separately for each companion on this device.</p>
+<div class="personality-grid">
+<label class="customizer-field">Romance style<select id="personalityRomance"><option value="gentle">Gentle & tender</option><option value="affectionate">Warm & affectionate</option><option value="flirty">Playfully flirty</option><option value="poetic">Poetic & dreamy</option><option value="confident">Confident & bold</option></select></label>
+<label class="customizer-field">Humour<select id="personalityHumour"><option value="light">Light & sweet</option><option value="witty">Witty banter</option><option value="playful">Cheeky & playful</option><option value="calm">Calm & sincere</option></select></label>
+<label class="customizer-field">Conversation energy<select id="personalityEnergy"><option value="balanced">Balanced</option><option value="bubbly">Bubbly & energetic</option><option value="calm">Calm & soothing</option><option value="thoughtful">Deep & thoughtful</option></select></label>
+<label class="customizer-field">Affection<select id="personalityAffection"><option value="natural">Natural & gradual</option><option value="warm">Warm & caring</option><option value="very affectionate">Extra affectionate</option><option value="reserved">Soft & reserved</option></select></label>
+<label class="customizer-field">Reply length<select id="personalityLength"><option value="short">Short & sweet</option><option value="balanced">Balanced</option><option value="detailed">Detailed & expressive</option></select></label>
+<label class="customizer-field">Conversation style<select id="personalityStyle"><option value="natural">Natural everyday chat</option><option value="storytelling">Romantic storytelling</option><option value="supportive">Supportive listener</option><option value="adventurous">Adventurous & spontaneous</option></select></label>
+</div><div class="modal-actions"><button class="cancel" type="button" id="resetPersonality">Reset</button><button class="cancel" type="button" id="closePersonality">Close</button><button class="action" type="button" id="savePersonality">Save style 💗</button></div><p class="memory-hint">Fictional adult companion • romantic and non-explicit. Changes apply to new replies.</p>
+</div></div>
 <div class="modal" id="galleryModal">
   <div class="modal-card">
     <h3>♡ My Gallery</h3>
@@ -1445,7 +1457,8 @@ async function sendChat() {
       body:JSON.stringify({
         character,
         message,
-        history:chatHistory
+        history:chatHistory,
+        personalitySettings:loadPersonalitySettings()
       })
     });
 
@@ -1478,6 +1491,14 @@ async function sendChat() {
   }
 }
 
+const personalityDefaults={romance:"gentle",humour:"light",energy:"balanced",affection:"natural",length:"short",style:"natural"};
+function personalityStorageKey(){return "heartmate-personality-"+character;}
+function loadPersonalitySettings(){try{const saved=JSON.parse(localStorage.getItem(personalityStorageKey())||"{}");return Object.fromEntries(Object.keys(personalityDefaults).map(k=>[k,typeof saved[k]==="string"?saved[k]:personalityDefaults[k]]));}catch{return {...personalityDefaults};}}
+function openPersonalityStudio(){$("personalityCompanionName").textContent=girlName;Object.entries(loadPersonalitySettings()).forEach(([k,v])=>{const el=$("personality"+k[0].toUpperCase()+k.slice(1));if(el)el.value=v;});$("personalityModal").classList.add("open");}
+function savePersonalityStudio(){const settings={};Object.keys(personalityDefaults).forEach(k=>{const el=$("personality"+k[0].toUpperCase()+k.slice(1));settings[k]=el?.value||personalityDefaults[k];});localStorage.setItem(personalityStorageKey(),JSON.stringify(settings));$("personalityModal").classList.remove("open");addMessage("💗 Our chat style is saved. My next replies will be "+settings.romance+", with "+settings.humour+" humour and "+settings.energy+" energy.","bot");}
+$("savePersonality").addEventListener("click",savePersonalityStudio);
+$("closePersonality").addEventListener("click",()=>$("personalityModal").classList.remove("open"));
+$("resetPersonality").addEventListener("click",()=>{localStorage.removeItem(personalityStorageKey());openPersonalityStudio();});
 sendButton.addEventListener("click", sendChat);
 
 input.addEventListener("keydown", event => {
