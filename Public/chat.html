@@ -750,6 +750,23 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
             <option value="elegant silk spa robe over a fully covered lounge set">Luxury spa robe set</option>
           </select>
         </label>
+        <label class="customizer-field">Party & evening collection
+          <select id="outfitPartyDress">
+            <option value="no additional party outfit layer">No additional party outfit</option>
+            <option value="glamorous fitted satin party dress with elegant draping and opaque full coverage">Satin party dress</option>
+            <option value="sparkling sequin mini party dress with fully lined opaque fabric">Sequin party mini</option>
+            <option value="elegant one-shoulder cocktail party dress with a fitted waist and opaque coverage">One-shoulder cocktail dress</option>
+            <option value="romantic off-shoulder floral party dress with a fitted silhouette and full coverage">Off-shoulder floral party dress</option>
+            <option value="glamorous velvet party dress with a tasteful neckline and opaque fabric">Velvet party dress</option>
+            <option value="metallic champagne-gold party gown with a sleek fitted silhouette and secure full coverage">Metallic party gown</option>
+            <option value="elegant fitted lace-look party dress with opaque lining and delicate details">Lace-look party dress</option>
+            <option value="glamorous asymmetric party dress with a graceful side slit and opaque lining">Asymmetric slit party dress</option>
+            <option value="elegant fitted midi party dress with a square neckline and smooth opaque fabric">Square-neck midi party dress</option>
+            <option value="luxury satin wrap party dress with a defined waist and secure coverage">Satin wrap party dress</option>
+            <option value="sparkling fitted party gown with a flowing skirt and opaque lining">Sparkling party gown</option>
+            <option value="chic tailored trouser suit with a fitted satin top for a glamorous party look">Glam party trouser suit</option>
+          </select>
+        </label>
         <label class="customizer-field">Indian dress collection
           <select id="outfitIndianDress">
             <option value="no additional Indian outfit layer">No additional Indian outfit</option>
@@ -1648,6 +1665,7 @@ function buildOutfitStudioLayout() {
   const groups = [
     {title:"👗 Outfit & body styling",hint:"Clothes, swimwear, shape and colours",ids:["outfitChoice","outfitBust","outfitCurves","outfitBody","outfitColor","outfitAccessories"],open:true},
     {title:"🇮🇳 Indian dress collection",hint:"Kurtis, leggings and traditional looks",ids:["outfitIndianDress"]},
+    {title:"🎉 Party & evening collection",hint:"Party dresses, cocktail looks and evening gowns",ids:["outfitPartyDress"]},
     {title:"💄 Beauty & finishing touches",hint:"Hair, makeup and expressions",ids:["outfitHair","outfitMakeup","outfitExpression"]},
     {title:"✨ Mood, pose & scene",hint:"Lighting, atmosphere and background",ids:["outfitMood","outfitPose","outfitLighting","outfitBackground"]}
   ];
@@ -1742,6 +1760,7 @@ $("createMediaButton").addEventListener("click", async () => {
   if (mediaType === "outfit") {
     const outfit = $("outfitChoice").value;
     const indianDress = $("outfitIndianDress").value;
+    const partyDress = $("outfitPartyDress").value;
     const bust = $("outfitBust").value;
     const curves = $("outfitCurves").value;
     const bodyShape = $("outfitBody").value;
@@ -1763,7 +1782,7 @@ $("createMediaButton").addEventListener("click", async () => {
       indian:"High-fashion Indian ethnicwear editorial featuring a fitted saree blouse with a tasteful deep neckline, beautifully draped saree defining the waist and hips, rich embroidery, luxurious fabric and graceful confident styling; opaque secure coverage."
     };
     if (specialScenes[selectedStudioMode]) scene = specialScenes[selectedStudioMode] + " " + scene;
-    const selectedOutfit = indianDress !== "no additional Indian outfit layer" ? indianDress : outfit;
+    const selectedOutfit = partyDress !== "no additional party outfit layer" ? partyDress : (indianDress !== "no additional Indian outfit layer" ? indianDress : outfit);
     scene = "Full-body fashion portrait of " + girlName + ", a fictional adult woman aged 25 or older, wearing a " + color + " " + selectedOutfit +
       ". Bust styling: " + bust + ". Curves and hips: " + curves +
       ". Overall body shape: " + bodyShape + ". Accessories: " + accessories +
