@@ -1134,11 +1134,11 @@ function makeCard(name,description) {
   link.textContent = isPremium
     ? "✦ VIP · Unlock this companion"
     : "Start a conversation →";
+  let premiumLock = null;
   if (isPremium) {
-    const lock = document.createElement("div");
-    lock.className = "premium-lock";
-    lock.textContent = "✦ EXCLUSIVE VIP COMPANION";
-    info.appendChild(lock);
+    premiumLock = document.createElement("div");
+    premiumLock.className = "premium-lock";
+    premiumLock.textContent = "✦ EXCLUSIVE VIP COMPANION";
   }
 
   image.onerror = function() {
@@ -1152,7 +1152,9 @@ function makeCard(name,description) {
     }
   };
 
-  info.append(heading,moodBadge,paragraph,link);
+  info.append(heading,moodBadge,paragraph);
+  if (premiumLock) info.appendChild(premiumLock);
+  info.appendChild(link);
   card.append(image,info);
 
   return card;
