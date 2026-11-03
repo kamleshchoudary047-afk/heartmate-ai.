@@ -717,6 +717,43 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
             <option value="minimal accessories">Minimal</option>
           </select>
         </label>
+        <label class="customizer-field">Makeup
+          <select id="outfitMakeup">
+            <option value="soft natural glowing makeup">Soft natural glow</option>
+            <option value="smoky eyes with softly blended dark shadow">Smoky eyes</option>
+            <option value="classic red lipstick and elegant eyeliner">Red lipstick glamour</option>
+            <option value="glossy lips and luminous dewy skin makeup">Glossy lips & dewy skin</option>
+            <option value="bronze goddess makeup with warm highlights">Bronze goddess</option>
+            <option value="rose-toned romantic makeup with fluttery lashes">Romantic rose</option>
+            <option value="bold winged eyeliner and sculpted makeup">Bold winged liner</option>
+            <option value="champagne shimmer eyes and nude lipstick">Champagne shimmer</option>
+          </select>
+        </label>
+        <label class="customizer-field">Expression
+          <select id="outfitExpression">
+            <option value="warm confident smile">Confident smile</option>
+            <option value="playful wink and teasing smile">Playful wink</option>
+            <option value="soft dreamy gaze toward camera">Dreamy gaze</option>
+            <option value="mysterious direct eye contact">Mysterious gaze</option>
+            <option value="gentle affectionate expression">Affectionate</option>
+            <option value="subtle knowing smile">Knowing smile</option>
+            <option value="joyful candid laughter">Joyful laughter</option>
+            <option value="calm poised runway expression">Runway expression</option>
+          </select>
+        </label>
+        <label class="customizer-field">Lighting
+          <select id="outfitLighting">
+            <option value="soft flattering studio beauty lighting">Soft studio</option>
+            <option value="warm golden-hour glow">Golden hour</option>
+            <option value="romantic candlelight ambience">Candlelight</option>
+            <option value="soft rose-pink ambient lighting">Rose-pink ambience</option>
+            <option value="dramatic cinematic shadows with flattering highlights">Cinematic drama</option>
+            <option value="moonlit blue-silver ambience">Moonlight</option>
+            <option value="warm bedside lamps and gentle ambient light">Warm bedside lamps</option>
+            <option value="bright sunlit resort lighting">Sunlit resort</option>
+            <option value="neon city glow with tasteful colour reflections">Neon city glow</option>
+          </select>
+        </label>
         <label class="customizer-field">Mood
           <select id="outfitMood">
             <option value="confident and glamorous">Confident & glamorous</option>
@@ -771,8 +808,12 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
         </label>
         <label class="customizer-field">Background
           <select id="outfitBackground">
-            <option value="luxury softly lit bedroom">Luxury bedroom</option>
-            <option value="romantic candlelit suite">Candlelit suite</option>
+            <option value="luxury softly lit bedroom with elegant satin bedding">Luxury bedroom</option>
+            <option value="romantic candlelit suite with rose petals and warm decor">Candlelit suite</option>
+            <option value="tasteful luxury hotel bedroom with plush headboard">Hotel bedroom</option>
+            <option value="elegant dressing room with full-length mirror">Luxury dressing room</option>
+            <option value="cozy window seat in a softly lit penthouse bedroom">Penthouse bedroom</option>
+            <option value="romantic canopy bed suite with soft draped fabrics">Canopy bed suite</option>
             <option value="sunny tropical beach">Tropical beach</option>
             <option value="city rooftop at sunset">Rooftop sunset</option>
             <option value="elegant studio with warm lighting">Warm studio</option>
@@ -1283,12 +1324,16 @@ $("createMediaButton").addEventListener("click", async () => {
     const bodyShape = $("outfitBody").value;
     const color = $("outfitColor").value;
     const accessories = $("outfitAccessories").value;
+    const makeup = $("outfitMakeup").value;
+    const expression = $("outfitExpression").value;
+    const lighting = $("outfitLighting").value;
     const mood = $("outfitMood").value;
     const pose = $("outfitPose").value;
     const background = $("outfitBackground").value;
     scene = "Full-body fashion portrait of " + girlName + ", a fictional adult woman aged 25 or older, wearing a " + color + " " + outfit +
       ". Bust styling: " + bust + ". Curves and hips: " + curves +
       ". Overall body shape: " + bodyShape + ". Accessories: " + accessories +
+      ". Makeup: " + makeup + ". Facial expression: " + expression + ". Lighting: " + lighting +
       ". Mood: " + mood + ". Pose: " + pose + ". Background: " + background +
       ". Premium tasteful adult fashion editorial, fictional adult woman aged 25 or older, realistic anatomy, garments must remain opaque or fully lined with full intimate coverage, no nudity, no transparent exposure, no exposed genitals, non-explicit.";
     if ($("sceneInput").value.trim()) scene += " Additional styling: " + $("sceneInput").value.trim();
