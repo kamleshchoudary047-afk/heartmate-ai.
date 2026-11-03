@@ -555,7 +555,6 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
     <small>● Here with you</small>
   </div>
   <div id="account">
-    <a class="small-button" href="/membership.html">✦ VIP</a>
     <button class="small-button" id="signIn">Sign in</button>
     <button class="small-button" id="signOut" hidden>Sign out</button>
   </div>
@@ -598,7 +597,7 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
 
 <div class="modal" id="galleryModal">
   <div class="modal-card">
-    <h3>💎 Your VIP Gallery</h3>
+    <h3>♡ My Gallery</h3>
     <p>Your unlocked and created photos for this companion, saved on this device.</p>
     <button class="gallery-filter active" id="galleryAll">All photos</button>
     <button class="gallery-filter" id="galleryFavourites">❤️ Favourites</button>
@@ -914,7 +913,7 @@ async function openGallery() {
   const grid = $("galleryGrid");
   grid.replaceChildren();
   if (!window.heartmateUser) {
-    grid.innerHTML = '<div class="gallery-empty">Please sign in to view your VIP Gallery. 💗</div>';
+    grid.innerHTML = '<div class="gallery-empty">Please sign in to view your My Gallery. 💗</div>';
     return;
   }
   try {
@@ -932,7 +931,7 @@ async function openGallery() {
       const img = document.createElement("img");
       const imageUrl = photo.uploaded ? photo.url : URL.createObjectURL(photo.blob);
       img.src = imageUrl;
-      img.alt = girlName + " VIP gallery photo";
+      img.alt = girlName + " My Gallery photo";
       img.addEventListener("click", () => {
         if (photo.uploaded) {
           $("galleryViewerImage").src = photo.url;
@@ -1090,11 +1089,7 @@ async function sendChat() {
     if (voiceReplies) speak(data.reply);
     await refreshRelationship();
   } catch (error) {
-    if (error.message.includes("VIP Membership")) {
-      addMessage(error.message + " Open VIP Membership from the top of this chat to unlock her. ✦", "bot");
-    } else {
-      addMessage("Sorry, I couldn't connect. " + error.message, "bot");
-    }
+    addMessage("Sorry, I couldn't connect. " + error.message, "bot");
   } finally {
     busy = false;
     sendButton.disabled = false;
