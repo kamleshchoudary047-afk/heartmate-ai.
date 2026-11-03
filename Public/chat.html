@@ -624,10 +624,45 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
             <option value="elegant satin evening dress">Elegant satin evening dress</option>
             <option value="glamorous cocktail dress">Glamorous cocktail dress</option>
             <option value="tasteful opaque satin nightwear set">Satin nightwear</option>
-            <option value="tasteful opaque fashion bodysuit with a robe">Fashion bodysuit & robe</option>
-            <option value="stylish tasteful bikini swimsuit">Beach swimwear</option>
+            <option value="tasteful opaque lace-trimmed nightwear set with full coverage">Lace-trim nightwear</option>
+            <option value="tasteful opaque fashion bodysuit with a flowing robe">Fashion bodysuit & robe</option>
+            <option value="glamorous fully lined lingerie-inspired fashion set with opaque coverage">Lingerie-inspired fashion</option>
+            <option value="high-cut string bikini with narrow side straps and fully opaque front and back coverage">High-cut string bikini</option>
+            <option value="cheeky-cut bikini swimsuit with opaque full front coverage">Cheeky bikini</option>
+            <option value="halter-neck bikini with a supportive lined top and matching bottoms">Halter bikini</option>
+            <option value="one-piece swimsuit with a tasteful plunging neckline and full intimate coverage">Plunging one-piece swimsuit</option>
             <option value="chic casual jeans and fitted top">Casual chic</option>
-            <option value="luxury red-carpet gown">Red-carpet gown</option>
+            <option value="luxury red-carpet gown with a tasteful slit">Red-carpet gown</option>
+            <option value="fitted off-shoulder mini dress">Off-shoulder mini dress</option>
+            <option value="elegant fitted cocktail dress">Fitted cocktail dress</option>
+          </select>
+        </label>
+        <label class="customizer-field">Bust styling
+          <select id="outfitBust">
+            <option value="natural realistic bust proportions">Natural</option>
+            <option value="slightly fuller bust silhouette with realistic proportions">Slightly fuller</option>
+            <option value="fuller voluptuous bust silhouette with realistic proportions">Fuller silhouette</option>
+            <option value="enhanced tasteful cleavage styling while remaining fully covered">Enhanced cleavage styling</option>
+          </select>
+        </label>
+        <label class="customizer-field">Outfit colour
+          <select id="outfitColor">
+            <option value="black">Black</option>
+            <option value="deep red">Deep red</option>
+            <option value="soft pink">Soft pink</option>
+            <option value="white">White</option>
+            <option value="emerald green">Emerald green</option>
+            <option value="royal blue">Royal blue</option>
+            <option value="champagne gold">Champagne gold</option>
+          </select>
+        </label>
+        <label class="customizer-field">Accessories
+          <select id="outfitAccessories">
+            <option value="delicate necklace and earrings">Delicate jewellery</option>
+            <option value="high heels and elegant jewellery">Heels & jewellery</option>
+            <option value="silk robe and hair accessories">Silk robe details</option>
+            <option value="sunglasses and beach accessories">Beach accessories</option>
+            <option value="minimal accessories">Minimal</option>
           </select>
         </label>
         <label class="customizer-field">Mood
@@ -659,7 +694,7 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
           </select>
         </label>
       </div>
-      <p class="customizer-note">All looks stay non-explicit, with opaque clothing and no nudity. Your created photo can be saved in My Gallery.</p>
+      <p class="customizer-note">Style fictional adult companions (25+) in glamorous, flirty fashion. Swimwear and lingerie-inspired looks remain opaque and non-explicit. No nudity. Photos can be saved in My Gallery.</p>
     </div>
     <textarea id="sceneInput" placeholder="Add optional details…"></textarea>
     <div class="modal-actions">
@@ -1144,12 +1179,16 @@ $("createMediaButton").addEventListener("click", async () => {
 
   if (mediaType === "outfit") {
     const outfit = $("outfitChoice").value;
+    const bust = $("outfitBust").value;
+    const color = $("outfitColor").value;
+    const accessories = $("outfitAccessories").value;
     const mood = $("outfitMood").value;
     const pose = $("outfitPose").value;
     const background = $("outfitBackground").value;
-    scene = "Full-body fashion portrait of " + girlName + ", a fictional adult woman, wearing " + outfit +
+    scene = "Full-body fashion portrait of " + girlName + ", a fictional adult woman aged 25 or older, wearing a " + color + " " + outfit +
+      ". Figure styling: " + bust + ". Accessories: " + accessories +
       ". Mood: " + mood + ". Pose: " + pose + ". Background: " + background +
-      ". Tasteful fashion editorial, opaque clothing that fully covers intimate areas, non-explicit.";
+      ". Premium tasteful adult fashion editorial, realistic anatomy, opaque garments with full intimate coverage, no nudity, no exposed genitals, non-explicit.";
     if ($("sceneInput").value.trim()) scene += " Additional styling: " + $("sceneInput").value.trim();
   }
   if (!scene) {
