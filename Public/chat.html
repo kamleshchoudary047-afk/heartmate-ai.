@@ -1185,7 +1185,7 @@ async function getGalleryPhotos() {
   const uploaded = (uploadedGalleryImages[character] || []).map((url, index) => {
     const id = "uploaded:" + character + ":" + index;
     const setting = settingById.get(id) || {};
-    return {id, userId:window.heartmateUser.uid, character, createdAt:0, url, uploaded:true, favourite:!!setting.favourite, hidden:!!setting.hidden};
+    return {id, userId:window.heartmateUser.uid, character, createdAt:0, url, uploaded:true, favourite:!!setting.favourite, hidden:!!setting.hidden, caption:setting.caption || "", albumId:setting.albumId || ""};
   }).filter(photo => !photo.hidden);
   return [...saved, ...uploaded].sort((a,b) => b.createdAt - a.createdAt);
 }
