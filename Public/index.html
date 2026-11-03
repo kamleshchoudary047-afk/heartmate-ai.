@@ -658,11 +658,9 @@ header{background:rgba(10,6,13,.9);border-bottom:1px solid #ff78b52b}
       <a href="#experiences">Experiences</a>
       <a href="/shorts.html">♥ Shorts</a>
       <a href="#companions">All Companions</a>
-      <a href="/membership.html">VIP Membership</a>
     </nav>
 
     <div class="account-area">
-      <a class="small-button" href="/membership.html">✦ VIP</a>
       <button class="small-button" id="googleSignIn" type="button">Sign in with Google</button>
       <button class="small-button" id="googleSignOut" type="button" hidden>Sign out</button>
       <span id="accountStatus" aria-live="polite"></span>
@@ -756,15 +754,6 @@ header{background:rgba(10,6,13,.9);border-bottom:1px solid #ff78b52b}
     <div class="featured-grid" id="companionsGrid"></div>
   </section>
 
-  <section class="vip-strip">
-    <div>
-      <div class="section-kicker">The VIP experience</div>
-      <h2>More moments. More possibilities.</h2>
-      <p>Unlock five exclusive companions and enjoy higher daily chat, image, video and voice limits.</p>
-    </div>
-    <a class="primary-button" href="/membership.html">Explore VIP Membership →</a>
-  </section>
-
   <section class="closing">
     <div class="section-kicker">Your story starts here</div>
     <h2>Your after-dark story starts here.</h2>
@@ -776,7 +765,7 @@ header{background:rgba(10,6,13,.9);border-bottom:1px solid #ff78b52b}
 <footer>
   <p>© 2026 Heartmate AI. All rights reserved.</p>
   <p>AI-generated fictional adult characters. 18+ experience.</p>
-  <p><a href="/membership.html">VIP Membership</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/delete-account.html">Delete account</a></p>
+  <p><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/delete-account.html">Delete account</a></p>
 </footer>
 
 <nav class="bottom-nav">
@@ -1095,7 +1084,7 @@ document.getElementById("dailyChat").href =
   "chat.html?girl=" + encodeURIComponent(note[0]);
 
 /* Build companion cards */
-const premiumCompanions = new Set(["elena","amara","isabelle","celeste","layla"]);
+const premiumCompanions = new Set();
 
 function makeCard(name,description) {
   const slug = name.toLowerCase();
@@ -1128,17 +1117,13 @@ function makeCard(name,description) {
 
   const link = document.createElement("a");
   link.className = "chat-link";
-  link.href = isPremium
-    ? "/membership.html"
-    : "chat.html?girl=" + encodeURIComponent(name);
-  link.textContent = isPremium
-    ? "✦ VIP · Unlock this companion"
-    : "Start a conversation →";
+  link.href = "chat.html?girl=" + encodeURIComponent(name);
+  link.textContent = "Start a conversation →";
   let premiumLock = null;
   if (isPremium) {
     premiumLock = document.createElement("div");
     premiumLock.className = "premium-lock";
-    premiumLock.textContent = "✦ EXCLUSIVE VIP COMPANION";
+    premiumLock.textContent = "AVAILABLE FREE";
   }
 
   image.onerror = function() {
