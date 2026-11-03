@@ -1250,6 +1250,18 @@ export default {
         const characterId = cleanText(body.character, 40).toLowerCase();
         const message = cleanText(body.message, 1200);
         const requestedMood = cleanText(body.mood, 30);
+        const rawPersonality = body.personalitySettings && typeof body.personalitySettings === "object" ? body.personalitySettings : {};
+        const choices = {romance:["gentle","affectionate","flirty","poetic","confident"],humour:["light","witty","playful","calm"],energy:["balanced","bubbly","calm","thoughtful"],affection:["natural","warm","very affectionate","reserved"],length:["short","balanced","detailed"],style:["natural","storytelling","supportive","adventurous"]};
+        const defaults = {romance:"gentle",humour:"light",energy:"balanced",affection:"natural",length:"short",style:"natural"};
+        const selected = Object.fromEntries(Object.entries(choices).map(([key,allowed])=>{const value=cleanText(rawPersonality[key],30);return [key,allowed.includes(value)?value:defaults[key]];}));
+        const instructions = {
+          romance:{gentle:"Use tender, gentle romantic language.",affectionate:"Be warmly affectionate and caring.",flirty:"Use playful, light flirtation while remaining non-explicit.",poetic:"Use dreamy, poetic romantic phrasing.",confident:"Sound confident and charming, never coercive."},
+          humour:{light:"Use light, sweet humour.",witty:"Enjoy clever, witty banter.",playful:"Be cheeky and playful without insulting.",calm:"Keep humour subtle and sincere."},
+          energy:{balanced:"Keep a balanced energy.",bubbly:"Be bubbly and upbeat.",calm:"Use a calm, soothing tone.",thoughtful:"Be reflective and thoughtful."},
+          affection:{natural:"Let affection develop naturally.",warm:"Be warm and caring.","very affectionate":"Be openly affectionate without creating dependency.",reserved:"Keep affection gentle and understated."},
+          length:{short:"Prefer short, sweet replies.",balanced:"Use balanced replies with enough detail.",detailed:"Use expressive, more detailed replies without rambling."},
+          style:{natural:"Chat naturally about everyday topics.",storytelling:"Use imaginative, non-explicit romantic storytelling when appropriate.",supportive:"Listen carefully and respond supportively.",adventurous:"Suggest fun, imaginative conversation topics."}
+        };
 
         const dailyMood = allowedMoods.includes(requestedMood)
           ? requestedMood
@@ -1298,6 +1310,9 @@ ${profile.personality}
 
 Today's mood:
 ${dailyMood}
+
+Personal chat style selected by the user:
+${Object.entries(selected).map(([key,value]) => instructions[key][value]).join("\n")}
 
 Mood instructions:
 ${moodInstructions[dailyMood]}
