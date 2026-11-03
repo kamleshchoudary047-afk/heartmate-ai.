@@ -723,7 +723,10 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
 <h3>🎙️ Voice Romance Studio</h3>
 <p>Make <strong id="voiceRomanceCompanion">your companion</strong> sound closer to your favourite style. Settings are saved separately for each companion on this device.</p>
 <div class="voice-romance-grid">
-<label class="customizer-field">Voice<select id="romanceVoice"><option value="">Best available voice</option></select></label>
+<label class="customizer-field">Voice<select id="romanceVoice"><option value="">Auto-pick a voice for this companion</option></select></label>
+<label class="customizer-field">Romantic voice reactions
+  <select id="romanceReactions"><option value="on">On · sweet and expressive</option><option value="off">Off · read normal replies</option></select>
+</label>
 <label class="customizer-field">Speaking style<select id="romanceStyle"><option value="tender">Tender & gentle</option><option value="romantic">Warm & romantic</option><option value="playful">Playful & bright</option><option value="dreamy">Dreamy & soft</option><option value="confident">Confident & expressive</option><option value="soothing">Calm & soothing</option></select></label>
 <label class="customizer-field">Speaking speed <output id="romanceRateValue">0.94×</output><input id="romanceRate" type="range" min="0.75" max="1.25" step="0.05" value="0.95"></label>
 <label class="customizer-field">Voice pitch <output id="romancePitchValue">1.15</output><input id="romancePitch" type="range" min="0.75" max="1.5" step="0.05" value="1.15"></label>
@@ -1868,8 +1871,23 @@ async function sendChat() {
     addMessage(data.reply, "bot");
     chatHistory.push({role:"assistant", content:data.reply});
 
-    // Start speaking immediately; do not wait for relationship refresh.
-    if (voiceReplies) speak(data.reply);
+    // Sweet, non-explicit voice reactions for romantic messages.
+    if (voiceReplies) {
+      const voiceSettings=loadVoiceRomanceSettings();
+      const trigger=/\b(kiss|kissing|hug|hugging|cuddle|cuddling|love you|miss you|come closer|make me blush|beautiful girl|gorgeous|sweetheart)\b/i;
+      let spokenReply=data.reply;
+      if (voiceSettings.reactions!=="off" && trigger.test(message)) {
+        const reactions=[
+          "Ah… you're making me blush. Come a little closer and be sweet with me.",
+          "Mmm… that's so sweet. You have me smiling.",
+          "Oh… my cheeks are getting warm. Tell me something lovely.",
+          "Hehe… you're making my heart flutter. Stay close."
+        ];
+        let hash=0;for(let i=0;i<character.length;i++)hash=(hash*33+character.charCodeAt(i))>>>0;
+        spokenReply=reactions[hash%reactions.length]+" "+data.reply;
+      }
+      speak(spokenReply);
+    }
     await refreshRelationship();
   } catch (error) {
     addMessage("Sorry, I couldn't connect. " + error.message, "bot");
@@ -2268,7 +2286,7 @@ function toggleVoice() {
     : "Voice replies are off. Tap “Hear her” on any reply to listen once.";
 }
 
-const voiceRomanceDefaults={voiceURI:"",style:"tender",rate:0.95,pitch:1.15,volume:1};
+const voiceRomanceDefaults={voiceURI:"",style:"tender",rate:0.95,pitch:1.15,volume:1,reactions:"on"};
 function voiceRomanceKey(){return "heartmate-voice-romance-"+character;}
 function loadVoiceRomanceSettings(){
   try{const saved=JSON.parse(localStorage.getItem(voiceRomanceKey())||"{}");return {...voiceRomanceDefaults,...saved};}
@@ -2280,7 +2298,10 @@ function chooseCuteFemaleVoice(){
   if(settings.voiceURI){const chosen=voices.find(v=>v.voiceURI===settings.voiceURI);if(chosen)return chosen;}
   const preferredNames=/samantha|ava|zoe|tessa|karen|moira|victoria|serena|susan|fiona|female|zira|heera|google.*female|microsoft.*zira/i;
   const english=voices.filter(v=>/^en([-_]|$)/i.test(v.lang));
-  return english.find(v=>preferredNames.test(v.name))||voices.find(v=>preferredNames.test(v.name))||english.find(v=>/india|united states|united kingdom/i.test(v.name+" "+v.lang))||english[0]||voices[0]||null;
+  const candidates=english.filter(v=>preferredNames.test(v.name));
+  const pool=candidates.length?candidates:(english.length?english:voices);
+  let hash=0;for(let i=0;i<character.length;i++)hash=(hash*31+character.charCodeAt(i))>>>0;
+  return pool.length?pool[hash%pool.length]:null;
 }
 function populateRomanceVoices(){
   const select=$("romanceVoice");if(!select)return;
@@ -2294,6 +2315,7 @@ function openVoiceRomanceStudio(){
   $("voiceRomanceCompanion").textContent=girlName;
   const settings=loadVoiceRomanceSettings();
   $("romanceStyle").value=settings.style;
+  $("romanceReactions").value=settings.reactions||"on";
   $("romanceRate").value=settings.rate;
   $("romancePitch").value=settings.pitch;
   $("romanceVolume").value=settings.volume;
@@ -2306,7 +2328,7 @@ function updateRomanceVoiceValues(){
   $("romanceVolumeValue").textContent=Math.round(Number($("romanceVolume").value)*100)+"%";
 }
 function currentRomanceVoiceSettings(){
-  return {voiceURI:$("romanceVoice").value,style:$("romanceStyle").value,rate:Number($("romanceRate").value),pitch:Number($("romancePitch").value),volume:Number($("romanceVolume").value)};
+  return {voiceURI:$("romanceVoice").value,style:$("romanceStyle").value,rate:Number($("romanceRate").value),pitch:Number($("romancePitch").value),volume:Number($("romanceVolume").value),reactions:$("romanceReactions").value};
 }
 function applyRomanceStyle(settings,utterance){
   const presets={tender:{rate:0.88,pitch:1.12},romantic:{rate:0.94,pitch:1.2},playful:{rate:1.08,pitch:1.28},dreamy:{rate:0.84,pitch:1.08},confident:{rate:1.02,pitch:0.98},soothing:{rate:0.86,pitch:0.94}};
