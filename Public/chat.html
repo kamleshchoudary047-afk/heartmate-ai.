@@ -308,6 +308,56 @@ button:disabled{opacity:.5;cursor:wait}
 #sceneInput{min-height:76px;resize:vertical}
 @media(max-width:380px){.studio-section .customizer-grid{grid-template-columns:1fr}}
 
+
+/* Midnight Intimacy Studio — premium section redesign */
+#midnightControls{--midnight-pink:#ff9acb;--midnight-lilac:#c6a6ff;--midnight-gold:#f4c98a;padding-top:2px}
+#midnightControls .studio-intro{
+  position:relative;isolation:isolate;overflow:hidden;
+  padding:20px 18px;margin:10px 0 18px;border:1px solid #f7a9d455;border-radius:22px;
+  background:radial-gradient(ellipse at 92% 0%,#bd5d9c55,transparent 48%),linear-gradient(135deg,#512b4c 0%,#30213f 52%,#1c172d 100%);
+  box-shadow:0 14px 34px #09061066;color:#fcecf6;font-size:12px;line-height:1.65
+}
+#midnightControls .studio-intro:after{content:"✦";position:absolute;right:18px;top:10px;color:#ffd5e9;font-size:42px;opacity:.42;z-index:-1}
+#midnightControls .studio-intro strong{font-size:18px;letter-spacing:.2px;margin-bottom:7px}
+#midnightControls .studio-section{
+  position:relative;margin:13px 0;border:1px solid #ffffff20;border-radius:19px;
+  background:linear-gradient(145deg,#ffffff0d,#ffffff04);overflow:hidden;
+  box-shadow:0 8px 22px #09061035;transition:border-color .2s,box-shadow .2s,transform .2s
+}
+#midnightControls .studio-section:nth-of-type(2){--section-accent:#f39bc5;--section-glow:#9f477d}
+#midnightControls .studio-section:nth-of-type(3){--section-accent:#d9a9ff;--section-glow:#764ca8}
+#midnightControls .studio-section:nth-of-type(4){--section-accent:#f3bd9b;--section-glow:#a65d55}
+#midnightControls .studio-section:nth-of-type(5){--section-accent:#9fd9dc;--section-glow:#397c85}
+#midnightControls .studio-section:nth-of-type(6){--section-accent:#f2d28e;--section-glow:#98733c}
+#midnightControls .studio-section:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--section-accent,#f39bc5);opacity:.85}
+#midnightControls .studio-section[open]{border-color:color-mix(in srgb,var(--section-accent,#f39bc5) 55%,transparent);box-shadow:0 12px 28px #08050d55,0 0 0 1px #ffffff08}
+#midnightControls .studio-section summary{
+  position:relative;min-height:64px;padding:16px 16px 16px 18px;gap:10px;
+  background:linear-gradient(100deg,var(--section-glow,#9f477d)22,transparent 82%);
+  font-size:13px;letter-spacing:.1px
+}
+#midnightControls .studio-section summary:after{
+  content:"⌄";display:grid;place-items:center;width:27px;height:27px;flex:0 0 27px;
+  border:1px solid color-mix(in srgb,var(--section-accent,#f39bc5) 48%,transparent);
+  border-radius:50%;background:#ffffff0c;color:var(--section-accent,#f39bc5);font-size:17px;margin-left:auto
+}
+#midnightControls .studio-section[open] summary:after{content:"⌃";background:color-mix(in srgb,var(--section-accent,#f39bc5) 15%,transparent)}
+#midnightControls .studio-section .customizer-grid{padding:5px 15px 17px;margin:0;gap:12px}
+#midnightControls .customizer-field{gap:8px;padding:11px;border:1px solid #ffffff12;border-radius:14px;background:linear-gradient(145deg,#ffffff0b,#ffffff04);color:#f4ddec;font-size:11px;letter-spacing:.15px}
+#midnightControls .customizer-field select{
+  min-height:46px;padding:11px 32px 11px 11px;border:1px solid #d9a3c52e;border-radius:11px;
+  background-color:#21182b;color:#fff;font-size:12px;line-height:1.4;box-shadow:inset 0 1px #ffffff08
+}
+#midnightControls .customizer-field select:focus{outline:2px solid #f39bc588;outline-offset:1px;border-color:#f39bc5}
+#midnightControls .customizer-note{padding:12px 14px;border:1px solid #e7a4cb30;border-radius:14px;background:linear-gradient(120deg,#6b345122,#ffffff06);color:#e8cddd;line-height:1.6}
+@media(max-width:420px){
+  #midnightControls .studio-intro{padding:18px 15px;border-radius:18px}
+  #midnightControls .studio-section{border-radius:16px}
+  #midnightControls .studio-section summary{padding:14px 12px 14px 15px;min-height:60px;font-size:12px}
+  #midnightControls .studio-section .customizer-grid{grid-template-columns:1fr;padding:4px 12px 14px}
+  #midnightControls .customizer-field{padding:10px}
+}
+
 .customizer-field{display:flex;flex-direction:column;gap:6px;color:#e8d8f4;font-size:11px;font-weight:700}
 .customizer-field select{width:100%;padding:11px 10px;border:1px solid #ffffff25;border-radius:12px;background:#171020;color:#fff;font:13px Arial,sans-serif}
 .customizer-note{margin:4px 0 10px;color:#c5b5d5;font-size:11px}
