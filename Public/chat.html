@@ -1036,8 +1036,9 @@ async function sendChat() {
     addMessage(data.reply, "bot");
     chatHistory.push({role:"assistant", content:data.reply});
 
-    await refreshRelationship();
+    // Start speaking immediately; do not wait for relationship refresh.
     if (voiceReplies) speak(data.reply);
+    await refreshRelationship();
   } catch (error) {
     addMessage("Sorry, I couldn't connect. " + error.message, "bot");
   } finally {
@@ -1220,6 +1221,19 @@ function chooseCuteFemaleVoice() {
     || englishVoices[0] || voices[0] || null;
 }
 
+function unlockSpeechPlayback() {
+  // iOS Safari may require speech synthesis to be activated by a tap first.
+  if (!("speechSynthesis" in window)) return;
+  try {
+    const unlock = new SpeechSynthesisUtterance(" ");
+    unlock.volume = 0;
+    unlock.rate = 1;
+    window.speechSynthesis.speak(unlock);
+  } catch (error) {
+    console.warn("Speech playback unlock was unavailable:", error);
+  }
+}
+
 function speak(text) {
   if (!("speechSynthesis" in window)) {
     status.textContent = "Voice playback is not supported in this browser.";
@@ -1232,7 +1246,11 @@ function speak(text) {
   utterance.rate = 0.94;
   utterance.pitch = 1.2;
   utterance.volume = 1;
-  utterance.onerror = () => { status.textContent = "Voice playback could not start on this device."; };
+  utterance.onstart = () => { status.textContent = " " + girlName + " is speaking…"; };
+  utterance.onend = () => { status.textContent = ""; };
+  utterance.onerror = () => {
+    status.textContent = "Automatic voice playback was blocked. Tap “Hear her” to listen.";
+  };
   window.speechSynthesis.speak(utterance);
 }
 
@@ -1244,9 +1262,10 @@ updateVoiceButton();
 /* VOICE RECORDING */
 
 async function toggleRecording() {
-  // Starting voice chat opts into spoken companion replies for this session.
+  // Enable spoken replies and unlock iPhone speech playback from this tap.
   voiceReplies = true;
   updateVoiceButton();
+  unlockSpeechPlayback();
 
   if (recorder && recorder.state === "recording") {
     recorder.stop();
