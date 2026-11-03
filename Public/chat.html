@@ -1244,6 +1244,10 @@ updateVoiceButton();
 /* VOICE RECORDING */
 
 async function toggleRecording() {
+  // Starting voice chat opts into spoken companion replies for this session.
+  voiceReplies = true;
+  updateVoiceButton();
+
   if (recorder && recorder.state === "recording") {
     recorder.stop();
     status.textContent = "Processing your voice…";
@@ -1319,8 +1323,9 @@ async function toggleRecording() {
           throw new Error("No speech was detected.");
         }
 
-        input.focus();
-        status.textContent = "Voice converted to text. Tap Send.";
+        status.textContent = "Voice recognized. Sending to " + girlName + "…";
+        // Voice input is hands-free: send the recognized words automatically.
+        await sendChat();
       } catch (error) {
         status.textContent = "";
         addMessage("Voice transcription failed: " + error.message, "bot");
