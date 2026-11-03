@@ -280,6 +280,10 @@ button:disabled{opacity:.5;cursor:wait}
 }
 .modal-card h3{margin:0 0 8px}
 .modal-card p{color:var(--muted);font-size:13px;line-height:1.5}
+.customizer-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.customizer-field{display:flex;flex-direction:column;gap:6px;color:#e8d8f4;font-size:11px;font-weight:700}
+.customizer-field select{width:100%;padding:11px 10px;border:1px solid #ffffff25;border-radius:12px;background:#171020;color:#fff;font:13px Arial,sans-serif}
+.customizer-note{margin:4px 0 10px;color:#c5b5d5;font-size:11px}
 #sceneInput {
   width:100%;
   min-height:100px;
@@ -577,7 +581,8 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
 
 <footer class="footer">
   <div class="tools">
-    <button onclick="openGallery()">💎 VIP Gallery</button>
+    <button onclick="openGallery()">♡ My Gallery</button>
+    <button onclick="openMedia('outfit')">✨ Outfit Studio</button>
     <button onclick="openMedia('image')">📸 Create image</button>
     <button onclick="openMedia('video')">🎬 Create video</button>
     <button id="voiceToggle" type="button" onclick="toggleVoice()" aria-pressed="false">🔇 Voice off · tap to enable</button>
@@ -613,7 +618,51 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
   <div class="modal-card">
     <h3 id="modalTitle">Create something lovely ✨</h3>
     <p id="modalDescription">Describe what you want to create.</p>
-    <textarea id="sceneInput" placeholder="Describe your scene…"></textarea>
+    <div id="outfitControls" hidden>
+      <div class="customizer-grid">
+        <label class="customizer-field">Outfit
+          <select id="outfitChoice">
+            <option value="elegant satin evening dress">Elegant satin evening dress</option>
+            <option value="glamorous cocktail dress">Glamorous cocktail dress</option>
+            <option value="tasteful opaque satin nightwear set">Satin nightwear</option>
+            <option value="tasteful opaque fashion bodysuit with a robe">Fashion bodysuit & robe</option>
+            <option value="stylish tasteful bikini swimsuit">Beach swimwear</option>
+            <option value="chic casual jeans and fitted top">Casual chic</option>
+            <option value="luxury red-carpet gown">Red-carpet gown</option>
+          </select>
+        </label>
+        <label class="customizer-field">Mood
+          <select id="outfitMood">
+            <option value="confident and glamorous">Confident</option>
+            <option value="soft and romantic">Romantic</option>
+            <option value="playful and flirty">Playful</option>
+            <option value="mysterious and cinematic">Mysterious</option>
+            <option value="elegant and sophisticated">Elegant</option>
+          </select>
+        </label>
+        <label class="customizer-field">Pose
+          <select id="outfitPose">
+            <option value="relaxed standing fashion pose">Standing</option>
+            <option value="seated editorial portrait pose">Seated</option>
+            <option value="over-the-shoulder fashion pose">Over the shoulder</option>
+            <option value="walking confidently toward the camera">Walking</option>
+            <option value="sitting gracefully by a window">By the window</option>
+          </select>
+        </label>
+        <label class="customizer-field">Background
+          <select id="outfitBackground">
+            <option value="luxury softly lit bedroom">Luxury bedroom</option>
+            <option value="romantic candlelit suite">Candlelit suite</option>
+            <option value="sunny tropical beach">Tropical beach</option>
+            <option value="city rooftop at sunset">Rooftop sunset</option>
+            <option value="elegant studio with warm lighting">Studio</option>
+            <option value="rose garden at golden hour">Rose garden</option>
+          </select>
+        </label>
+      </div>
+      <p class="customizer-note">All looks stay non-explicit, with opaque clothing and no nudity. Your created photo can be saved in My Gallery.</p>
+    </div>
+    <textarea id="sceneInput" placeholder="Add optional details…"></textarea>
     <div class="modal-actions">
       <button class="cancel" onclick="closeMedia()">Cancel</button>
       <button id="createMediaButton">Create</button>
@@ -1078,10 +1127,14 @@ input.addEventListener("keydown", event => {
 
 function openMedia(type) {
   mediaType = type;
-  $("modalTitle").textContent =
+  const outfitMode = type === "outfit";
+  $("modalTitle").textContent = outfitMode ? "✨ Outfit Studio" :
     type === "video" ? "Create a video 🎬" : "Create an image 📸";
-  $("modalDescription").textContent =
-    "Describe the scene you want for " + girlName + ".";
+  $("modalDescription").textContent = outfitMode
+    ? "Style " + girlName + " with a new outfit, mood, pose and setting."
+    : "Describe the scene you want for " + girlName + ".";
+  $("outfitControls").hidden = !outfitMode;
+  $("sceneInput").placeholder = outfitMode ? "Optional details (colour, accessories, hairstyle)…" : "Describe your scene…";
   $("sceneInput").value = "";
   $("mediaModal").classList.add("open");
 }
@@ -1091,8 +1144,23 @@ function closeMedia() {
 }
 
 $("createMediaButton").addEventListener("click", async () => {
-  const scene = $("sceneInput").value.trim();
-  if (!scene || busy) return;
+  let scene = $("sceneInput").value.trim();
+  if (busy) return;
+
+  if (mediaType === "outfit") {
+    const outfit = $("outfitChoice").value;
+    const mood = $("outfitMood").value;
+    const pose = $("outfitPose").value;
+    const background = $("outfitBackground").value;
+    scene = "Full-body fashion portrait of " + girlName + ", a fictional adult woman, wearing " + outfit +
+      ". Mood: " + mood + ". Pose: " + pose + ". Background: " + background +
+      ". Tasteful fashion editorial, opaque clothing that fully covers intimate areas, non-explicit.";
+    if ($("sceneInput").value.trim()) scene += " Additional styling: " + $("sceneInput").value.trim();
+  }
+  if (!scene) {
+    $("sceneInput").focus();
+    return;
+  }
 
   closeMedia();
 
