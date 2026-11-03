@@ -264,19 +264,28 @@ button:disabled{opacity:.5;cursor:wait}
   position:fixed;
   inset:0;
   z-index:10;
-  align-items:flex-end;
+  align-items:flex-start;
   justify-content:center;
-  padding:12px;
+  padding:12px 12px calc(12px + env(safe-area-inset-bottom));
   background:#000b;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
 }
 .modal.open{display:flex}
 .modal-card {
   width:100%;
   max-width:480px;
-  padding:20px;
+  max-height:calc(100dvh - 24px - env(safe-area-inset-bottom));
+  margin:auto 0;
+  padding:20px 20px calc(20px + env(safe-area-inset-bottom));
   border:1px solid #d5b1f944;
   border-radius:24px;
   background:linear-gradient(145deg,#30213f,#171020);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
 }
 .modal-card h3{margin:0 0 8px}
 .modal-card p{color:var(--muted);font-size:13px;line-height:1.5}
