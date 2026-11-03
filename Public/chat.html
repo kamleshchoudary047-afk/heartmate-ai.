@@ -330,6 +330,7 @@ button:disabled{opacity:.5;cursor:wait}
 }
 .modal-actions .cancel{background:#ffffff15}
 .date-night-card{max-height:88vh;overflow-y:auto}.date-night-card>.customizer-field{display:block;margin:10px 0}.date-night-card input{box-sizing:border-box;width:100%;padding:12px;border:1px solid #ffffff25;border-radius:10px;background:#171020;color:#fff}
+.voice-romance-card{max-height:88vh;overflow-y:auto}.voice-romance-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:15px 0}.voice-romance-grid .customizer-field{display:flex;flex-direction:column;gap:7px;min-width:0}.voice-romance-grid select{width:100%;padding:12px;border:1px solid #ffffff25;border-radius:11px;background:#171020;color:#fff}.voice-romance-grid input[type=range]{width:100%;accent-color:#ff83bd}.voice-romance-grid output{color:#ffc0dc;font-size:12px}.voice-romance-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.voice-romance-actions button{padding:11px 7px;border:1px solid #ffffff20;border-radius:11px;background:linear-gradient(135deg,#ed75b4,#9d6cdb);color:#241326;font-weight:800;font-size:12px}.voice-romance-actions .cancel{background:#ffffff12;color:#ffe1ef}@media(max-width:520px){.voice-romance-grid{grid-template-columns:1fr}.voice-romance-actions{grid-template-columns:1fr 1fr}.voice-romance-actions button:last-child{grid-column:1/-1}}
 .personality-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}.personality-card{max-height:88vh;overflow-y:auto}.personality-grid .customizer-field{min-width:0}@media(max-width:520px){.personality-grid{grid-template-columns:1fr}}.memory-toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin:12px 0 5px;padding:12px;border:1px solid #ffffff20;border-radius:15px;background:#ffffff08}
 .memory-album-label{grid-column:1/-1;color:#f4d9e9;font-size:12px;font-weight:800}
 .memory-toolbar select{min-width:0;width:100%;padding:10px;border:1px solid #ffffff25;border-radius:10px;background:#171020;color:#fff;font-size:13px}
@@ -618,6 +619,7 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
   <div class="tools">
     <button onclick="openGallery()">♡ My Gallery</button>
     <button type="button" onclick="openPersonalityStudio()">💗 Personality Studio</button>
+    <button type="button" onclick="openVoiceRomanceStudio()">🎙️ Voice Romance Studio</button>
     <button type="button" onclick="openDateNightStudio()">🌹 Date Night Studio</button>
     <button onclick="openMedia('outfit')">✨ Outfit Studio</button>
     <button onclick="openMedia('image')">📸 Create image</button>
@@ -645,6 +647,21 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
 <label class="customizer-field">A little extra (optional)<input id="dateExtra" maxlength="180" placeholder="e.g. her favourite flowers, a surprise dessert…"></label>
 <div class="modal-actions"><button type="button" class="cancel" id="closeDateNight">Close</button><button type="button" class="action" id="startDateNight">Start our date 💗</button></div>
 <p class="memory-hint">A fictional, romantic, non-explicit roleplay. You can guide the story at any time.</p>
+</div></div>
+
+<div class="modal" id="voiceRomanceModal"><div class="modal-card personality-card voice-romance-card">
+<h3>🎙️ Voice Romance Studio</h3>
+<p>Make <strong id="voiceRomanceCompanion">your companion</strong> sound closer to your favourite style. Settings are saved separately for each companion on this device.</p>
+<div class="voice-romance-grid">
+<label class="customizer-field">Voice<select id="romanceVoice"><option value="">Best available voice</option></select></label>
+<label class="customizer-field">Speaking style<select id="romanceStyle"><option value="tender">Tender & gentle</option><option value="romantic">Warm & romantic</option><option value="playful">Playful & bright</option><option value="dreamy">Dreamy & soft</option><option value="confident">Confident & expressive</option><option value="soothing">Calm & soothing</option></select></label>
+<label class="customizer-field">Speaking speed <output id="romanceRateValue">0.94×</output><input id="romanceRate" type="range" min="0.75" max="1.25" step="0.05" value="0.95"></label>
+<label class="customizer-field">Voice pitch <output id="romancePitchValue">1.15</output><input id="romancePitch" type="range" min="0.75" max="1.5" step="0.05" value="1.15"></label>
+<label class="customizer-field">Volume <output id="romanceVolumeValue">100%</output><input id="romanceVolume" type="range" min="0.2" max="1" step="0.05" value="1"></label>
+</div>
+<div class="voice-romance-actions"><button type="button" class="cancel" id="previewRomanceVoice">▶ Preview voice</button><button type="button" class="cancel" id="resetRomanceVoice">Reset</button><button type="button" id="saveRomanceVoice">Save voice 💗</button></div>
+<p class="memory-hint">Uses voices available in your browser or device. The voice list and voice quality can differ between iPhone, Android and desktop. No paid voice service is added.</p>
+<div class="modal-actions"><button type="button" class="cancel" id="closeVoiceRomance">Close</button></div>
 </div></div>
 
 <div class="modal" id="personalityModal"><div class="modal-card personality-card">
@@ -1526,6 +1543,13 @@ function personalityStorageKey(){return "heartmate-personality-"+character;}
 function loadPersonalitySettings(){try{const saved=JSON.parse(localStorage.getItem(personalityStorageKey())||"{}");return Object.fromEntries(Object.keys(personalityDefaults).map(k=>[k,typeof saved[k]==="string"?saved[k]:personalityDefaults[k]]));}catch{return {...personalityDefaults};}}
 function openPersonalityStudio(){$("personalityCompanionName").textContent=girlName;Object.entries(loadPersonalitySettings()).forEach(([k,v])=>{const el=$("personality"+k[0].toUpperCase()+k.slice(1));if(el)el.value=v;});$("personalityModal").classList.add("open");}
 function savePersonalityStudio(){const settings={};Object.keys(personalityDefaults).forEach(k=>{const el=$("personality"+k[0].toUpperCase()+k.slice(1));settings[k]=el?.value||personalityDefaults[k];});localStorage.setItem(personalityStorageKey(),JSON.stringify(settings));$("personalityModal").classList.remove("open");addMessage("💗 Our chat style is saved. My next replies will be "+settings.romance+", with "+settings.humour+" humour and "+settings.energy+" energy.","bot");}
+$("romanceRate").addEventListener("input",updateRomanceVoiceValues);
+$("romancePitch").addEventListener("input",updateRomanceVoiceValues);
+$("romanceVolume").addEventListener("input",updateRomanceVoiceValues);
+$("previewRomanceVoice").addEventListener("click",()=>{const settings=currentRomanceVoiceSettings();localStorage.setItem(voiceRomanceKey(),JSON.stringify(settings));unlockSpeechPlayback();speak("Hello, sweetheart. I'm "+girlName+". I'm happy to spend this little moment with you.");});
+$("saveRomanceVoice").addEventListener("click",()=>{localStorage.setItem(voiceRomanceKey(),JSON.stringify(currentRomanceVoiceSettings()));$("voiceRomanceModal").classList.remove("open");addMessage("🎙️ My voice style is saved for our chats, sweetheart.","bot");});
+$("resetRomanceVoice").addEventListener("click",()=>{localStorage.removeItem(voiceRomanceKey());openVoiceRomanceStudio();});
+$("closeVoiceRomance").addEventListener("click",()=>$("voiceRomanceModal").classList.remove("open"));
 $("savePersonality").addEventListener("click",savePersonalityStudio);
 $("closePersonality").addEventListener("click",()=>$("personalityModal").classList.remove("open"));
 $("resetPersonality").addEventListener("click",()=>{localStorage.removeItem(personalityStorageKey());openPersonalityStudio();});
@@ -1812,15 +1836,50 @@ function toggleVoice() {
     : "Voice replies are off. Tap “Hear her” on any reply to listen once.";
 }
 
-function chooseCuteFemaleVoice() {
-  if (!("speechSynthesis" in window)) return null;
-  const voices = window.speechSynthesis.getVoices() || [];
-  const preferredNames = /samantha|ava|zoe|tessa|karen|moira|victoria|serena|susan|fiona|female|zira|heera|google.*female|microsoft.*zira/i;
-  const englishVoices = voices.filter(voice => /^en([-_]|$)/i.test(voice.lang));
-  return englishVoices.find(voice => preferredNames.test(voice.name))
-    || voices.find(voice => preferredNames.test(voice.name))
-    || englishVoices.find(voice => /india|united states|united kingdom/i.test(voice.name + " " + voice.lang))
-    || englishVoices[0] || voices[0] || null;
+const voiceRomanceDefaults={voiceURI:"",style:"tender",rate:0.95,pitch:1.15,volume:1};
+function voiceRomanceKey(){return "heartmate-voice-romance-"+character;}
+function loadVoiceRomanceSettings(){
+  try{const saved=JSON.parse(localStorage.getItem(voiceRomanceKey())||"{}");return {...voiceRomanceDefaults,...saved};}
+  catch{return {...voiceRomanceDefaults};}
+}
+function availableSpeechVoices(){return "speechSynthesis" in window?(window.speechSynthesis.getVoices()||[]):[];}
+function chooseCuteFemaleVoice(){
+  const voices=availableSpeechVoices(),settings=loadVoiceRomanceSettings();
+  if(settings.voiceURI){const chosen=voices.find(v=>v.voiceURI===settings.voiceURI);if(chosen)return chosen;}
+  const preferredNames=/samantha|ava|zoe|tessa|karen|moira|victoria|serena|susan|fiona|female|zira|heera|google.*female|microsoft.*zira/i;
+  const english=voices.filter(v=>/^en([-_]|$)/i.test(v.lang));
+  return english.find(v=>preferredNames.test(v.name))||voices.find(v=>preferredNames.test(v.name))||english.find(v=>/india|united states|united kingdom/i.test(v.name+" "+v.lang))||english[0]||voices[0]||null;
+}
+function populateRomanceVoices(){
+  const select=$("romanceVoice");if(!select)return;
+  const current=select.value||loadVoiceRomanceSettings().voiceURI;
+  const voices=availableSpeechVoices();
+  select.innerHTML='<option value="">Best available voice</option>';
+  voices.forEach(voice=>{const option=document.createElement("option");option.value=voice.voiceURI;option.textContent=voice.name+" · "+voice.lang;select.appendChild(option);});
+  select.value=current;
+}
+function openVoiceRomanceStudio(){
+  $("voiceRomanceCompanion").textContent=girlName;
+  const settings=loadVoiceRomanceSettings();
+  $("romanceStyle").value=settings.style;
+  $("romanceRate").value=settings.rate;
+  $("romancePitch").value=settings.pitch;
+  $("romanceVolume").value=settings.volume;
+  populateRomanceVoices();$("romanceVoice").value=settings.voiceURI||"";
+  updateRomanceVoiceValues();$("voiceRomanceModal").classList.add("open");
+}
+function updateRomanceVoiceValues(){
+  $("romanceRateValue").textContent=Number($("romanceRate").value).toFixed(2)+"×";
+  $("romancePitchValue").textContent=Number($("romancePitch").value).toFixed(2);
+  $("romanceVolumeValue").textContent=Math.round(Number($("romanceVolume").value)*100)+"%";
+}
+function currentRomanceVoiceSettings(){
+  return {voiceURI:$("romanceVoice").value,style:$("romanceStyle").value,rate:Number($("romanceRate").value),pitch:Number($("romancePitch").value),volume:Number($("romanceVolume").value)};
+}
+function applyRomanceStyle(settings,utterance){
+  const presets={tender:{rate:0.88,pitch:1.12},romantic:{rate:0.94,pitch:1.2},playful:{rate:1.08,pitch:1.28},dreamy:{rate:0.84,pitch:1.08},confident:{rate:1.02,pitch:0.98},soothing:{rate:0.86,pitch:0.94}};
+  const preset=presets[settings.style]||presets.tender;
+  utterance.rate=settings.rate??preset.rate;utterance.pitch=settings.pitch??preset.pitch;utterance.volume=settings.volume??1;
 }
 
 function unlockSpeechPlayback() {
@@ -1843,11 +1902,14 @@ function speak(text) {
   }
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  const voice = chooseCuteFemaleVoice();
-  if (voice) utterance.voice = voice;
-  utterance.rate = 0.94;
-  utterance.pitch = 1.2;
-  utterance.volume = 1;
+  const settings=loadVoiceRomanceSettings();
+  const voice=chooseCuteFemaleVoice();
+  if(voice)utterance.voice=voice;
+  const presets={tender:{rate:0.88,pitch:1.12},romantic:{rate:0.94,pitch:1.2},playful:{rate:1.08,pitch:1.28},dreamy:{rate:0.84,pitch:1.08},confident:{rate:1.02,pitch:0.98},soothing:{rate:0.86,pitch:0.94}};
+  const preset=presets[settings.style]||presets.tender;
+  utterance.rate=Number(settings.rate)||preset.rate;
+  utterance.pitch=Number(settings.pitch)||preset.pitch;
+  utterance.volume=Number(settings.volume??1);
   utterance.onstart = () => { status.textContent = " " + girlName + " is speaking…"; };
   utterance.onend = () => { status.textContent = ""; };
   utterance.onerror = () => {
@@ -1857,7 +1919,7 @@ function speak(text) {
 }
 
 if ("speechSynthesis" in window) {
-  window.speechSynthesis.onvoiceschanged = () => chooseCuteFemaleVoice();
+  window.speechSynthesis.onvoiceschanged = () => {chooseCuteFemaleVoice();populateRomanceVoices();};
 }
 updateVoiceButton();
 
