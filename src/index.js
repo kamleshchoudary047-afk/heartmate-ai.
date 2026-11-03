@@ -1090,8 +1090,8 @@ export default {
         voiceChat: true,
         videoTaskOwnership: true,
         notifications: "preferences-only",
-        vipMembership: true,
-        razorpayConfigured: Boolean(env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET)
+        vipMembership: false,
+        razorpayConfigured: false
       });
     }
 
@@ -1125,15 +1125,11 @@ export default {
         await saveVisitor(env, user);
 
         if (url.pathname === "/api/membership") {
-          return await handleMembership(request, env, user);
+          return json({ plan: "free", status: "free", isVip: false, expiresAt: null, premiumCompanions: [], razorpayConfigured: false });
         }
 
-        if (url.pathname === "/api/billing/order") {
-          return await handleBillingOrder(request, env, user);
-        }
-
-        if (url.pathname === "/api/billing/verify") {
-          return await handleBillingVerify(request, env, user);
+        if (url.pathname === "/api/billing/order" || url.pathname === "/api/billing/verify") {
+          return json({ error: "Paid memberships are disabled. Heartmate AI is free." }, 410);
         }
 
         if (url.pathname === "/api/profile") {
@@ -1264,9 +1260,6 @@ export default {
         if (!profile) {
           return json({ error: "Character not found." }, 404);
         }
-
-        const accessError = await requireCharacterAccess(env, user.uid, characterId);
-        if (accessError) return accessError;
 
         if (!message) {
           return json({ error: "Please enter a message." }, 400);
@@ -1421,9 +1414,6 @@ Conversation instructions:
           return json({ error: "Character not found." }, 404);
         }
 
-        const accessError = await requireCharacterAccess(env, user.uid, characterId);
-        if (accessError) return accessError;
-
         await saveVisitor(env, user);
 
         const result = await env.DB.prepare(`
@@ -1484,9 +1474,6 @@ Conversation instructions:
         if (!profile) {
           return json({ error: "Character not found." }, 404);
         }
-
-        const accessError = await requireCharacterAccess(env, user.uid, characterId);
-        if (accessError) return accessError;
 
         if (!isValidDate(welcomeDate)) {
           return json({ error: "Invalid welcome date." }, 400);
@@ -1661,9 +1648,6 @@ Instructions:
           return json({ error: "Character not found." }, 404);
         }
 
-        const accessError = await requireCharacterAccess(env, user.uid, characterId);
-        if (accessError) return accessError;
-
         const scene = cleanText(body.scene || body.prompt, 400);
         if (!scene) {
           return json({ error: "Please describe the picture." }, 400);
@@ -1792,9 +1776,6 @@ Instructions:
         if (!profile) {
           return json({ error: "Character not found." }, 404);
         }
-
-        const accessError = await requireCharacterAccess(env, user.uid, characterId);
-        if (accessError) return accessError;
 
         if (!scene) {
           return json({ error: "Please describe the video scene." }, 400);
