@@ -622,6 +622,7 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
     <button type="button" onclick="openVoiceRomanceStudio()">🎙️ Voice Romance Studio</button>
     <button type="button" onclick="openDateNightStudio()">🌹 Date Night Studio</button>
     <button onclick="openMedia('outfit')">✨ Outfit Studio</button>
+    <button onclick="openMedia('midnight')">🌙 Midnight Intimacy Studio</button>
     <button onclick="openMedia('image')">📸 Create image</button>
     <button onclick="openMedia('video')">🎬 Create video</button>
     <button id="voiceToggle" type="button" onclick="toggleVoice()" aria-pressed="false">🔇 Voice off · tap to enable</button>
@@ -1029,6 +1030,140 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
       </div>
       <p class="customizer-note">Makeup, expressions, hair, lighting, pose and colour remain individually adjustable. Secret Looks opens your signed-in favourites in My Gallery.</p>
       <p class="customizer-note">Style fictional adult companions (25+) in glamorous, flirty fashion. Swimwear, cut-outs and lingerie-inspired fashion use opaque, secure coverage. No nudity or exposed intimate areas.</p>
+    </div>
+    <div id="midnightControls" hidden>
+      <div class="studio-intro">
+        <strong>🌙 Midnight Intimacy Studio</strong>
+        Build a cinematic, romantic after-dark photo with fictional adults aged 25+. Choose each section independently; all styling stays tasteful and non-explicit.
+      </div>
+      <details class="studio-section" open>
+        <summary>🛏️ Bedroom & private setting</summary>
+        <div class="customizer-grid">
+          <label class="customizer-field">Location
+            <select id="midnightRoom">
+              <option value="a luxurious modern hotel bedroom">Luxury hotel bedroom</option>
+              <option value="a romantic private bedroom with soft rose accents">Romantic private bedroom</option>
+              <option value="a penthouse suite overlooking a glittering city at night">City penthouse suite</option>
+              <option value="a cozy bedroom with warm fairy lights and plush pillows">Fairy-light bedroom</option>
+              <option value="a moonlit resort suite with a beautiful balcony">Moonlit resort suite</option>
+              <option value="a tasteful spa suite with soft towels and candles">Private spa suite</option>
+            </select>
+          </label>
+          <label class="customizer-field">Bed & décor
+            <select id="midnightDecor">
+              <option value="elegant dark satin bedding, plush pillows and tasteful rose petals">Dark satin & roses</option>
+              <option value="champagne silk bedding with elegant neutral décor">Champagne silk</option>
+              <option value="soft white linen, layered pillows and minimalist luxury décor">White linen luxury</option>
+              <option value="deep burgundy bedding and refined romantic décor">Burgundy romance</option>
+              <option value="velvet textures, flowers and understated luxury details">Velvet & flowers</option>
+            </select>
+          </label>
+        </div>
+      </details>
+      <details class="studio-section">
+        <summary>👗 Nightwear & styling</summary>
+        <div class="customizer-grid">
+          <label class="customizer-field">Adult companion outfit
+            <select id="midnightOutfit">
+              <option value="an elegant opaque satin nightdress with a matching robe">Satin nightdress & robe</option>
+              <option value="a fully lined lace-trim nightwear set with a silk robe">Lace-trim nightwear & robe</option>
+              <option value="a luxurious silk pajama set">Silk pajamas</option>
+              <option value="a tasteful opaque satin slip dress">Satin slip dress</option>
+              <option value="a glamorous velvet evening robe over an opaque nightwear set">Velvet robe & nightwear</option>
+              <option value="an elegant fully opaque lounge set">Elegant lounge set</option>
+            </select>
+          </label>
+          <label class="customizer-field">Colour palette
+            <select id="midnightColor">
+              <option value="black and champagne">Black & champagne</option>
+              <option value="deep red and burgundy">Deep red</option>
+              <option value="midnight blue and silver">Midnight blue</option>
+              <option value="soft blush pink and ivory">Blush & ivory</option>
+              <option value="emerald green and gold">Emerald & gold</option>
+              <option value="classic ivory and pearl">Ivory & pearl</option>
+            </select>
+          </label>
+          <label class="customizer-field">Beauty styling
+            <select id="midnightBeauty">
+              <option value="soft glamorous makeup, softly styled hair and delicate jewellery">Soft glamour</option>
+              <option value="smoky evening makeup, loose waves and elegant earrings">Smoky eyes & waves</option>
+              <option value="natural dewy makeup and relaxed loose hair">Natural & dreamy</option>
+              <option value="classic red lipstick, polished hair and refined accessories">Classic red-carpet</option>
+            </select>
+          </label>
+        </div>
+      </details>
+      <details class="studio-section">
+        <summary>💋 Couple poses & affection</summary>
+        <div class="customizer-grid">
+          <label class="customizer-field">Pose
+            <select id="midnightPose">
+              <option value="sitting close together on the bed, holding hands and smiling softly">Sitting close together</option>
+              <option value="a gentle romantic kiss while fully clothed">Gentle romantic kiss</option>
+              <option value="a warm embrace beside the bed">Warm embrace</option>
+              <option value="cuddling side by side on top of the neatly made bed, fully clothed">Cozy side-by-side cuddle</option>
+              <option value="foreheads touching with tender eye contact">Foreheads touching</option>
+              <option value="one partner gently wrapping an arm around the other's shoulders">Affectionate shoulder embrace</option>
+              <option value="a graceful solo portrait seated beside the bed">Solo midnight portrait</option>
+            </select>
+          </label>
+          <label class="customizer-field">Chemistry
+            <select id="midnightChemistry">
+              <option value="tender and affectionate">Tender & affectionate</option>
+              <option value="playfully flirtatious and smiling">Playful & flirty</option>
+              <option value="deeply romantic with expressive eye contact">Deeply romantic</option>
+              <option value="confident, glamorous and alluring">Confident & alluring</option>
+              <option value="dreamy, peaceful and emotionally close">Dreamy & peaceful</option>
+            </select>
+          </label>
+        </div>
+      </details>
+      <details class="studio-section">
+        <summary>🕯️ Lighting & atmosphere</summary>
+        <div class="customizer-grid">
+          <label class="customizer-field">Lighting
+            <select id="midnightLighting">
+              <option value="warm candlelight with soft golden highlights">Warm candlelight</option>
+              <option value="soft pink and purple ambient lighting">Pink & purple glow</option>
+              <option value="cool moonlight through sheer curtains">Moonlight</option>
+              <option value="cinematic low-key lighting with gentle rim light">Cinematic low light</option>
+              <option value="warm bedside lamps and a soft golden glow">Bedside lamps</option>
+              <option value="subtle city lights shining through the window">City lights</option>
+            </select>
+          </label>
+          <label class="customizer-field">Atmosphere
+            <select id="midnightMood">
+              <option value="a dreamy, intimate and elegant midnight atmosphere">Dreamy midnight</option>
+              <option value="a luxurious romantic anniversary evening">Anniversary night</option>
+              <option value="a playful after-date atmosphere">After-date romance</option>
+              <option value="a quiet, cozy and affectionate night together">Cozy night together</option>
+              <option value="a dramatic glamorous editorial atmosphere">Glamorous after dark</option>
+            </select>
+          </label>
+        </div>
+      </details>
+      <details class="studio-section">
+        <summary>📸 Camera & photo finish</summary>
+        <div class="customizer-grid">
+          <label class="customizer-field">Camera framing
+            <select id="midnightCamera">
+              <option value="a tasteful full-body cinematic composition">Full-body cinematic</option>
+              <option value="a medium portrait showing expressions and affectionate pose">Medium couple portrait</option>
+              <option value="a close-up portrait focused on faces and eye contact">Close-up expressions</option>
+              <option value="a wide luxury-suite editorial composition">Wide suite editorial</option>
+            </select>
+          </label>
+          <label class="customizer-field">Photography style
+            <select id="midnightFinish">
+              <option value="photorealistic luxury lifestyle photography with natural anatomy">Realistic lifestyle photo</option>
+              <option value="cinematic romantic movie still with soft depth of field">Romantic movie still</option>
+              <option value="premium fashion editorial photography">Fashion editorial</option>
+              <option value="soft film photography with subtle grain">Soft film look</option>
+            </select>
+          </label>
+        </div>
+      </details>
+      <p class="customizer-note">All outfits remain opaque and fully covering. Romantic kissing, cuddling and embraces are supported; nudity and explicit sexual activity are not.</p>
     </div>
     <textarea id="sceneInput" placeholder="Add optional details…"></textarea>
     <div class="modal-actions">
@@ -1642,13 +1777,19 @@ input.addEventListener("keydown", event => {
 function openMedia(type) {
   mediaType = type;
   const outfitMode = type === "outfit";
+  const midnightMode = type === "midnight";
   $("modalTitle").textContent = outfitMode ? "✨ Outfit Studio" :
+    midnightMode ? "🌙 Midnight Intimacy Studio" :
     type === "video" ? "Create a video 🎬" : "Create an image 📸";
   $("modalDescription").textContent = outfitMode
     ? "Create a complete look for " + girlName + ". Choose a quick scene or customise each section below."
-    : "Describe the scene you want for " + girlName + ".";
+    : midnightMode
+      ? "Create a sensual, non-explicit midnight photo. Open each section to customise the scene."
+      : "Describe the scene you want for " + girlName + ".";
   $("outfitControls").hidden = !outfitMode;
-  $("sceneInput").placeholder = outfitMode ? "Optional details (colour, accessories, hairstyle)…" : "Describe your scene…";
+  $("midnightControls").hidden = !midnightMode;
+  $("sceneInput").placeholder = outfitMode ? "Optional details (colour, accessories, hairstyle)…" :
+    midnightMode ? "Optional romantic details…" : "Describe your scene…";
   $("sceneInput").value = "";
   $("mediaModal").classList.add("open");
 }
@@ -1756,6 +1897,31 @@ document.querySelectorAll("[data-studio]").forEach(button => {
 $("createMediaButton").addEventListener("click", async () => {
   let scene = $("sceneInput").value.trim();
   if (busy) return;
+
+  if (mediaType === "midnight") {
+    const room = $("midnightRoom").value;
+    const decor = $("midnightDecor").value;
+    const outfit = $("midnightOutfit").value;
+    const color = $("midnightColor").value;
+    const beauty = $("midnightBeauty").value;
+    const pose = $("midnightPose").value;
+    const chemistry = $("midnightChemistry").value;
+    const lighting = $("midnightLighting").value;
+    const mood = $("midnightMood").value;
+    const camera = $("midnightCamera").value;
+    const finish = $("midnightFinish").value;
+    scene = "Create a premium, photorealistic, sensual but non-explicit midnight romance photograph featuring " +
+      girlName + ", a fictional adult woman aged 25 or older, and a fictional adult partner aged 25 or older. " +
+      "Setting: " + room + ", " + decor + ". Her outfit: " + color + " " + outfit +
+      ", fully opaque and providing complete intimate coverage. Beauty styling: " + beauty +
+      ". Pose: " + pose + ". Their chemistry: " + chemistry +
+      ". Lighting: " + lighting + ". Atmosphere: " + mood +
+      ". Composition: " + camera + ". Photography: " + finish +
+      ". Both adults are clearly 25 or older, fictional, fully clothed or wearing opaque fully covering nightwear. " +
+      "Tasteful romantic editorial only: no nudity, no exposed intimate areas, no transparent clothing, no sexual activity, no graphic sexual content. " +
+      "Realistic anatomy, natural hands, elegant styling, polished cinematic composition.";
+    if ($("sceneInput").value.trim()) scene += " Additional scene direction: " + $("sceneInput").value.trim();
+  }
 
   if (mediaType === "outfit") {
     const outfit = $("outfitChoice").value;
