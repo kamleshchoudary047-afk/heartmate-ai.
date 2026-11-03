@@ -358,6 +358,24 @@ button:disabled{opacity:.5;cursor:wait}
   #midnightControls .customizer-field{padding:10px}
 }
 
+/* Dress-to-Bikini comparison studio */
+#transitionControls{padding-top:3px}
+#transitionControls .transition-hero{padding:19px 17px;margin:10px 0 14px;border:1px solid #f2a7c955;border-radius:20px;background:radial-gradient(circle at 90% 5%,#ffb7d633,transparent 42%),linear-gradient(135deg,#542c51,#28203d 75%);box-shadow:0 12px 28px #09061055;color:#faeaf4}
+#transitionControls .transition-kicker{display:block;margin-bottom:7px;color:#f8c1dc;font-size:9px;font-weight:900;letter-spacing:2px}
+#transitionControls .transition-hero strong{display:block;color:white;font-size:18px;margin-bottom:7px}
+#transitionControls .transition-hero p{margin:0;color:#e8d4e4;font-size:12px;line-height:1.6}
+#transitionControls .transition-preview{display:grid;grid-template-columns:1fr 24px 1fr;align-items:stretch;gap:6px;margin:12px 0 17px}
+#transitionControls .transition-preview-panel{min-height:90px;display:flex;flex-direction:column;justify-content:flex-end;padding:11px;border:1px solid #f3b5d544;border-radius:15px;background:linear-gradient(155deg,#b75d8833,#30213f 80%)}
+#transitionControls .transition-preview-panel.after{background:linear-gradient(155deg,#5b9eae55,#30213f 80%);border-color:#8edce044}
+#transitionControls .transition-preview-panel span{font-size:9px;letter-spacing:1px;color:#f5c5df;font-weight:900}
+#transitionControls .transition-preview-panel b{font-size:12px;color:#fff;margin-top:5px}
+#transitionControls .transition-preview-panel small{font-size:10px;color:#d8c6d8;margin-top:2px}
+#transitionControls .transition-preview-divider{display:grid;place-items:center;color:#f5c3dc;font-size:16px}
+#transitionControls .studio-section{border-radius:17px}
+#transitionControls .studio-section summary{min-height:57px}
+#transitionControls .customizer-grid{padding:5px 12px 14px}
+@media(max-width:380px){#transitionControls .transition-preview-panel{padding:8px;min-height:82px}#transitionControls .transition-preview-panel b{font-size:11px}}
+
 .customizer-field{display:flex;flex-direction:column;gap:6px;color:#e8d8f4;font-size:11px;font-weight:700}
 .customizer-field select{width:100%;padding:11px 10px;border:1px solid #ffffff25;border-radius:12px;background:#171020;color:#fff;font:13px Arial,sans-serif}
 .customizer-note{margin:4px 0 10px;color:#c5b5d5;font-size:11px}
@@ -673,6 +691,7 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
     <button type="button" onclick="openDateNightStudio()">🌹 Date Night Studio</button>
     <button onclick="openMedia('outfit')">✨ Outfit Studio</button>
     <button onclick="openMedia('midnight')">🌙 Midnight Intimacy Studio</button>
+    <button onclick="openMedia('transition')">👙 Dress-to-Bikini Studio</button>
     <button onclick="openMedia('image')">📸 Create image</button>
     <button onclick="openMedia('video')">🎬 Create video</button>
     <button id="voiceToggle" type="button" onclick="toggleVoice()" aria-pressed="false">🔇 Voice off · tap to enable</button>
@@ -1080,6 +1099,95 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
       </div>
       <p class="customizer-note">Makeup, expressions, hair, lighting, pose and colour remain individually adjustable. Secret Looks opens your signed-in favourites in My Gallery.</p>
       <p class="customizer-note">Style fictional adult companions (25+) in glamorous, flirty fashion. Swimwear, cut-outs and lingerie-inspired fashion use opaque, secure coverage. No nudity or exposed intimate areas.</p>
+    </div>
+    <div id="transitionControls" hidden>
+      <div class="transition-hero">
+        <span class="transition-kicker">TWO LOOKS · ONE PHOTO</span>
+        <strong>👙 Dress-to-Bikini Transformation</strong>
+        <p>Create a polished side-by-side fashion comparison of the same fictional adult companion (25+) in two separate looks. This is a clothing-style comparison, not an undressing sequence.</p>
+      </div>
+      <div class="transition-preview" aria-label="Two-panel fashion comparison preview">
+        <div class="transition-preview-panel"><span>01 · BEFORE</span><b>Evening look</b><small>Dress styling</small></div>
+        <div class="transition-preview-divider">✦</div>
+        <div class="transition-preview-panel after"><span>02 · AFTER</span><b>Swimwear look</b><small>Opaque bikini</small></div>
+      </div>
+      <details class="studio-section" open>
+        <summary>👗 Before — dress look</summary>
+        <div class="customizer-grid">
+          <label class="customizer-field">Dress style
+            <select id="transitionDress">
+              <option value="an elegant fitted satin evening dress">Satin evening dress</option>
+              <option value="a glamorous off-shoulder cocktail dress">Off-shoulder cocktail</option>
+              <option value="a floral summer midi dress">Floral summer dress</option>
+              <option value="a sophisticated black party dress">Black party dress</option>
+              <option value="a beautiful traditional Indian saree with a coordinated blouse">Indian saree</option>
+              <option value="a stylish fitted kurti with slim leggings">Kurti & leggings</option>
+              <option value="a sparkling evening gown">Sparkling evening gown</option>
+            </select>
+          </label>
+          <label class="customizer-field">Dress colour
+            <select id="transitionDressColor">
+              <option value="ruby red">Ruby red</option><option value="midnight black">Midnight black</option>
+              <option value="royal blue">Royal blue</option><option value="emerald green">Emerald green</option>
+              <option value="soft blush pink">Blush pink</option><option value="champagne gold">Champagne gold</option>
+              <option value="ivory white">Ivory white</option>
+            </select>
+          </label>
+        </div>
+      </details>
+      <details class="studio-section" open>
+        <summary>👙 After — bikini look</summary>
+        <div class="customizer-grid">
+          <label class="customizer-field">Bikini design
+            <select id="transitionBikini">
+              <option value="a classic fully lined triangle bikini with opaque cups and bottoms">Classic triangle bikini</option>
+              <option value="a supportive high-waist retro bikini with opaque lining">High-waist retro bikini</option>
+              <option value="an elegant bandeau bikini with secure opaque coverage">Bandeau bikini</option>
+              <option value="a sporty racerback bikini with opaque full coverage">Sporty bikini</option>
+              <option value="a ruched bikini with adjustable ties and opaque lining">Ruched tie-side bikini</option>
+              <option value="a chic one-shoulder bikini with opaque full coverage">One-shoulder bikini</option>
+              <option value="a tasteful high-leg bikini with fully opaque coverage">High-leg bikini</option>
+            </select>
+          </label>
+          <label class="customizer-field">Bikini colour
+            <select id="transitionBikiniColor">
+              <option value="coral pink">Coral pink</option><option value="classic black">Classic black</option>
+              <option value="ocean turquoise">Ocean turquoise</option><option value="lavender">Lavender</option>
+              <option value="sunshine yellow">Sunshine yellow</option><option value="ruby red">Ruby red</option>
+              <option value="white with subtle gold accents">White & gold</option>
+            </select>
+          </label>
+        </div>
+      </details>
+      <details class="studio-section">
+        <summary>🌴 Scene & photo layout</summary>
+        <div class="customizer-grid">
+          <label class="customizer-field">Background
+            <select id="transitionBackground">
+              <option value="a luxurious tropical beach with turquoise water">Tropical beach</option>
+              <option value="a beautiful resort swimming pool">Resort pool</option>
+              <option value="a sunlit seaside hotel terrace">Seaside terrace</option>
+              <option value="a clean warm neutral fashion studio">Studio backdrop</option>
+              <option value="a palm-lined luxury resort garden">Resort garden</option>
+            </select>
+          </label>
+          <label class="customizer-field">Composition
+            <select id="transitionLayout">
+              <option value="two equal vertical panels side by side with a slim elegant divider">Side-by-side panels</option>
+              <option value="a clean two-column editorial diptych with matching full-body framing">Full-body diptych</option>
+              <option value="a magazine-style split layout with balanced portrait panels">Magazine split layout</option>
+            </select>
+          </label>
+          <label class="customizer-field">Photo finish
+            <select id="transitionFinish">
+              <option value="photorealistic premium fashion editorial photography">Photorealistic editorial</option>
+              <option value="bright luxury resort campaign photography">Resort campaign</option>
+              <option value="soft cinematic summer photography">Cinematic summer</option>
+            </select>
+          </label>
+        </div>
+      </details>
+      <p class="customizer-note">Both panels show the same fictional adult woman aged 25+, with matching face, hairstyle and body proportions. Swimwear remains opaque and fully covering. No nudity or clothing-removal sequence.</p>
     </div>
     <div id="midnightControls" hidden>
       <div class="studio-intro">
@@ -1828,18 +1936,23 @@ function openMedia(type) {
   mediaType = type;
   const outfitMode = type === "outfit";
   const midnightMode = type === "midnight";
+  const transitionMode = type === "transition";
   $("modalTitle").textContent = outfitMode ? "✨ Outfit Studio" :
     midnightMode ? "🌙 Midnight Intimacy Studio" :
+    transitionMode ? "👙 Dress-to-Bikini Studio" :
     type === "video" ? "Create a video 🎬" : "Create an image 📸";
   $("modalDescription").textContent = outfitMode
     ? "Create a complete look for " + girlName + ". Choose a quick scene or customise each section below."
     : midnightMode
       ? "Create a sensual, non-explicit midnight photo. Open each section to customise the scene."
-      : "Describe the scene you want for " + girlName + ".";
+      : transitionMode
+        ? "Create one image with two coordinated fashion looks, side by side."
+        : "Describe the scene you want for " + girlName + ".";
   $("outfitControls").hidden = !outfitMode;
   $("midnightControls").hidden = !midnightMode;
+  $("transitionControls").hidden = !transitionMode;
   $("sceneInput").placeholder = outfitMode ? "Optional details (colour, accessories, hairstyle)…" :
-    midnightMode ? "Optional romantic details…" : "Describe your scene…";
+    midnightMode ? "Optional romantic details…" : transitionMode ? "Optional fashion details…" : "Describe your scene…";
   $("sceneInput").value = "";
   $("mediaModal").classList.add("open");
 }
@@ -1947,6 +2060,27 @@ document.querySelectorAll("[data-studio]").forEach(button => {
 $("createMediaButton").addEventListener("click", async () => {
   let scene = $("sceneInput").value.trim();
   if (busy) return;
+
+  if (mediaType === "transition") {
+    const dress = $("transitionDress").value;
+    const dressColor = $("transitionDressColor").value;
+    const bikini = $("transitionBikini").value;
+    const bikiniColor = $("transitionBikiniColor").value;
+    const background = $("transitionBackground").value;
+    const layout = $("transitionLayout").value;
+    const finish = $("transitionFinish").value;
+    scene = "Create ONE polished fashion-comparison image featuring " + girlName +
+      ", the same fictional adult woman aged 25 or older, in a two-panel side-by-side diptych. " +
+      "LEFT PANEL, BEFORE: she wears " + dressColor + " " + dress +
+      ". RIGHT PANEL, AFTER: she wears " + bikiniColor + " " + bikini +
+      ". Both panels must show the same recognizable face, same hairstyle, same adult identity, consistent body proportions and coordinated lighting. " +
+      "Use " + background + " as a coordinated setting across both panels. Composition: " + layout +
+      ". Photography: " + finish +
+      ". Make the transition clear only through the two separate finished outfit portraits; do not depict undressing, removal of clothing, nudity, or an intermediate state. " +
+      "Both looks are tasteful fashion photography; bikini is fully opaque, lined and provides complete intimate coverage. " +
+      "Fictional adult woman aged 25+, realistic anatomy, elegant confident non-sexual poses, high quality, clean panel separation, no text or watermark.";
+    if ($("sceneInput").value.trim()) scene += " Additional fashion direction: " + $("sceneInput").value.trim();
+  }
 
   if (mediaType === "midnight") {
     const room = $("midnightRoom").value;
