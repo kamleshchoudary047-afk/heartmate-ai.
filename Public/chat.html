@@ -748,6 +748,22 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
             <option value="celestial-inspired satin evening dress with tasteful full coverage">Celestial satin dress</option>
             <option value="romantic velvet corset-inspired gown with opaque structured panels">Velvet corset gown</option>
             <option value="elegant silk spa robe over a fully covered lounge set">Luxury spa robe set</option>
+            <option value="luxurious chiffon saree with a fitted deep-sweetheart-neck blouse, elegant drape across the waist, defined silhouette and fully covered bust">Chiffon saree · deep sweetheart blouse</option>
+            <option value="silk saree with a fitted deep-V blouse, tasteful cleavage, sculpted waist drape and elegant hip silhouette">Silk saree · deep-V blouse</option>
+            <option value="sequinned party saree with a sleeveless fitted blouse, open-back detail and secure opaque front coverage">Party saree · sleeveless blouse</option>
+            <option value="pre-draped satin saree gown with a fitted corset-inspired blouse, defined waist and flowing hip drape">Pre-draped saree gown</option>
+            <option value="glamorous backless designer saree with a secure fully lined blouse, graceful waist drape and statement pallu">Designer backless saree</option>
+            <option value="bridal lehenga with a fitted embellished choli, tasteful deep neckline, defined waist and flowing embroidered skirt">Bridal lehenga · fitted choli</option>
+            <option value="contemporary sequin lehenga with a sleeveless deep-neck choli, opaque lining and flattering fitted waist">Sequin lehenga · deep-neck choli</option>
+            <option value="velvet lehenga with a structured sweetheart-neck blouse, full lining and dramatic skirt">Velvet lehenga · sweetheart blouse</option>
+            <option value="Indo-western mermaid lehenga with a fitted waist, sculpted hip line and fully lined cropped choli">Mermaid lehenga</option>
+            <option value="ornate sharara set with a fitted short kurti, tasteful neckline and flowing flared trousers">Glam sharara set</option>
+            <option value="elegant gharara set with a fitted embroidered kurti and dramatic flared pants">Embroidered gharara</option>
+            <option value="Anarkali floor-length gown with a fitted bodice, elegant sweetheart neckline and flowing skirt">Fitted Anarkali gown</option>
+            <option value="modern dhoti saree with a fitted sleeveless blouse, sculpted waist drape and secure coverage">Modern dhoti saree</option>
+            <option value="designer Indo-western skirt set with a fitted deep-square-neck blouse and flowing overlay">Indo-western skirt set</option>
+            <option value="tailored festive kurti with a fitted waist, side slits and matching slim trousers">Fitted festive kurti set</option>
+            <option value="elegant Punjabi salwar suit with a fitted short kameez, tasteful neckline and flowing dupatta">Punjabi salwar suit</option>
           </select>
         </label>
         <label class="customizer-field">Bust styling
@@ -757,6 +773,7 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
             <option value="fuller voluptuous bust silhouette with realistic proportions">Fuller silhouette</option>
             <option value="enhanced tasteful cleavage styling while remaining fully covered">Enhanced cleavage styling</option>
             <option value="dramatically fuller but natural-looking bust proportions, fully covered">Extra-full fashion silhouette</option>
+            <option value="glamorous fuller bust with a structured deep sweetheart or V neckline, tasteful cleavage and secure opaque coverage">Indian blouse glamour · tasteful cleavage</option>
           </select>
         </label>
         <label class="customizer-field">Curves & hips
@@ -765,6 +782,7 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
             <option value="gently fuller hips with balanced realistic proportions">Slightly fuller hips</option>
             <option value="fuller rounded hips and curvy silhouette, realistic anatomy">Fuller hourglass curves</option>
             <option value="defined waist with softly emphasized hips, realistic anatomy">Defined waist & hips</option>
+            <option value="fitted hourglass silhouette with softly emphasized rounded hips and a tailored waist, realistic anatomy">Sculpted waist & rounded hips</option>
           </select>
         </label>
         <label class="customizer-field">Body shape
@@ -949,6 +967,7 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
         <button type="button" class="gallery-filter" data-studio="afterdark">🌙 After-Dark Looks</button>
         <button type="button" class="gallery-filter" data-studio="swim">🏝️ Swimwear Looks</button>
         <button type="button" class="gallery-filter" data-studio="glam">💎 Bold Glamour</button>
+        <button type="button" class="gallery-filter" data-studio="indian">🇮🇳 Indian Glamour</button>
         <button type="button" class="gallery-filter" data-studio="secret">🔒 Secret Looks</button>
         <button type="button" class="gallery-filter" data-studio="story">💌 Romantic Story</button>
       </div>
@@ -1663,11 +1682,12 @@ document.querySelectorAll("[data-studio]").forEach(button => {
     if (mode === "afterdark") $("outfitChoice").value = "tasteful opaque satin nightwear set";
     if (mode === "swim") $("outfitChoice").value = "classic triangle bikini with fully lined opaque cups and bottoms";
     if (mode === "glam") $("outfitChoice").value = "luxury red-carpet gown with a tasteful slit";
+    if (mode === "indian") $("outfitChoice").value = "luxurious chiffon saree with a fitted deep-sweetheart-neck blouse, elegant drape across the waist, defined silhouette and fully covered bust";
     if (mode === "fantasy") $("outfitChoice").value = "fantasy-inspired elegant gown with opaque full coverage and flowing cape";
     const labels = {
       surprise:"Surprise look", date:"Date night", spa:"Luxury spa", couple:"Romantic couple portrait",
       compare:"Two-look fashion comparison", fantasy:"Fantasy wardrobe", afterdark:"After-dark fashion",
-      swim:"Resort swimwear", glam:"Bold glamour"
+      swim:"Resort swimwear", glam:"Bold glamour", indian:"Indian traditional glamour"
     };
     button.textContent = "✓ " + (labels[mode] || "Selected") + " · Create";
     document.querySelectorAll("[data-studio]").forEach(other => { if (other !== button) other.textContent = other.textContent.replace(/^✓ /,"").replace(/ · Create$/,""); });
@@ -1698,7 +1718,8 @@ $("createMediaButton").addEventListener("click", async () => {
       spa:"Luxury spa editorial in a serene private wellness suite, plush robe, tasteful towel styling, flowers, warm stone textures and calming candlelight.",
       couple:"Tasteful romantic portrait of " + girlName + ", a fictional adult woman aged 25 or older, with a fictional adult partner aged 25 or older; elegant evening outfits, gentle embrace, warm affectionate chemistry, both fully clothed.",
       compare:"Create one clean side-by-side fashion diptych featuring two distinct fully clothed looks for the same fictional adult woman aged 25 or older: left panel an elegant satin evening gown, right panel a glamorous tailored cocktail dress; keep the same recognizable face and consistent lighting.",
-      fantasy:"Elegant fantasy fashion editorial with a flowing enchanted gown, delicate celestial accessories, magical garden lights and an ethereal atmosphere; fully opaque coverage."
+      fantasy:"Elegant fantasy fashion editorial with a flowing enchanted gown, delicate celestial accessories, magical garden lights and an ethereal atmosphere; fully opaque coverage.",
+      indian:"High-fashion Indian ethnicwear editorial featuring a fitted saree blouse with a tasteful deep neckline, beautifully draped saree defining the waist and hips, rich embroidery, luxurious fabric and graceful confident styling; opaque secure coverage."
     };
     if (specialScenes[selectedStudioMode]) scene = specialScenes[selectedStudioMode] + " " + scene;
     scene = "Full-body fashion portrait of " + girlName + ", a fictional adult woman aged 25 or older, wearing a " + color + " " + outfit +
