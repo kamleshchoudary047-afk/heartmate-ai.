@@ -290,6 +290,24 @@ button:disabled{opacity:.5;cursor:wait}
 .modal-card h3{margin:0 0 8px}
 .modal-card p{color:var(--muted);font-size:13px;line-height:1.5}
 .customizer-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.studio-intro{padding:13px 14px;margin:12px 0 16px;border:1px solid #ed9cc844;border-radius:16px;background:linear-gradient(135deg,#48283f99,#30213f88);color:#f9e8f2;font-size:12px;line-height:1.55}
+.studio-intro strong{display:block;font-size:14px;margin-bottom:4px;color:#fff}
+.studio-section{margin:10px 0;border:1px solid #ffffff1c;border-radius:16px;background:#ffffff08;overflow:hidden}
+.studio-section summary{list-style:none;display:flex;align-items:center;gap:8px;padding:14px 13px;cursor:pointer;color:#fff;font-size:13px;font-weight:800}
+.studio-section summary::-webkit-details-marker{display:none}
+.studio-section summary:after{content:"＋";margin-left:auto;color:#f3a6cc;font-size:18px}
+.studio-section[open] summary:after{content:"−"}
+.studio-section .customizer-grid{padding:0 12px 14px;margin:0;grid-template-columns:1fr 1fr;gap:12px}
+.customizer-field{font-size:12px;min-width:0}
+.customizer-field select{min-height:44px;padding:11px 9px;border-radius:12px;font-size:13px;line-height:1.25}
+#specialStudioActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0 16px}
+#specialStudioActions .gallery-filter{display:flex;align-items:center;justify-content:flex-start;min-height:58px;padding:10px 12px;border:1px solid #ffffff20;border-radius:14px;background:linear-gradient(145deg,#ffffff12,#ffffff07);color:#f8eaf5;text-align:left;font-size:12px;font-weight:700;line-height:1.3;white-space:normal}
+#specialStudioActions .gallery-filter:active{transform:scale(.98);background:#a94f7d55}
+.studio-subtitle{margin:18px 0 6px;color:#fff;font-size:14px;font-weight:800}
+.studio-helper{margin:0 0 8px;color:#c5b5d5;font-size:11px;line-height:1.5}
+#sceneInput{min-height:76px;resize:vertical}
+@media(max-width:380px){.studio-section .customizer-grid{grid-template-columns:1fr}}
+
 .customizer-field{display:flex;flex-direction:column;gap:6px;color:#e8d8f4;font-size:11px;font-weight:700}
 .customizer-field select{width:100%;padding:11px 10px;border:1px solid #ffffff25;border-radius:12px;background:#171020;color:#fff;font:13px Arial,sans-serif}
 .customizer-note{margin:4px 0 10px;color:#c5b5d5;font-size:11px}
