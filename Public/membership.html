@@ -22,7 +22,7 @@ h1,h2,h3{font-family:'Playfair Display',serif}h1{margin:18px 0 12px;font-size:cl
 .hero p{max-width:610px;margin:auto;color:var(--muted);font-size:14px;line-height:1.8}
 .status{margin:0 auto 20px;padding:13px 16px;border:1px solid var(--border);border-radius:14px;background:#ffffff09;color:var(--muted);font-size:13px;text-align:center}
 .status.success{color:#b8f0cb;border-color:#75d49a55}.status.error{color:#ffc1ca;border-color:#e17b9155}
-.plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 .plan{position:relative;padding:25px;border:1px solid var(--border);border-radius:23px;background:linear-gradient(145deg,#2c1823,#1a1017);box-shadow:0 16px 50px #0004}
 .plan.featured{border-color:#e8b98288;background:linear-gradient(145deg,#482737,#21121b)}
 .plan h2{margin:0 0 6px;font-size:25px}.plan p{margin:0;color:var(--muted);font-size:12px;line-height:1.7}
@@ -59,7 +59,21 @@ footer{margin-top:28px;color:#9e888d;text-align:center;font-size:10px;line-heigh
 
 <div id="status" class="status" role="status" aria-live="polite">Sign in with Google to view your membership and purchase VIP.</div>
 
-<section class="plans" aria-label="VIP plans">
+<section class="plans" aria-label="Membership plans">
+  <article class="plan">
+    <h2>Free</h2>
+    <p>Start chatting and discover your companion.</p>
+    <div class="price">₹0 <small>/ always free</small></div>
+    <div class="note">No payment required</div>
+    <ul>
+      <li>Standard companion collection</li>
+      <li>Up to 30 AI chats per day</li>
+      <li>Up to 3 AI images per day</li>
+      <li>Up to 1 AI video per day</li>
+      <li>30 spoken replies per day</li>
+    </ul>
+    <a class="buy" style="display:block;text-align:center" href="/">Continue with Free</a>
+  </article>
   <article class="plan">
     <h2>VIP Monthly</h2>
     <p>One month of the full VIP experience.</p>
