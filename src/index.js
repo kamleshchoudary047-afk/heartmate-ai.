@@ -46,8 +46,288 @@ async function ensureUsageSchema(env) {
   await usageSchemaPromise;
 }
 
+// Membership and billing data. Payment secrets are configured as Worker secrets.
+let membershipSchemaPromise = null;
+
+async function ensureMembershipSchema(env) {
+  if (!membershipSchemaPromise) {
+    membershipSchemaPromise = env.DB.batch([
+      env.DB.prepare(`
+        CREATE TABLE IF NOT EXISTS memberships (
+          uid TEXT PRIMARY KEY,
+          plan TEXT NOT NULL DEFAULT 'free',
+          status TEXT NOT NULL DEFAULT 'inactive',
+          expires_at INTEGER NOT NULL DEFAULT 0,
+          last_payment_id TEXT,
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+      `),
+      env.DB.prepare(`
+        CREATE TABLE IF NOT EXISTS billing_orders (
+          order_id TEXT PRIMARY KEY,
+          uid TEXT NOT NULL,
+          plan TEXT NOT NULL,
+          amount INTEGER NOT NULL,
+          status TEXT NOT NULL DEFAULT 'created',
+          payment_id TEXT,
+          created_at INTEGER NOT NULL
+        )
+      `)
+    ]).catch(error => {
+      membershipSchemaPromise = null;
+      throw error;
+    });
+  }
+  await membershipSchemaPromise;
+}
+
+const PREMIUM_CHARACTERS = new Set([
+  "elena", "amara", "isabelle", "celeste", "layla"
+]);
+
+const VIP_LIMITS = {
+  chat: [300, 30],
+  image: [30, 5],
+  video: [5, 2],
+  transcribe: [100, 10],
+  speech: [150, 20]
+};
+
+const VIP_PLANS = {
+  monthly: { amount: 29900, duration: 30 * 24 * 60 * 60 * 1000, label: "VIP Monthly" },
+  yearly: { amount: 249900, duration: 365 * 24 * 60 * 60 * 1000, label: "VIP Yearly" }
+};
+
+async function getMembership(env, uid) {
+  await ensureMembershipSchema(env);
+  const row = await env.DB.prepare(`
+    SELECT plan, status, expires_at
+    FROM memberships
+    WHERE uid = ?
+    LIMIT 1
+  `).bind(uid).first();
+
+  const active = row?.plan === "vip" &&
+    row?.status === "active" &&
+    Number(row?.expires_at || 0) > Date.now();
+
+  return {
+    plan: active ? "vip" : "free",
+    status: active ? "active" : "inactive",
+    expiresAt: active ? Number(row.expires_at) : null,
+    isVip: active
+  };
+}
+
+async function requireCharacterAccess(env, uid, characterId) {
+  if (!PREMIUM_CHARACTERS.has(characterId)) return null;
+  const membership = await getMembership(env, uid);
+  if (membership.isVip) return null;
+  return json({
+    error: "This companion is part of VIP Membership. Upgrade to VIP to chat with " +
+      (characters[characterId]?.name || "this companion") + ".",
+    code: "VIP_REQUIRED",
+    upgradeUrl: "/membership.html"
+  }, 403);
+}
+
+async function razorpaySignatureMatches(orderId, paymentId, signature, secret) {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const digest = new Uint8Array(await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(orderId + "|" + paymentId)
+  ));
+  const expected = Array.from(digest, byte => byte.toString(16).padStart(2, "0")).join("");
+  if (typeof signature !== "string" || signature.length !== expected.length) return false;
+  let mismatch = 0;
+  for (let i = 0; i < expected.length; i++) {
+    mismatch |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
+
+async function handleMembership(request, env, user) {
+  if (request.method !== "GET") return json({ error: "Method not allowed." }, 405);
+  const membership = await getMembership(env, user.uid);
+  return json({
+    ...membership,
+    premiumCompanions: Array.from(PREMIUM_CHARACTERS),
+    razorpayConfigured: Boolean(env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET)
+  });
+}
+
+async function handleBillingOrder(request, env, user) {
+  if (request.method !== "POST") return json({ error: "Method not allowed." }, 405);
+  if (!env.RAZORPAY_KEY_ID || !env.RAZORPAY_KEY_SECRET) {
+    return json({
+      error: "VIP payments are not configured yet. Please try again later.",
+      code: "PAYMENTS_NOT_CONFIGURED"
+    }, 503);
+  }
+
+  let body;
+  try { body = await request.json(); }
+  catch { return json({ error: "Invalid JSON request." }, 400); }
+
+  const planKey = cleanText(body.plan, 20).toLowerCase();
+  const plan = VIP_PLANS[planKey];
+  if (!plan) return json({ error: "Choose a valid VIP plan." }, 400);
+
+  await ensureMembershipSchema(env);
+
+  const existing = await getMembership(env, user.uid);
+  if (existing.isVip) {
+    return json({ error: "Your VIP Membership is already active." }, 409);
+  }
+
+  const receipt = "hm_" + user.uid.slice(0, 10) + "_" + Date.now().toString(36);
+  const response = await fetch("https://api.razorpay.com/v1/orders", {
+    method: "POST",
+    headers: {
+      "Authorization": "Basic " + btoa(env.RAZORPAY_KEY_ID + ":" + env.RAZORPAY_KEY_SECRET),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      amount: plan.amount,
+      currency: "INR",
+      receipt,
+      notes: { uid: user.uid, plan: planKey, product: "Heartmate AI VIP" }
+    })
+  });
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || !result.id || result.amount !== plan.amount || result.currency !== "INR") {
+    console.error("Razorpay order creation failed:", result?.error?.description || response.status);
+    return json({ error: "Could not create a payment order. Please try again." }, 502);
+  }
+
+  await env.DB.prepare(`
+    INSERT INTO billing_orders (order_id, uid, plan, amount, status, created_at)
+    VALUES (?, ?, ?, ?, 'created', ?)
+  `).bind(result.id, user.uid, planKey, plan.amount, Date.now()).run();
+
+  return json({
+    orderId: result.id,
+    keyId: env.RAZORPAY_KEY_ID,
+    amount: plan.amount,
+    currency: "INR",
+    plan: planKey,
+    name: plan.label
+  });
+}
+
+async function handleBillingVerify(request, env, user) {
+  if (request.method !== "POST") return json({ error: "Method not allowed." }, 405);
+  if (!env.RAZORPAY_KEY_ID || !env.RAZORPAY_KEY_SECRET) {
+    return json({ error: "VIP payments are not configured yet." }, 503);
+  }
+
+  let body;
+  try { body = await request.json(); }
+  catch { return json({ error: "Invalid JSON request." }, 400); }
+
+  const orderId = cleanText(body.razorpay_order_id, 80);
+  const paymentId = cleanText(body.razorpay_payment_id, 80);
+  const signature = cleanText(body.razorpay_signature, 160);
+
+  if (!orderId || !paymentId || !signature) {
+    return json({ error: "Payment verification details are incomplete." }, 400);
+  }
+
+  await ensureMembershipSchema(env);
+  const order = await env.DB.prepare(`
+    SELECT order_id, plan, amount, status, payment_id
+    FROM billing_orders
+    WHERE order_id = ? AND uid = ?
+    LIMIT 1
+  `).bind(orderId, user.uid).first();
+
+  if (!order) return json({ error: "Payment order not found for this account." }, 404);
+
+  if (order.status === "paid" && order.payment_id === paymentId) {
+    return json({ ok: true, membership: await getMembership(env, user.uid) });
+  }
+
+  if (order.status !== "created") {
+    return json({ error: "This payment order has already been processed." }, 409);
+  }
+
+  const validSignature = await razorpaySignatureMatches(
+    orderId, paymentId, signature, env.RAZORPAY_KEY_SECRET
+  );
+  if (!validSignature) return json({ error: "Payment signature could not be verified." }, 400);
+
+  const paymentResponse = await fetch(
+    "https://api.razorpay.com/v1/payments/" + encodeURIComponent(paymentId),
+    {
+      headers: {
+        "Authorization": "Basic " + btoa(env.RAZORPAY_KEY_ID + ":" + env.RAZORPAY_KEY_SECRET)
+      }
+    }
+  );
+  const payment = await paymentResponse.json().catch(() => ({}));
+
+  if (
+    !paymentResponse.ok ||
+    payment.status !== "captured" ||
+    payment.order_id !== orderId ||
+    payment.amount !== Number(order.amount) ||
+    payment.currency !== "INR"
+  ) {
+    return json({
+      error: "Payment has not been confirmed as captured. If money was deducted, please contact support with your payment ID."
+    }, 402);
+  }
+
+  const plan = VIP_PLANS[order.plan];
+  if (!plan) return json({ error: "The purchased plan is invalid." }, 400);
+
+  const now = Date.now();
+  await env.DB.batch([
+    env.DB.prepare(`
+      UPDATE billing_orders
+      SET status = 'paid', payment_id = ?
+      WHERE order_id = ? AND uid = ? AND status = 'created'
+    `).bind(paymentId, orderId, user.uid),
+    env.DB.prepare(`
+      INSERT INTO memberships
+        (uid, plan, status, expires_at, last_payment_id, updated_at)
+      SELECT ?, 'vip', 'active', ?, ?, CURRENT_TIMESTAMP
+      WHERE changes() = 1
+      ON CONFLICT(uid) DO UPDATE SET
+        plan = 'vip',
+        status = 'active',
+        expires_at = MAX(memberships.expires_at, ?) + ?,
+        last_payment_id = excluded.last_payment_id,
+        updated_at = CURRENT_TIMESTAMP
+    `).bind(user.uid, now + plan.duration, paymentId, now, plan.duration)
+  ]);
+
+  const processed = await env.DB.prepare(`
+    SELECT status, payment_id FROM billing_orders WHERE order_id = ? AND uid = ?
+  `).bind(orderId, user.uid).first();
+
+  if (processed?.status !== "paid" || processed.payment_id !== paymentId) {
+    return json({ error: "Payment was received but membership activation needs support. Please share payment ID " + paymentId }, 409);
+  }
+
+  return json({ ok: true, membership: await getMembership(env, user.uid) });
+}
+
 async function consumeUsage(env, uid, action, dailyLimit, minuteLimit) {
   await ensureUsageSchema(env);
+  const membership = await getMembership(env, uid);
+  if (membership.isVip && VIP_LIMITS[action]) {
+    [dailyLimit, minuteLimit] = VIP_LIMITS[action];
+  }
   const now = Date.now();
   const day = new Date(now).toISOString().slice(0, 10);
   const minute = Math.floor(now / 60000);
@@ -821,7 +1101,10 @@ export default {
       "/api/voice-settings",
       "/api/transcribe",
       "/api/speech",
-      "/api/notifications"
+      "/api/notifications",
+      "/api/membership",
+      "/api/billing/order",
+      "/api/billing/verify"
     ];
 
     if (featureRoutes.includes(url.pathname)) {
@@ -838,6 +1121,18 @@ export default {
         );
 
         await saveVisitor(env, user);
+
+        if (url.pathname === "/api/membership") {
+          return await handleMembership(request, env, user);
+        }
+
+        if (url.pathname === "/api/billing/order") {
+          return await handleBillingOrder(request, env, user);
+        }
+
+        if (url.pathname === "/api/billing/verify") {
+          return await handleBillingVerify(request, env, user);
+        }
 
         if (url.pathname === "/api/profile") {
           return await handleProfile(request, env, user);
@@ -967,6 +1262,9 @@ export default {
         if (!profile) {
           return json({ error: "Character not found." }, 404);
         }
+
+        const accessError = await requireCharacterAccess(env, user.uid, characterId);
+        if (accessError) return accessError;
 
         if (!message) {
           return json({ error: "Please enter a message." }, 400);
@@ -1121,6 +1419,9 @@ Conversation instructions:
           return json({ error: "Character not found." }, 404);
         }
 
+        const accessError = await requireCharacterAccess(env, user.uid, characterId);
+        if (accessError) return accessError;
+
         await saveVisitor(env, user);
 
         const result = await env.DB.prepare(`
@@ -1181,6 +1482,9 @@ Conversation instructions:
         if (!profile) {
           return json({ error: "Character not found." }, 404);
         }
+
+        const accessError = await requireCharacterAccess(env, user.uid, characterId);
+        if (accessError) return accessError;
 
         if (!isValidDate(welcomeDate)) {
           return json({ error: "Invalid welcome date." }, 400);
@@ -1355,6 +1659,9 @@ Instructions:
           return json({ error: "Character not found." }, 404);
         }
 
+        const accessError = await requireCharacterAccess(env, user.uid, characterId);
+        if (accessError) return accessError;
+
         const scene = cleanText(body.scene || body.prompt, 400);
         if (!scene) {
           return json({ error: "Please describe the picture." }, 400);
@@ -1483,6 +1790,9 @@ Instructions:
         if (!profile) {
           return json({ error: "Character not found." }, 404);
         }
+
+        const accessError = await requireCharacterAccess(env, user.uid, characterId);
+        if (accessError) return accessError;
 
         if (!scene) {
           return json({ error: "Please describe the video scene." }, 400);
@@ -1714,6 +2024,8 @@ Instructions:
           env.DB.prepare("DELETE FROM daily_welcomes WHERE uid = ?").bind(user.uid),
           env.DB.prepare("DELETE FROM video_tasks WHERE uid = ?").bind(user.uid),
           env.DB.prepare("DELETE FROM usage_counters WHERE uid = ?").bind(user.uid),
+          env.DB.prepare("DELETE FROM billing_orders WHERE uid = ?").bind(user.uid),
+          env.DB.prepare("DELETE FROM memberships WHERE uid = ?").bind(user.uid),
           env.DB.prepare("DELETE FROM visitors WHERE uid = ?").bind(user.uid)
         ]);
 
