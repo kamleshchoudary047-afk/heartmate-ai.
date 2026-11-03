@@ -1089,7 +1089,9 @@ export default {
         dailyPhotos: true,
         voiceChat: true,
         videoTaskOwnership: true,
-        notifications: "preferences-only"
+        notifications: "preferences-only",
+        vipMembership: true,
+        razorpayConfigured: Boolean(env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET)
       });
     }
 
@@ -2011,6 +2013,10 @@ Instructions:
             requiredConfirmation: "DELETE_MY_ACCOUNT"
           }, 400);
         }
+
+        // Ensure optional membership and usage tables exist before deletion.
+        await ensureMembershipSchema(env);
+        await ensureUsageSchema(env);
 
         // Delete child records first. All statements run as one D1 batch.
         await env.DB.batch([
