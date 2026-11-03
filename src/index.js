@@ -1660,8 +1660,12 @@ Instructions:
           "Create a photorealistic image of " + profile.name +
           ", a fictional adult woman aged 25 or older. " +
           "Scene: " + scene + ". " +
-          "Use realistic skin texture, natural anatomy, " +
-          "an expressive face and cinematic lighting. " +
+          "Use the supplied companion portrait as a strict identity reference. " +
+          "Preserve the same recognizable face and identity: facial structure, " +
+          "eyes, eyebrows, nose, lips, jawline, skin tone and apparent age. " +
+          "Do not redesign, beautify into a different person, or alter facial features. " +
+          "Only change the requested clothing, pose, body styling and background. " +
+          "Use realistic skin texture, natural anatomy and cinematic lighting. " +
           "Keep clothing opaque and appropriately covering. " +
           "No nudity, exposed intimate areas or sexual activity. " +
           "No text, captions or watermarks.";
@@ -1671,29 +1675,51 @@ Instructions:
         form.append("width", "1024");
         form.append("height", "1024");
 
-        if (characterId === "aria") {
-          for (let i = 0; i < 4; i++) {
-            const imageUrl = new URL(
-              `/images/aria-ref-${i + 1}.jpeg`,
-              request.url
-            );
+        // Use the companion's existing portrait as an identity reference so
+        // Outfit Studio changes styling while keeping the same fictional face.
+        const identityReferencePaths = {
+          aria: ["/images/aria-1.jpeg", "/images/aria-2.jpeg", "/images/aria-3.jpeg", "/images/aria-4.jpeg"],
+          amber: ["/images/amber/amber-1.jpeg"],
+          aurora: ["/images/aurora/aurora-1.jpeg"],
+          chloe: ["/images/chloe/chloe-1.jpeg"],
+          diana: ["/images/diana/diana-1.jpeg"],
+          ella: ["/images/ella/ella-1.jpeg"],
+          freya: ["/images/freya/freya-1.jpeg"],
+          ivy: ["/images/ivy/ivy-1.jpeg"],
+          jade: ["/images/jade/IMG_3604.jpeg"],
+          kira: ["/images/kira/kira-1.jpeg"],
+          lila: ["/images/lila/lila-1.jpeg"],
+          luna: ["/images/luna/luna-1.jpeg"],
+          maya: ["/images/maya/maya-1.jpeg"],
+          nina: ["/images/nina/nina-1.jpeg"],
+          nova: ["/images/nova/nova-1.jpeg"],
+          rose: ["/images/rose/rose-1.jpeg"],
+          ruby: ["/images/ruby/ruby-1.jpeg"],
+          scarlett: ["/images/scarlett/scarlett-1.jpeg"],
+          sienna: ["/images/sienna/Sienna-6.jpeg"],
+          sofia: ["/images/sofia/sofia-1.jpeg"],
+          stella: ["/images/stella/stella-1.jpeg"],
+          valentina: ["/images/valentina/valentina-1.jpeg"],
+          violet: ["/images/violet/Violet-3.jpeg"],
+          zara: ["/images/zara/zara-1.jpeg"]
+        };
 
-            const imageResponse = await env.ASSETS.fetch(
-              new Request(imageUrl)
-            );
+        const referencePaths = identityReferencePaths[characterId] || [];
+        for (let i = 0; i < referencePaths.length; i++) {
+          const imageUrl = new URL(referencePaths[i], request.url);
+          const imageResponse = await env.ASSETS.fetch(new Request(imageUrl));
 
-            if (!imageResponse.ok) {
-              throw new Error(
-                `Could not load Aria reference photo ${i + 1}.`
-              );
-            }
-
-            form.append(
-              `input_image_${i}`,
-              await imageResponse.blob(),
-              `aria-ref-${i + 1}.jpeg`
+          if (!imageResponse.ok) {
+            throw new Error(
+              `The identity reference for ${profile.name} could not be loaded.`
             );
           }
+
+          form.append(
+            `input_image_${i}`,
+            await imageResponse.blob(),
+            referencePaths[i].split("/").pop() || `reference-${i + 1}.jpeg`
+          );
         }
 
         const formResponse = new Response(form);
