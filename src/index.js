@@ -673,10 +673,34 @@ async function handleTranscription(request, env) {
     return json({ error: "Invalid or oversized audio." }, 400);
   }
 
-  const result = await env.AI.run(
-    "@cf/openai/whisper-large-v3-turbo",
-    { audio: [...audio] }
-  );
+  // Workers AI Whisper expects the audio payload as base64.
+  // Convert in chunks to avoid argument/string limits on larger recordings.
+  let binary = "";
+  const chunkSize = 0x8000;
+
+  for (let offset = 0; offset < audio.length; offset += chunkSize) {
+    binary += String.fromCharCode(
+      ...audio.subarray(offset, offset + chunkSize)
+    );
+  }
+
+  const audioBase64 = btoa(binary);
+
+  let result;
+  try {
+    result = await env.AI.run(
+      "@cf/openai/whisper-large-v3-turbo",
+      {
+        audio: audioBase64,
+        task: "transcribe"
+      }
+    );
+  } catch (error) {
+    console.error("Whisper transcription error:", error?.message || String(error));
+    return json({
+      error: "The transcription service could not process this recording. Please try again with a shorter recording."
+    }, 502);
+  }
 
   const transcript = cleanText(result?.text, 1200);
   if (!transcript) {
