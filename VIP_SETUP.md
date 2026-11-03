@@ -23,14 +23,15 @@
    ```
 
 4. Paste the Test Key ID and Test Key Secret when Wrangler prompts you.
-5. Deploy the Worker:
+5. In Razorpay Dashboard, enable automatic payment capture for orders. Heartmate AI activates VIP only when the server confirms the payment status is `captured`.
+6. Deploy the Worker:
 
    ```sh
    npx wrangler deploy
    ```
 
-6. Visit `/membership.html`, sign in with Google and complete a Razorpay test payment. Confirm that the membership status changes to VIP and the five VIP companions open.
-7. Before accepting real money, switch Razorpay to Live Mode, generate Live API keys, replace both Worker secrets using the same commands, and deploy again.
+7. Visit `/membership.html`, sign in with Google and complete a Razorpay test payment. Confirm that the membership status changes to VIP and the five VIP companions open.
+8. Before accepting real money, switch Razorpay to Live Mode, generate Live API keys, replace both Worker secrets using the same commands, and deploy again.
 
 Never put the Razorpay Key Secret in HTML, JavaScript, GitHub source, or a public environment variable. Only the Key ID is returned to the checkout page.
 
