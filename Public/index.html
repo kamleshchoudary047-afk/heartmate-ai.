@@ -626,6 +626,24 @@ header{background:rgba(10,6,13,.9);border-bottom:1px solid #ff78b52b}
 .closing{border-color:#ff79b555;background:radial-gradient(circle at 50% 0%,#e43d8b55,transparent 65%),linear-gradient(120deg,#35142b,#160d1d);box-shadow:0 25px 75px #0008}
 .bottom-nav{background:rgba(10,6,13,.97);border-top-color:#ff79b544}footer{color:#bda9b8}footer a{color:#ffacd0}
 @media(max-width:760px){.hero{border-color:#ff79b566;background-image:linear-gradient(0deg,#0d0710 0%,#0d0710d9 42%,#0d071055 100%),url('/images/aria-1.jpeg');background-position:center 25%}.hero h1{text-shadow:0 4px 28px #000}.section{padding-top:43px}}
+.vip-strip {
+  display:flex; align-items:center; justify-content:space-between; gap:24px;
+  margin-top:60px; padding:30px; border:1px solid rgba(232,185,130,.3);
+  border-radius:24px; background:linear-gradient(115deg,#39202c,#1b1018);
+  box-shadow:0 18px 55px rgba(0,0,0,.18);
+}
+.vip-strip h2 { margin:0 0 8px; font:600 27px 'Playfair Display',serif; }
+.vip-strip p { color:var(--muted); font-size:13px; line-height:1.7; }
+.premium-lock {
+  display:inline-block; margin:7px 0 0; padding:5px 9px; border-radius:20px;
+  border:1px solid rgba(232,185,130,.35); color:#ffe0bd;
+  background:rgba(232,185,130,.1); font-size:10px; font-weight:800;
+}
+@media(max-width:760px) {
+  .vip-strip { display:block; margin-top:42px; padding:23px; }
+  .vip-strip h2 { font-size:23px; }
+  .vip-strip .primary-button { margin-top:18px; }
+}
 </style>
 </head>
 
@@ -640,9 +658,11 @@ header{background:rgba(10,6,13,.9);border-bottom:1px solid #ff78b52b}
       <a href="#experiences">Experiences</a>
       <a href="/shorts.html">♥ Shorts</a>
       <a href="#companions">All Companions</a>
+      <a href="/membership.html">VIP Membership</a>
     </nav>
 
     <div class="account-area">
+      <a class="small-button" href="/membership.html">✦ VIP</a>
       <button class="small-button" id="googleSignIn" type="button">Sign in with Google</button>
       <button class="small-button" id="googleSignOut" type="button" hidden>Sign out</button>
       <span id="accountStatus" aria-live="polite"></span>
@@ -736,6 +756,15 @@ header{background:rgba(10,6,13,.9);border-bottom:1px solid #ff78b52b}
     <div class="featured-grid" id="companionsGrid"></div>
   </section>
 
+  <section class="vip-strip">
+    <div>
+      <div class="section-kicker">The VIP experience</div>
+      <h2>More moments. More possibilities.</h2>
+      <p>Unlock five exclusive companions and enjoy higher daily chat, image, video and voice limits.</p>
+    </div>
+    <a class="primary-button" href="/membership.html">Explore VIP Membership →</a>
+  </section>
+
   <section class="closing">
     <div class="section-kicker">Your story starts here</div>
     <h2>Your after-dark story starts here.</h2>
@@ -747,7 +776,7 @@ header{background:rgba(10,6,13,.9);border-bottom:1px solid #ff78b52b}
 <footer>
   <p>© 2026 Heartmate AI. All rights reserved.</p>
   <p>AI-generated fictional adult characters. 18+ experience.</p>
-  <p><a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/delete-account.html">Delete account</a></p>
+  <p><a href="/membership.html">VIP Membership</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · <a href="/delete-account.html">Delete account</a></p>
 </footer>
 
 <nav class="bottom-nav">
@@ -1066,8 +1095,11 @@ document.getElementById("dailyChat").href =
   "chat.html?girl=" + encodeURIComponent(note[0]);
 
 /* Build companion cards */
+const premiumCompanions = new Set(["elena","amara","isabelle","celeste","layla"]);
+
 function makeCard(name,description) {
   const slug = name.toLowerCase();
+  const isPremium = premiumCompanions.has(slug);
   const card = document.createElement("article");
   card.className = "companion-card";
 
@@ -1096,8 +1128,18 @@ function makeCard(name,description) {
 
   const link = document.createElement("a");
   link.className = "chat-link";
-  link.href = "chat.html?girl=" + encodeURIComponent(name);
-  link.textContent = "Start a conversation →";
+  link.href = isPremium
+    ? "/membership.html"
+    : "chat.html?girl=" + encodeURIComponent(name);
+  link.textContent = isPremium
+    ? "✦ VIP · Unlock this companion"
+    : "Start a conversation →";
+  if (isPremium) {
+    const lock = document.createElement("div");
+    lock.className = "premium-lock";
+    lock.textContent = "✦ EXCLUSIVE VIP COMPANION";
+    info.appendChild(lock);
+  }
 
   image.onerror = function() {
     this.style.display = "none";
