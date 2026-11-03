@@ -717,6 +717,20 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
             <option value="two-tone colour blocking">Two-tone</option>
           </select>
         </label>
+        <label class="customizer-field">Hair styling
+          <select id="outfitHair">
+            <option value="soft loose waves with face-framing strands">Soft loose waves</option>
+            <option value="glossy Hollywood curls">Hollywood curls</option>
+            <option value="sleek high ponytail">Sleek high ponytail</option>
+            <option value="elegant low bun with loose tendrils">Elegant low bun</option>
+            <option value="long straight glossy hair">Long straight</option>
+            <option value="romantic braided updo">Braided updo</option>
+            <option value="messy romantic bun">Messy bun</option>
+            <option value="voluminous blowout">Voluminous blowout</option>
+            <option value="beachy textured waves">Beach waves</option>
+            <option value="polished side-swept hairstyle">Side-swept</option>
+          </select>
+        </label>
         <label class="customizer-field">Accessories
           <select id="outfitAccessories">
             <option value="delicate necklace and earrings">Delicate jewellery</option>
@@ -843,7 +857,22 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
           </select>
         </label>
       </div>
-      <p class="customizer-note">Style fictional adult companions (25+) in glamorous, flirty fashion. Swimwear, cut-outs and lingerie-inspired fashion use opaque, secure coverage. No nudity or exposed intimate areas. Photos can be saved in My Gallery.</p>
+      <div class="customizer-note"><strong>✨ Special studios & quick scenes</strong><br>Choose a creative mode below, then create your look. Each generated image uses the site's existing image allowance.</div>
+      <div class="customizer-grid" id="specialStudioActions">
+        <button type="button" class="gallery-filter" data-studio="surprise">🎲 Surprise Me</button>
+        <button type="button" class="gallery-filter" data-studio="date">🌹 Date Night</button>
+        <button type="button" class="gallery-filter" data-studio="spa">🧖 Luxury Spa</button>
+        <button type="button" class="gallery-filter" data-studio="couple">💞 Couple Portrait</button>
+        <button type="button" class="gallery-filter" data-studio="compare">👗 Compare 2 Looks</button>
+        <button type="button" class="gallery-filter" data-studio="fantasy">🦋 Fantasy Wardrobe</button>
+        <button type="button" class="gallery-filter" data-studio="afterdark">🌙 After-Dark Looks</button>
+        <button type="button" class="gallery-filter" data-studio="swim">🏝️ Swimwear Looks</button>
+        <button type="button" class="gallery-filter" data-studio="glam">💎 Bold Glamour</button>
+        <button type="button" class="gallery-filter" data-studio="secret">🔒 Secret Looks</button>
+        <button type="button" class="gallery-filter" data-studio="story">💌 Romantic Story</button>
+      </div>
+      <p class="customizer-note">Makeup, expressions, hair, lighting, pose and colour remain individually adjustable. Secret Looks opens your signed-in favourites in My Gallery.</p>
+      <p class="customizer-note">Style fictional adult companions (25+) in glamorous, flirty fashion. Swimwear, cut-outs and lingerie-inspired fashion use opaque, secure coverage. No nudity or exposed intimate areas.</p>
     </div>
     <textarea id="sceneInput" placeholder="Add optional details…"></textarea>
     <div class="modal-actions">
@@ -1146,7 +1175,7 @@ async function openGallery() {
       remove.textContent = "🗑";
       remove.setAttribute("aria-label", "Delete photo");
       remove.addEventListener("click", async () => {
-        if (confirm("Delete this photo from your VIP Gallery?")) {
+        if (confirm("Delete this photo from your My Gallery?")) {
           await updateGalleryPhoto(photo.id, "delete", !!photo.uploaded);
           openGallery();
         }
@@ -1322,6 +1351,49 @@ function closeMedia() {
   $("mediaModal").classList.remove("open");
 }
 
+let selectedStudioMode = "standard";
+
+function randomizeOutfitControls() {
+  ["outfitChoice","outfitColor","outfitAccessories","outfitHair","outfitMakeup","outfitExpression","outfitLighting","outfitMood","outfitPose","outfitBackground"].forEach(id => {
+    const el = $(id);
+    if (el && el.options.length) el.selectedIndex = Math.floor(Math.random() * el.options.length);
+  });
+}
+
+document.querySelectorAll("[data-studio]").forEach(button => {
+  button.addEventListener("click", () => {
+    const mode = button.dataset.studio;
+    selectedStudioMode = mode;
+    if (mode === "secret") {
+      closeMedia();
+      galleryShowFavourites = true;
+      $("galleryAll").classList.remove("active");
+      $("galleryFavourites").classList.add("active");
+      openGallery();
+      return;
+    }
+    if (mode === "story") {
+      closeMedia();
+      input.value = "Let's create a sweet, romantic date-night story together. Set the scene at a beautiful rooftop restaurant at sunset, keep it affectionate, playful and non-explicit, and let me choose what happens next.";
+      sendChat();
+      return;
+    }
+    if (mode === "surprise") randomizeOutfitControls();
+    if (mode === "afterdark") $("outfitChoice").value = "tasteful opaque satin nightwear set";
+    if (mode === "swim") $("outfitChoice").value = "classic triangle bikini with fully lined opaque cups and bottoms";
+    if (mode === "glam") $("outfitChoice").value = "luxury red-carpet gown with a tasteful slit";
+    if (mode === "fantasy") $("outfitChoice").value = "fantasy-inspired elegant gown with opaque full coverage and flowing cape";
+    const labels = {
+      surprise:"Surprise look", date:"Date night", spa:"Luxury spa", couple:"Romantic couple portrait",
+      compare:"Two-look fashion comparison", fantasy:"Fantasy wardrobe", afterdark:"After-dark fashion",
+      swim:"Resort swimwear", glam:"Bold glamour"
+    };
+    button.textContent = "✓ " + (labels[mode] || "Selected") + " · Create";
+    document.querySelectorAll("[data-studio]").forEach(other => { if (other !== button) other.textContent = other.textContent.replace(/^✓ /,"").replace(/ · Create$/,""); });
+    $("modalDescription").textContent = labels[mode] + " selected. Adjust any options, then tap Create.";
+  });
+});
+
 $("createMediaButton").addEventListener("click", async () => {
   let scene = $("sceneInput").value.trim();
   if (busy) return;
@@ -1333,16 +1405,25 @@ $("createMediaButton").addEventListener("click", async () => {
     const bodyShape = $("outfitBody").value;
     const color = $("outfitColor").value;
     const accessories = $("outfitAccessories").value;
+    const hair = $("outfitHair").value;
     const makeup = $("outfitMakeup").value;
     const expression = $("outfitExpression").value;
     const lighting = $("outfitLighting").value;
     const mood = $("outfitMood").value;
     const pose = $("outfitPose").value;
     const background = $("outfitBackground").value;
+    const specialScenes = {
+      date:"Romantic date-night editorial at a candlelit rooftop restaurant at sunset, elegant table setting, city skyline, affectionate confident atmosphere.",
+      spa:"Luxury spa editorial in a serene private wellness suite, plush robe, tasteful towel styling, flowers, warm stone textures and calming candlelight.",
+      couple:"Tasteful romantic portrait of " + girlName + ", a fictional adult woman aged 25 or older, with a fictional adult partner aged 25 or older; elegant evening outfits, gentle embrace, warm affectionate chemistry, both fully clothed.",
+      compare:"Create one clean side-by-side fashion diptych featuring two distinct fully clothed looks for the same fictional adult woman aged 25 or older: left panel an elegant satin evening gown, right panel a glamorous tailored cocktail dress; keep the same recognizable face and consistent lighting.",
+      fantasy:"Elegant fantasy fashion editorial with a flowing enchanted gown, delicate celestial accessories, magical garden lights and an ethereal atmosphere; fully opaque coverage."
+    };
+    if (specialScenes[selectedStudioMode]) scene = specialScenes[selectedStudioMode] + " " + scene;
     scene = "Full-body fashion portrait of " + girlName + ", a fictional adult woman aged 25 or older, wearing a " + color + " " + outfit +
       ". Bust styling: " + bust + ". Curves and hips: " + curves +
       ". Overall body shape: " + bodyShape + ". Accessories: " + accessories +
-      ". Makeup: " + makeup + ". Facial expression: " + expression + ". Lighting: " + lighting +
+      ". Hairstyle: " + hair + ". Makeup: " + makeup + ". Facial expression: " + expression + ". Lighting: " + lighting +
       ". Mood: " + mood + ". Pose: " + pose + ". Background: " + background +
       ". Premium tasteful adult fashion editorial, fictional adult woman aged 25 or older, realistic anatomy, garments must remain opaque or fully lined with full intimate coverage, no nudity, no transparent exposure, no exposed genitals, non-explicit.";
     if ($("sceneInput").value.trim()) scene += " Additional styling: " + $("sceneInput").value.trim();
@@ -1353,6 +1434,7 @@ $("createMediaButton").addEventListener("click", async () => {
   }
 
   closeMedia();
+  if (mediaType === "outfit") selectedStudioMode = "standard";
 
   if (mediaType === "video") {
     if (!confirm("Video generation may use paid credits. Continue?")) return;
@@ -1392,7 +1474,7 @@ async function generateImage(scene) {
     try {
       await saveGalleryPhoto(blob);
     } catch (saveError) {
-      addMessage("This photo was created, but couldn't be saved to your VIP Gallery on this device.", "bot");
+      addMessage("This photo was created, but couldn't be saved to your My Gallery on this device.", "bot");
     }
   } catch (error) {
     addMessage("Image creation failed: " + error.message, "bot");
