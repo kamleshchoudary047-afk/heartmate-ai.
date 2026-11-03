@@ -748,7 +748,21 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
             <option value="celestial-inspired satin evening dress with tasteful full coverage">Celestial satin dress</option>
             <option value="romantic velvet corset-inspired gown with opaque structured panels">Velvet corset gown</option>
             <option value="elegant silk spa robe over a fully covered lounge set">Luxury spa robe set</option>
-            <option value="luxurious chiffon saree with a fitted deep-sweetheart-neck blouse, elegant drape across the waist, defined silhouette and fully covered bust">Chiffon saree · deep sweetheart blouse</option>
+          </select>
+        </label>
+        <label class="customizer-field">Indian dress collection
+          <select id="outfitIndianDress">
+            <option value="no additional Indian outfit layer">No additional Indian outfit</option>
+            <option value="plain fitted kurti with matching slim leggings, smooth opaque fabric and a neat elegant finish">Plain fitted kurti with leggings</option>
+            <option value="plain straight-cut kurti with close-fitting leggings and a matching dupatta">Plain straight kurti and leggings</option>
+            <option value="short fitted kurti with ankle-length leggings and a graceful side-slit design">Short kurti and leggings</option>
+            <option value="long fitted kurti with slim leggings, shaped waist and a flowing dupatta">Long kurti and leggings</option>
+            <option value="embroidered fitted kurti with matching leggings and delicate traditional detailing">Embroidered kurti and leggings</option>
+            <option value="simple cotton kurti with comfortable fitted leggings and a light dupatta">Cotton kurti and leggings</option>
+            <option value="elegant straight kurta with fitted churidar leggings and a coordinated dupatta">Straight kurta and churidar</option>
+            <option value="fitted Punjabi short kurti with slim salwar leggings and a colourful dupatta">Punjabi kurti set</option>
+            <option value="modern Indo-western tunic with fitted leggings and subtle embellishment">Indo-western tunic and leggings</option>
+                      <option value="luxurious chiffon saree with a fitted deep-sweetheart-neck blouse, elegant drape across the waist, defined silhouette and fully covered bust">Chiffon saree · deep sweetheart blouse</option>
             <option value="simple plain georgette saree in a single soft pastel colour, minimal border and elegant fitted blouse">Plain pastel georgette saree</option>
             <option value="simple plain chiffon saree in a rich jewel tone, delicate narrow border and matching fitted blouse">Plain jewel-tone chiffon saree</option>
             <option value="minimal plain satin saree in a single elegant colour with a subtle sheen and matching blouse">Plain satin saree</option>
@@ -774,20 +788,6 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
             <option value="designer Indo-western skirt set with a fitted deep-square-neck blouse and flowing overlay">Indo-western skirt set</option>
             <option value="tailored festive kurti with a fitted waist, side slits and matching slim trousers">Fitted festive kurti set</option>
             <option value="elegant Punjabi salwar suit with a fitted short kameez, tasteful neckline and flowing dupatta">Punjabi salwar suit</option>
-          </select>
-        </label>
-        <label class="customizer-field">Indian dress collection
-          <select id="outfitIndianDress">
-            <option value="no additional Indian outfit layer">No additional Indian outfit</option>
-            <option value="plain fitted kurti with matching slim leggings, smooth opaque fabric and a neat elegant finish">Plain fitted kurti with leggings</option>
-            <option value="plain straight-cut kurti with close-fitting leggings and a matching dupatta">Plain straight kurti and leggings</option>
-            <option value="short fitted kurti with ankle-length leggings and a graceful side-slit design">Short kurti and leggings</option>
-            <option value="long fitted kurti with slim leggings, shaped waist and a flowing dupatta">Long kurti and leggings</option>
-            <option value="embroidered fitted kurti with matching leggings and delicate traditional detailing">Embroidered kurti and leggings</option>
-            <option value="simple cotton kurti with comfortable fitted leggings and a light dupatta">Cotton kurti and leggings</option>
-            <option value="elegant straight kurta with fitted churidar leggings and a coordinated dupatta">Straight kurta and churidar</option>
-            <option value="fitted Punjabi short kurti with slim salwar leggings and a colourful dupatta">Punjabi kurti set</option>
-            <option value="modern Indo-western tunic with fitted leggings and subtle embellishment">Indo-western tunic and leggings</option>
           </select>
         </label>
         <label class="customizer-field">Bust styling
@@ -1722,7 +1722,7 @@ document.querySelectorAll("[data-studio]").forEach(button => {
     if (mode === "afterdark") $("outfitChoice").value = "tasteful opaque satin nightwear set";
     if (mode === "swim") $("outfitChoice").value = "classic triangle bikini with fully lined opaque cups and bottoms";
     if (mode === "glam") $("outfitChoice").value = "luxury red-carpet gown with a tasteful slit";
-    if (mode === "indian") $("outfitChoice").value = "luxurious chiffon saree with a fitted deep-sweetheart-neck blouse, elegant drape across the waist, defined silhouette and fully covered bust";
+    if (mode === "indian") $("outfitIndianDress").value = "luxurious chiffon saree with a fitted deep-sweetheart-neck blouse, elegant drape across the waist, defined silhouette and fully covered bust";
     if (mode === "fantasy") $("outfitChoice").value = "fantasy-inspired elegant gown with opaque full coverage and flowing cape";
     const labels = {
       surprise:"Surprise look", date:"Date night", spa:"Luxury spa", couple:"Romantic couple portrait",
@@ -1763,9 +1763,10 @@ $("createMediaButton").addEventListener("click", async () => {
       indian:"High-fashion Indian ethnicwear editorial featuring a fitted saree blouse with a tasteful deep neckline, beautifully draped saree defining the waist and hips, rich embroidery, luxurious fabric and graceful confident styling; opaque secure coverage."
     };
     if (specialScenes[selectedStudioMode]) scene = specialScenes[selectedStudioMode] + " " + scene;
-    scene = "Full-body fashion portrait of " + girlName + ", a fictional adult woman aged 25 or older, wearing a " + color + " " + outfit +
+    const selectedOutfit = indianDress !== "no additional Indian outfit layer" ? indianDress : outfit;
+    scene = "Full-body fashion portrait of " + girlName + ", a fictional adult woman aged 25 or older, wearing a " + color + " " + selectedOutfit +
       ". Bust styling: " + bust + ". Curves and hips: " + curves +
-      ". Indian dress styling: " + indianDress + ". Overall body shape: " + bodyShape + ". Accessories: " + accessories +
+      ". Overall body shape: " + bodyShape + ". Accessories: " + accessories +
       ". Hairstyle: " + hair + ". Makeup: " + makeup + ". Facial expression: " + expression + ". Lighting: " + lighting +
       ". Mood: " + mood + ". Pose: " + pose + ". Background: " + background +
       ". Premium tasteful adult fashion editorial, fictional adult woman aged 25 or older, realistic anatomy, garments must remain opaque or fully lined with full intimate coverage, no nudity, no transparent exposure, no exposed genitals, non-explicit.";
