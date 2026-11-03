@@ -329,6 +329,14 @@ button:disabled{opacity:.5;cursor:wait}
   background:linear-gradient(135deg,#ed75b4,#9d6cdb);
 }
 .modal-actions .cancel{background:#ffffff15}
+.memory-toolbar{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin:12px 0 5px;padding:12px;border:1px solid #ffffff20;border-radius:15px;background:#ffffff08}
+.memory-album-label{grid-column:1/-1;color:#f4d9e9;font-size:12px;font-weight:800}
+.memory-toolbar select{min-width:0;width:100%;padding:10px;border:1px solid #ffffff25;border-radius:10px;background:#171020;color:#fff;font-size:13px}
+.memory-toolbar button{padding:10px 12px;border:0;border-radius:10px;background:linear-gradient(135deg,#ed75b4,#9d6cdb);color:#241326;font-size:12px;font-weight:800}
+.memory-hint{font-size:11px!important;color:#c5b5d5!important;margin:5px 2px 10px!important}
+.memory-caption{width:100%;margin-top:7px;padding:9px;border:1px solid #ffffff20;border-radius:9px;background:#171020;color:#fff;font-size:12px}
+.memory-album-select{width:100%;margin-top:6px;padding:8px;border:1px solid #ffffff20;border-radius:9px;background:#21152a;color:#f8eaf5;font-size:11px}
+.memory-date{display:block;margin-top:5px;color:#cbb9d2;font-size:10px}
 .gallery-grid {
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -628,6 +636,12 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
     <p>Your unlocked and created photos for this companion, saved on this device.</p>
     <button class="gallery-filter active" id="galleryAll">All photos</button>
     <button class="gallery-filter" id="galleryFavourites">❤️ Favourites</button>
+    <div class="memory-toolbar">
+      <label class="memory-album-label" for="memoryAlbumFilter">📚 Memory album</label>
+      <select id="memoryAlbumFilter"><option value="">All memories</option></select>
+      <button type="button" id="createMemoryAlbum">＋ New album</button>
+    </div>
+    <p class="memory-hint">Newest memories first. Add captions and organise your photos into albums.</p>
     <div class="gallery-grid" id="galleryGrid"></div>
     <div class="modal-actions">
       <button class="cancel" id="closeGallery">Close</button>
@@ -1048,7 +1062,7 @@ async function loadChatImages() {
 const galleryDBName = "heartmate-vip-gallery";
 function openGalleryDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(galleryDBName, 2);
+    const request = indexedDB.open(galleryDBName, 3);
     request.onupgradeneeded = () => {
       const db = request.result;
       if (!db.objectStoreNames.contains("photos")) {
@@ -1056,6 +1070,9 @@ function openGalleryDB() {
       }
       if (!db.objectStoreNames.contains("photoSettings")) {
         db.createObjectStore("photoSettings", {keyPath:"id"});
+      }
+      if (!db.objectStoreNames.contains("memoryAlbums")) {
+        db.createObjectStore("memoryAlbums", {keyPath:"id"});
       }
     };
     request.onsuccess = () => resolve(request.result);
@@ -1085,6 +1102,67 @@ async function saveGalleryPhoto(blob) {
 const uploadedGalleryImages = {"aria":["/images/aria-1.jpeg","/images/aria-2.jpeg","/images/aria-3.jpeg","/images/aria-4.jpeg"],"amber":["/images/amber/amber-1.jpeg","/images/amber/amber-2.jpeg","/images/amber/amber-3.jpeg","/images/amber/amber-4.jpeg","/images/amber/amber-5.jpeg","/images/amber/amber-6.jpeg","/images/amber/amber-7.jpeg","/images/amber/amber-8.jpeg"],"aurora":["/images/aurora/aurora-1.jpeg","/images/aurora/aurora-10.jpeg","/images/aurora/aurora-2.jpeg","/images/aurora/aurora-3.jpeg","/images/aurora/aurora-4.jpeg","/images/aurora/aurora-5.jpeg","/images/aurora/aurora-6.jpeg","/images/aurora/aurora-7.jpeg","/images/aurora/aurora-8.jpeg","/images/aurora/aurora-9.jpeg"],"chloe":["/images/chloe/chloe-1.jpeg","/images/chloe/chloe-2.jpeg","/images/chloe/chloe-3.jpeg","/images/chloe/chloe-4.jpeg","/images/chloe/chloe-5.jpeg","/images/chloe/chloe-7.jpeg","/images/chloe/chloe-8.jpeg","/images/chloe/chloe-9.jpeg"],"diana":["/images/diana/diana-1.jpeg","/images/diana/diana-2.jpeg","/images/diana/diana-3.jpeg","/images/diana/diana-4.jpeg","/images/diana/diana-5.jpeg","/images/diana/diana-6.jpeg","/images/diana/diana-7.jpeg","/images/diana/diana-8.jpeg"],"ella":["/images/ella/ella-1.jpeg","/images/ella/ella-10.jpeg","/images/ella/ella-2.jpeg","/images/ella/ella-3.jpeg","/images/ella/ella-4.jpeg","/images/ella/ella-5.jpeg","/images/ella/ella-6.jpeg","/images/ella/ella-7.jpeg","/images/ella/ella-8.jpeg","/images/ella/ella-9.jpeg"],"freya":["/images/freya/freya-1.jpeg","/images/freya/freya-10.jpeg","/images/freya/freya-2.jpeg","/images/freya/freya-3.jpeg","/images/freya/freya-4.jpeg","/images/freya/freya-5.jpeg","/images/freya/freya-6.jpeg","/images/freya/freya-7.jpeg","/images/freya/freya-8.jpeg","/images/freya/freya-9.jpeg"],"ivy":["/images/ivy/ivy-1.jpeg","/images/ivy/ivy-2.jpeg","/images/ivy/ivy-3.jpeg","/images/ivy/ivy-4.jpeg","/images/ivy/ivy-5.jpeg","/images/ivy/ivy-6.jpeg"],"jade":["/images/jade/IMG_3604.jpeg","/images/jade/jade-1.jpeg","/images/jade/jade-10.jpeg","/images/jade/jade-11.jpeg","/images/jade/jade-12.jpeg","/images/jade/jade-13.jpeg","/images/jade/jade-14.jpeg","/images/jade/jade-2.jpeg","/images/jade/jade-3.jpeg","/images/jade/jade-4.jpeg","/images/jade/jade-5.jpeg","/images/jade/jade-6.jpeg","/images/jade/jade-7.jpeg","/images/jade/jade-8.jpeg","/images/jade/jade-9.jpeg"],"kira":["/images/kira/kira-1.jpeg","/images/kira/kira-10.jpeg","/images/kira/kira-2.jpeg","/images/kira/kira-3.jpeg","/images/kira/kira-4.jpeg","/images/kira/kira-5.jpeg","/images/kira/kira-6.jpeg","/images/kira/kira-7.jpeg","/images/kira/kira-8.jpeg","/images/kira/kira-9.jpeg"],"lila":["/images/lila/lila-1.jpeg","/images/lila/lila-2.jpeg","/images/lila/lila-3.jpeg","/images/lila/lila-4.jpeg","/images/lila/lila-5.jpeg"],"luna":["/images/luna/luna-1.jpeg","/images/luna/luna-2.jpeg","/images/luna/luna-3.jpeg","/images/luna/luna-4.jpeg"],"maya":["/images/maya/maya-1.jpeg","/images/maya/maya-2.jpeg","/images/maya/maya-3.jpeg","/images/maya/maya-4.jpeg","/images/maya/maya-5.jpeg"],"nina":["/images/nina/nina-1.jpeg","/images/nina/nina-2.jpeg","/images/nina/nina-3.jpeg","/images/nina/nina-4.jpeg"],"nova":["/images/nova/nova-1.jpeg","/images/nova/nova-2.jpeg","/images/nova/nova-3.jpeg","/images/nova/nova-4.jpeg","/images/nova/nova-5.jpeg"],"rose":["/images/rose/rose-1.jpeg","/images/rose/rose-2.jpeg","/images/rose/rose-3.jpeg","/images/rose/rose-4.jpeg"],"ruby":["/images/ruby/ruby-1.jpeg","/images/ruby/ruby-10.jpeg","/images/ruby/ruby-2.jpeg","/images/ruby/ruby-3.jpeg","/images/ruby/ruby-4.jpeg","/images/ruby/ruby-5.jpeg","/images/ruby/ruby-6.jpeg","/images/ruby/ruby-7.jpeg","/images/ruby/ruby-8.jpeg","/images/ruby/ruby-9.jpeg"],"scarlett":["/images/scarlett/scarlett-1.jpeg","/images/scarlett/scarlett-2.jpeg","/images/scarlett/scarlett-3.jpeg","/images/scarlett/scarlett-4.jpeg","/images/scarlett/scarlett-5.jpeg"],"sienna":["/images/sienna/Sienna-6.jpeg","/images/sienna/sienna-1.jpeg","/images/sienna/sienna-10.jpeg","/images/sienna/sienna-2.jpeg","/images/sienna/sienna-3.jpeg","/images/sienna/sienna-4.jpeg","/images/sienna/sienna-5.jpeg","/images/sienna/sienna-7.jpeg","/images/sienna/sienna-8.jpeg","/images/sienna/sienna-9.jpeg"],"sofia":["/images/sofia/sofia-1.jpeg","/images/sofia/sofia-2.jpeg","/images/sofia/sofia-3.jpeg","/images/sofia/sofia-4.jpeg","/images/sofia/sofia-5.jpeg","/images/sofia/sofia-6.jpeg"],"stella":["/images/stella/stella-1.jpeg","/images/stella/stella-2.jpeg","/images/stella/stella-3.jpeg","/images/stella/stella-4.jpeg","/images/stella/stella-5.jpeg","/images/stella/stella-6.jpeg","/images/stella/stella-7.jpeg","/images/stella/stella-8.jpeg"],"valentina":["/images/valentina/valentina-1.jpeg","/images/valentina/valentina-2.jpeg","/images/valentina/valentina-3.jpeg","/images/valentina/valentina-4.jpeg","/images/valentina/valentina-5.jpeg","/images/valentina/valentina-6.jpeg","/images/valentina/valentina-7.jpeg","/images/valentina/valentina-8.jpeg"],"violet":["/images/violet/Violet-3.jpeg","/images/violet/violet-1.jpeg","/images/violet/violet-10.jpeg","/images/violet/violet-2.jpeg","/images/violet/violet-4.jpeg","/images/violet/violet-5.jpeg","/images/violet/violet-6.jpeg","/images/violet/violet-7.jpeg","/images/violet/violet-8.jpeg","/images/violet/violet-9.jpeg"],"zara":["/images/zara/zara-1.jpeg","/images/zara/zara-2.jpeg","/images/zara/zara-3.jpeg","/images/zara/zara-4.jpeg"]};
 
 let galleryShowFavourites = false;
+let galleryAlbumFilter = "";
+let galleryAlbumsCache = [];
+
+async function getMemoryAlbums() {
+  const db = await openGalleryDB();
+  const albums = await new Promise((resolve, reject) => {
+    const tx = db.transaction("memoryAlbums", "readonly");
+    const req = tx.objectStore("memoryAlbums").getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+  db.close();
+  return albums.filter(a => a.userId === window.heartmateUser?.uid && a.character === character)
+    .sort((a,b) => a.createdAt - b.createdAt);
+}
+
+async function createMemoryAlbum() {
+  if (!window.heartmateUser) return;
+  const name = prompt("Name your memory album (for example: Our Best Moments):");
+  if (!name || !name.trim()) return;
+  const album = {
+    id:window.heartmateUser.uid + ":" + character + ":album:" + Date.now(),
+    userId:window.heartmateUser.uid,
+    character,
+    name:name.trim().slice(0,48),
+    createdAt:Date.now()
+  };
+  const db = await openGalleryDB();
+  await new Promise((resolve,reject) => {
+    const tx = db.transaction("memoryAlbums","readwrite");
+    tx.objectStore("memoryAlbums").put(album);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
+  galleryAlbumFilter = album.id;
+  await openGallery();
+}
+
+async function updatePhotoMemory(photo, field, value) {
+  const db = await openGalleryDB();
+  await new Promise((resolve,reject) => {
+    const storeName = photo.uploaded ? "photoSettings" : "photos";
+    const tx = db.transaction(storeName,"readwrite");
+    const store = tx.objectStore(storeName);
+    const req = store.get(photo.id);
+    req.onsuccess = () => {
+      const record = req.result || {id:photo.id};
+      record[field] = value;
+      if (photo.uploaded) {
+        record.userId = window.heartmateUser.uid;
+        record.character = character;
+      }
+      store.put(record);
+    };
+    req.onerror = () => reject(req.error);
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+  db.close();
+}
 async function getGalleryPhotos() {
   const db = await openGalleryDB();
   const photos = await new Promise((resolve, reject) => {
@@ -1167,7 +1245,14 @@ async function openGallery() {
   }
   try {
     const mine = await getGalleryPhotos();
-    const shown = galleryShowFavourites ? mine.filter(photo => photo.favourite) : mine;
+    galleryAlbumsCache = await getMemoryAlbums();
+    const albumFilter = $("memoryAlbumFilter");
+    albumFilter.replaceChildren(new Option("All memories",""));
+    galleryAlbumsCache.forEach(album => albumFilter.add(new Option(album.name,album.id)));
+    albumFilter.value = galleryAlbumFilter;
+    const shown = galleryShowFavourites
+      ? mine.filter(photo => photo.favourite)
+      : mine.filter(photo => !galleryAlbumFilter || photo.albumId === galleryAlbumFilter);
     if (!shown.length) {
       grid.innerHTML = galleryShowFavourites
         ? '<div class="gallery-empty">No favourites yet. Tap ❤️ on a photo to save it here.</div>'
@@ -1188,6 +1273,32 @@ async function openGallery() {
         } else showGalleryPhoto(photo.blob);
       });
       card.appendChild(img);
+      const date = document.createElement("small");
+      date.className = "memory-date";
+      date.textContent = photo.createdAt ? new Date(photo.createdAt).toLocaleString() : "Heartmate collection";
+      card.appendChild(date);
+      const caption = document.createElement("input");
+      caption.className = "memory-caption";
+      caption.type = "text";
+      caption.maxLength = 100;
+      caption.placeholder = "Add a memory caption…";
+      caption.value = photo.caption || "";
+      caption.setAttribute("aria-label","Photo memory caption");
+      caption.addEventListener("change", async () => {
+        await updatePhotoMemory(photo,"caption",caption.value.trim());
+      });
+      card.appendChild(caption);
+      const albumSelect = document.createElement("select");
+      albumSelect.className = "memory-album-select";
+      albumSelect.setAttribute("aria-label","Add photo to album");
+      albumSelect.add(new Option("＋ Add to an album",""));
+      galleryAlbumsCache.forEach(album => albumSelect.add(new Option("📚 " + album.name,album.id)));
+      albumSelect.value = photo.albumId || "";
+      albumSelect.addEventListener("change", async () => {
+        await updatePhotoMemory(photo,"albumId",albumSelect.value);
+        if (galleryAlbumFilter) openGallery();
+      });
+      card.appendChild(albumSelect);
 
       const actions = document.createElement("div");
       actions.className = "gallery-actions";
@@ -1224,6 +1335,15 @@ async function openGallery() {
     grid.innerHTML = '<div class="gallery-empty">Gallery could not be opened in this browser.</div>';
   }
 }
+
+$("memoryAlbumFilter").addEventListener("change", event => {
+  galleryAlbumFilter = event.target.value;
+  galleryShowFavourites = false;
+  $("galleryAll").classList.add("active");
+  $("galleryFavourites").classList.remove("active");
+  openGallery();
+});
+$("createMemoryAlbum").addEventListener("click", createMemoryAlbum);
 
 $("closeGallery").addEventListener("click", () => $("galleryModal").classList.remove("open"));
 
