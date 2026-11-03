@@ -776,6 +776,20 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
             <option value="elegant Punjabi salwar suit with a fitted short kameez, tasteful neckline and flowing dupatta">Punjabi salwar suit</option>
           </select>
         </label>
+        <label class="customizer-field">Indian dress collection
+          <select id="outfitIndianDress">
+            <option value="no additional Indian outfit layer">No additional Indian outfit</option>
+            <option value="plain fitted kurti with matching slim leggings, smooth opaque fabric and a neat elegant finish">Plain fitted kurti with leggings</option>
+            <option value="plain straight-cut kurti with close-fitting leggings and a matching dupatta">Plain straight kurti and leggings</option>
+            <option value="short fitted kurti with ankle-length leggings and a graceful side-slit design">Short kurti and leggings</option>
+            <option value="long fitted kurti with slim leggings, shaped waist and a flowing dupatta">Long kurti and leggings</option>
+            <option value="embroidered fitted kurti with matching leggings and delicate traditional detailing">Embroidered kurti and leggings</option>
+            <option value="simple cotton kurti with comfortable fitted leggings and a light dupatta">Cotton kurti and leggings</option>
+            <option value="elegant straight kurta with fitted churidar leggings and a coordinated dupatta">Straight kurta and churidar</option>
+            <option value="fitted Punjabi short kurti with slim salwar leggings and a colourful dupatta">Punjabi kurti set</option>
+            <option value="modern Indo-western tunic with fitted leggings and subtle embellishment">Indo-western tunic and leggings</option>
+          </select>
+        </label>
         <label class="customizer-field">Bust styling
           <select id="outfitBust">
             <option value="natural realistic bust proportions">Natural</option>
@@ -1633,6 +1647,7 @@ function buildOutfitStudioLayout() {
   if (!originalGrid || root.dataset.organized === "yes") return;
   const groups = [
     {title:"👗 Outfit & body styling",hint:"Clothes, swimwear, shape and colours",ids:["outfitChoice","outfitBust","outfitCurves","outfitBody","outfitColor","outfitAccessories"],open:true},
+    {title:"🇮🇳 Indian dress collection",hint:"Kurtis, leggings and traditional looks",ids:["outfitIndianDress"]},
     {title:"💄 Beauty & finishing touches",hint:"Hair, makeup and expressions",ids:["outfitHair","outfitMakeup","outfitExpression"]},
     {title:"✨ Mood, pose & scene",hint:"Lighting, atmosphere and background",ids:["outfitMood","outfitPose","outfitLighting","outfitBackground"]}
   ];
@@ -1726,6 +1741,7 @@ $("createMediaButton").addEventListener("click", async () => {
 
   if (mediaType === "outfit") {
     const outfit = $("outfitChoice").value;
+    const indianDress = $("outfitIndianDress").value;
     const bust = $("outfitBust").value;
     const curves = $("outfitCurves").value;
     const bodyShape = $("outfitBody").value;
@@ -1749,7 +1765,7 @@ $("createMediaButton").addEventListener("click", async () => {
     if (specialScenes[selectedStudioMode]) scene = specialScenes[selectedStudioMode] + " " + scene;
     scene = "Full-body fashion portrait of " + girlName + ", a fictional adult woman aged 25 or older, wearing a " + color + " " + outfit +
       ". Bust styling: " + bust + ". Curves and hips: " + curves +
-      ". Overall body shape: " + bodyShape + ". Accessories: " + accessories +
+      ". Indian dress styling: " + indianDress + ". Overall body shape: " + bodyShape + ". Accessories: " + accessories +
       ". Hairstyle: " + hair + ". Makeup: " + makeup + ". Facial expression: " + expression + ". Lighting: " + lighting +
       ". Mood: " + mood + ". Pose: " + pose + ". Background: " + background +
       ". Premium tasteful adult fashion editorial, fictional adult woman aged 25 or older, realistic anatomy, garments must remain opaque or fully lined with full intimate coverage, no nudity, no transparent exposure, no exposed genitals, non-explicit.";
