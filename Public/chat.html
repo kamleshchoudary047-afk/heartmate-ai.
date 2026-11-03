@@ -1031,6 +1031,20 @@ function addImage(url) {
   messages.scrollTop = messages.scrollHeight;
 }
 
+// Restore generated photos inline with this character's chat on this device.
+async function loadChatImages() {
+  if (!window.heartmateUser) return;
+  try {
+    const photos = await getGalleryPhotos();
+    const created = photos
+      .filter(photo => !photo.uploaded && photo.blob instanceof Blob)
+      .sort((a, b) => a.createdAt - b.createdAt);
+    created.forEach(photo => addImage(URL.createObjectURL(photo.blob)));
+  } catch (error) {
+    console.warn("Could not restore chat photos:", error?.message || error);
+  }
+}
+
 const galleryDBName = "heartmate-vip-gallery";
 function openGalleryDB() {
   return new Promise((resolve, reject) => {
@@ -1864,6 +1878,7 @@ onAuthStateChanged(auth, async currentUser => {
     document.querySelector(".profile small").textContent =
       "● Signed in · Here with you";
     await loadChatHistory();
+    await loadChatImages();
     await refreshRelationship();
   } else {
     chatHistory = [];
