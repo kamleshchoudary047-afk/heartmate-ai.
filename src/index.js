@@ -556,6 +556,8 @@ async function handleDailyMission(request, env, user) {
   if (request.method === "GET") {
     const date = cleanText(new URL(request.url).searchParams.get("date"), 10);
     if (!isValidDate(date)) return json({ error: "A valid local date is required." }, 400);
+    if (date !== new Date().toISOString().slice(0, 10)) return json({ error: "Daily mission date must be today (UTC)." }, 400);
+    if (date !== new Date().toISOString().slice(0, 10)) return json({ error: "Daily mission date must be today (UTC)." }, 400);
     const claimed = await env.DB.prepare(`
       SELECT mission_id, character_id, reward_points, created_at
       FROM daily_mission_claims WHERE uid = ? AND mission_date = ? LIMIT 1
