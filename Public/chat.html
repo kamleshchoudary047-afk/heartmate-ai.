@@ -1336,10 +1336,7 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
 
 <script>
 const params = new URLSearchParams(location.search);
-if (params.get("live") === "1") {
-  voiceReplies = true;
-  updateVoiceButton();
-}
+const liveModeRequested = params.get("live") === "1";
 const names = {
   aria:"Aria",maya:"Maya",luna:"Luna",sofia:"Sofia",ella:"Ella",
   nova:"Nova",zara:"Zara",ivy:"Ivy",ruby:"Ruby",chloe:"Chloe",
@@ -1369,6 +1366,7 @@ const status = $("status");
 
 let busy = false;
 let voiceReplies = false;
+if (liveModeRequested) { voiceReplies = true; updateVoiceButton(); }
 let lastRelationshipLevel = null;
 let bikiniUnlockPending = false;
 let levelPhotoQueue = [];
