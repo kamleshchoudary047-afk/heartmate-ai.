@@ -1351,7 +1351,7 @@ const names = {
 };
 const requested = (params.get("girl") || "aria").toLowerCase();
 const character = names[requested] ? requested : "aria";
-const girlName = names[character];
+let girlName = names[character] || "Your companion";
 
 const $ = id => document.getElementById(id);
 $("girlName").textContent = girlName;
@@ -2563,6 +2563,18 @@ onAuthStateChanged(auth, async currentUser => {
   logout.hidden = !currentUser;
 
   if (currentUser) {
+    try {
+      const savedIdentity = await api("/api/companion-customization?character=" + encodeURIComponent(character));
+      const custom = savedIdentity.customization || {};
+      if (custom.display_name) {
+        girlName = custom.display_name;
+        $("girlName").textContent = girlName;
+        $("typingName").textContent = girlName;
+        document.title = "Heartmate AI — Chat with " + girlName;
+      }
+    } catch (error) {
+      console.warn("Could not load companion customization:", error.message);
+    }
     document.querySelector(".profile small").textContent =
       "● Signed in · Here with you";
     await loadChatHistory();
