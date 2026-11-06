@@ -1336,6 +1336,10 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
 
 <script>
 const params = new URLSearchParams(location.search);
+if (params.get("live") === "1") {
+  voiceReplies = true;
+  updateVoiceButton();
+}
 const names = {
   aria:"Aria",maya:"Maya",luna:"Luna",sofia:"Sofia",ella:"Ella",
   nova:"Nova",zara:"Zara",ivy:"Ivy",ruby:"Ruby",chloe:"Chloe",
@@ -2580,6 +2584,12 @@ onAuthStateChanged(auth, async currentUser => {
     await loadChatHistory();
     await loadChatImages();
     await refreshRelationship();
+    if (params.get("gallery") === "1") await openGallery();
+    const datePrompt = params.get("prompt");
+    if (datePrompt) {
+      input.value = datePrompt;
+      await sendChat();
+    }
   } else {
     chatHistory = [];
     messages.innerHTML =
