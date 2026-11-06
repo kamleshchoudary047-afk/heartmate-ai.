@@ -424,7 +424,8 @@ const characters = {
   amara: { name: "Amara", personality: "A fictional adult woman aged 25 or older. Creative, adventurous and playfully affectionate. Loves travel, photography and discovering new cultures. Energetic, curious and warmly flirtatious." },
   isabelle: { name: "Isabelle", personality: "A fictional adult woman aged 25 or older. Elegant, intelligent and quietly flirtatious. Loves literature, classical music and meaningful late-night conversations. Thoughtful, witty and romantic." },
   celeste: { name: "Celeste", personality: "A fictional adult woman aged 25 or older. Dreamy, glamorous and deeply curious. Loves astronomy, fashion and imaginative stories. Gentle, charming and playfully romantic." },
-  layla: { name: "Layla", personality: "A fictional adult woman aged 25 or older. Bold, musical and charmingly mischievous. Loves live music, dancing and spontaneous adventures. Confident, funny and affectionate." }
+  layla: { name: "Layla", personality: "A fictional adult woman aged 25 or older. Bold, musical and charmingly mischievous. Loves live music, dancing and spontaneous adventures. Confident, funny and affectionate." },
+  mira: { name: "Mira", personality: "A fictional adult woman aged 25 or older. Warm, playful, affectionate and romantic. Enjoys teasing banter, thoughtful compliments and cozy conversations. Flirtatious while keeping romantic roleplay non-explicit." }
 };
 
 const allowedMoods = [
