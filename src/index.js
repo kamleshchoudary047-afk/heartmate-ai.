@@ -471,6 +471,129 @@ async function addAffectionPoints(env, uid, characterId, points = 5) {
   `).bind(uid, characterId, points, relationshipLevel(points)).run();
 }
 
+
+// Heartmate companion studio and free daily mission storage.
+let studioSchemaPromise = null;
+async function ensureStudioSchema(env) {
+  if (!studioSchemaPromise) {
+    studioSchemaPromise = env.DB.batch([
+      env.DB.prepare(`
+        CREATE TABLE IF NOT EXISTS companion_customizations (
+          uid TEXT NOT NULL,
+          character_id TEXT NOT NULL,
+          display_name TEXT NOT NULL DEFAULT '',
+          personality TEXT NOT NULL DEFAULT '',
+          interests TEXT NOT NULL DEFAULT '',
+          preferences TEXT NOT NULL DEFAULT '',
+          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (uid, character_id)
+        )
+      `),
+      env.DB.prepare(`
+        CREATE TABLE IF NOT EXISTS daily_mission_claims (
+          uid TEXT NOT NULL,
+          mission_date TEXT NOT NULL,
+          mission_id TEXT NOT NULL,
+          character_id TEXT NOT NULL,
+          reward_points INTEGER NOT NULL DEFAULT 10,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          PRIMARY KEY (uid, mission_date)
+        )
+      `)
+    ]).catch(error => {
+      studioSchemaPromise = null;
+      throw error;
+    });
+  }
+  await studioSchemaPromise;
+}
+
+async function handleCompanionCustomization(request, env, user) {
+  await ensureStudioSchema(env);
+  if (request.method === "GET") {
+    const characterId = cleanText(new URL(request.url).searchParams.get("character"), 40).toLowerCase();
+    if (!characters[characterId]) return json({ error: "Character not found." }, 404);
+    const row = await env.DB.prepare(`
+      SELECT display_name, personality, interests, preferences, updated_at
+      FROM companion_customizations WHERE uid = ? AND character_id = ? LIMIT 1
+    `).bind(user.uid, characterId).first();
+    return json({ character: characterId, customization: row || {
+      display_name: characters[characterId].name, personality: "", interests: "", preferences: ""
+    }});
+  }
+  if (request.method === "POST") {
+    let body;
+    try { body = await request.json(); } catch { return json({ error: "Invalid JSON request." }, 400); }
+    const characterId = cleanText(body.character, 40).toLowerCase();
+    if (!characters[characterId]) return json({ error: "Character not found." }, 404);
+    const displayName = cleanText(body.displayName, 40) || characters[characterId].name;
+    const personality = cleanText(body.personality, 1200);
+    const interests = cleanText(body.interests, 600);
+    const preferences = cleanText(body.preferences, 600);
+    await env.DB.prepare(`
+      INSERT INTO companion_customizations
+        (uid, character_id, display_name, personality, interests, preferences, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(uid, character_id) DO UPDATE SET
+        display_name = excluded.display_name, personality = excluded.personality,
+        interests = excluded.interests, preferences = excluded.preferences,
+        updated_at = CURRENT_TIMESTAMP
+    `).bind(user.uid, characterId, displayName, personality, interests, preferences).run();
+    return json({ ok: true, character: characterId, customization: { display_name: displayName, personality, interests, preferences }});
+  }
+  return json({ error: "Method not allowed." }, 405);
+}
+
+const dailyMission = {
+  id: "heart-to-heart",
+  title: "A little heart-to-heart",
+  description: "Send your companion a thoughtful message and claim today's free affection reward.",
+  rewardPoints: 10
+};
+
+async function handleDailyMission(request, env, user) {
+  await ensureStudioSchema(env);
+  if (request.method === "GET") {
+    const date = cleanText(new URL(request.url).searchParams.get("date"), 10);
+    if (!isValidDate(date)) return json({ error: "A valid local date is required." }, 400);
+    const claimed = await env.DB.prepare(`
+      SELECT mission_id, character_id, reward_points, created_at
+      FROM daily_mission_claims WHERE uid = ? AND mission_date = ? LIMIT 1
+    `).bind(user.uid, date).first();
+    const recent = await env.DB.prepare(`
+      SELECT mission_date FROM daily_mission_claims
+      WHERE uid = ? ORDER BY mission_date DESC LIMIT 60
+    `).bind(user.uid).all();
+    const dates = new Set((recent.results || []).map(row => row.mission_date));
+    let streak = 0;
+    const cursor = new Date(date + "T00:00:00Z");
+    while (dates.has(cursor.toISOString().slice(0, 10))) {
+      streak++;
+      cursor.setUTCDate(cursor.getUTCDate() - 1);
+    }
+    return json({ mission: dailyMission, date, claimed: Boolean(claimed), claim: claimed || null, streak });
+  }
+  if (request.method === "POST") {
+    let body;
+    try { body = await request.json(); } catch { return json({ error: "Invalid JSON request." }, 400); }
+    const date = cleanText(body.date, 10);
+    const characterId = cleanText(body.character, 40).toLowerCase();
+    if (!isValidDate(date)) return json({ error: "A valid local date is required." }, 400);
+    if (!characters[characterId]) return json({ error: "Choose a valid companion." }, 400);
+    const result = await env.DB.prepare(`
+      INSERT OR IGNORE INTO daily_mission_claims
+        (uid, mission_date, mission_id, character_id, reward_points)
+      VALUES (?, ?, ?, ?, ?)
+    `).bind(user.uid, date, dailyMission.id, characterId, dailyMission.rewardPoints).run();
+    if (!Number(result.meta?.changes || 0)) {
+      return json({ ok: true, alreadyClaimed: true, rewardPoints: 0 });
+    }
+    await addAffectionPoints(env, user.uid, characterId, dailyMission.rewardPoints);
+    return json({ ok: true, alreadyClaimed: false, rewardPoints: dailyMission.rewardPoints, character: characterId });
+  }
+  return json({ error: "Method not allowed." }, 405);
+}
+
 // Firebase public signing keys.
 let cachedGoogleKeys = null;
 let cachedGoogleKeysExpiry = 0;
@@ -1099,6 +1222,8 @@ export default {
     // Authenticated feature routes.
     const featureRoutes = [
       "/api/profile",
+      "/api/companion-customization",
+      "/api/daily-mission",
       "/api/relationship",
       "/api/daily-photo",
       "/api/voice-settings",
@@ -1135,6 +1260,14 @@ export default {
 
         if (url.pathname === "/api/profile") {
           return await handleProfile(request, env, user);
+        }
+
+        if (url.pathname === "/api/companion-customization") {
+          return await handleCompanionCustomization(request, env, user);
+        }
+
+        if (url.pathname === "/api/daily-mission") {
+          return await handleDailyMission(request, env, user);
         }
 
         if (url.pathname === "/api/relationship") {
@@ -1303,11 +1436,21 @@ export default {
           LIMIT 1
         `).bind(user.uid, characterId).first();
 
+        await ensureStudioSchema(env);
+        const customization = await env.DB.prepare(`
+          SELECT display_name, personality, interests, preferences
+          FROM companion_customizations
+          WHERE uid = ? AND character_id = ?
+          LIMIT 1
+        `).bind(user.uid, characterId).first();
+        const companionName = cleanText(customization?.display_name, 40) || profile.name;
+        const companionPersonality = cleanText(customization?.personality, 1200) || profile.personality;
+
         const systemPrompt = `
-You are ${profile.name}, a fictional adult AI companion aged 25 or older.
+You are ${companionName}, a fictional adult AI companion aged 25 or older.
 
 Your personality:
-${profile.personality}
+${companionPersonality}
 
 Today's mood:
 ${dailyMood}
@@ -1319,19 +1462,22 @@ Mood instructions:
 ${moodInstructions[dailyMood]}
 
 Personalized companion information:
+${cleanText(customization?.interests, 600)}
 ${cleanText(companionProfile?.bio, 1000)}
 
 Interests:
+${cleanText(customization?.interests, 600)}
 ${cleanText(companionProfile?.interests, 1000)}
 
 Preferences:
+${cleanText(customization?.preferences, 600)}
 ${cleanText(companionProfile?.preferences, 1000)}
 
 Remembered visitor information:
 ${savedMemory}
 
 Conversation instructions:
-- Always stay in character as ${profile.name}.
+- Always stay in character as ${companionName}.
 - You are an AI character, not a real human.
 - Be friendly, natural, engaging and emotionally supportive.
 - Remember relevant details from conversation history.
@@ -1388,7 +1534,7 @@ Conversation instructions:
 
         return json({
           reply: finalReply,
-          character: profile.name,
+          character: companionName,
           mood: dailyMood,
           affectionPointsAwarded: 5
         });
