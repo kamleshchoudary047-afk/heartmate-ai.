@@ -790,6 +790,21 @@ footer{background:#09070a;color:#cdb8b6}
  .closing{padding:34px 20px}
 }
 </style>
+
+<style id="heartmate-feature-hub">
+.hm-feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.hm-feature-card{display:flex;gap:15px;align-items:flex-start;min-height:142px;padding:20px;border:1px solid rgba(232,196,154,.2);border-radius:20px;background:linear-gradient(145deg,rgba(49,25,39,.94),rgba(20,12,20,.96));color:inherit;text-decoration:none;box-shadow:0 12px 34px #0003;transition:transform .2s,border-color .2s}
+.hm-feature-card:hover{transform:translateY(-3px);border-color:#e8c49a88}
+.hm-feature-card>span{flex:0 0 42px;width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:#e8c49a18;font-size:22px}
+.hm-feature-card h3{font-size:19px;margin:0 0 7px;color:#ffe0c4}
+.hm-feature-card p{font-size:12px;line-height:1.6;color:#c7afb0;margin:0 0 12px}
+.hm-feature-card small{font-size:9px;letter-spacing:1px;font-weight:800;color:#f0bd9c}
+.hm-coming-soon{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:18px;padding:17px;border:1px dashed #e8c49a55;border-radius:17px;background:#e8c49a09}
+.hm-coming-soon strong{color:#ffe0c4;margin-right:5px}
+.hm-coming-soon span{padding:7px 10px;border-radius:20px;background:#ffffff0d;color:#d8c4c4;font-size:11px}
+.hm-coming-soon p{flex-basis:100%;margin:2px 0 0;color:#aF9da3;font-size:11px;line-height:1.5}
+@media(max-width:650px){.hm-feature-grid{grid-template-columns:1fr;gap:10px}.hm-feature-card{min-height:0;padding:16px}.hm-feature-card h3{font-size:17px}}
+</style>
 </head>
 
 
@@ -877,33 +892,28 @@ footer{background:#09070a;color:#cdb8b6}
   <section class="section" id="experiences">
     <div class="section-heading">
       <div>
-        <div class="section-kicker">More ways to turn up the mood</div>
-        <h2>Make the fantasy yours</h2>
-        <p>Explore romantic moments, custom visuals and optional voice.</p>
+        <div class="section-kicker">Your Heartmate world</div>
+        <h2>Everything in one place</h2>
+        <p>Open the experiences already available in Heartmate, with more tools being built next.</p>
       </div>
     </div>
-
-    <div class="experience-grid">
-      <article class="experience-card">
-        <div class="experience-icon">💌</div>
-        <h3>Secret Letters</h3>
-        <p>Discover heartfelt notes, little confessions and unexpected surprises.</p>
-      </article>
-      <article class="experience-card">
-        <div class="experience-icon">🌙</div>
-        <h3>Virtual Dates</h3>
-        <p>Imagine moonlit walks, coffee dates and candlelight dinners.</p>
-      </article>
-      <article class="experience-card">
-        <div class="experience-icon">❤️</div>
-        <h3>Your Memories</h3>
-        <p>Keep special moments and follow the story of each connection.</p>
-      </article>
+    <div class="hm-feature-grid">
+      <a class="hm-feature-card" href="/heartmate-studio.html"><span>✨</span><div><h3>Create your companion</h3><p>Customize a companion's display name, personality and preferences.</p><small>OPEN COMPANION STUDIO →</small></div></a>
+      <a class="hm-feature-card" href="/chat.html?girl=Aria"><span>💬</span><div><h3>Memory-powered chat</h3><p>Continue conversations with saved chat history and long-term companion memory.</p><small>START CHATTING →</small></div></a>
+      <a class="hm-feature-card" href="/chat.html?girl=Aria"><span>🎙️</span><div><h3>Voice conversations</h3><p>Use voice input and optional spoken replies when your device supports them.</p><small>TRY VOICE CHAT →</small></div></a>
+      <a class="hm-feature-card" href="/chat.html?girl=Aria"><span>📸</span><div><h3>AI photos & videos</h3><p>Create companion images and request video scenes where the generation service is configured.</p><small>OPEN CHAT STUDIO →</small></div></a>
+      <a class="hm-feature-card" href="/chat.html?girl=Aria&amp;gallery=1"><span>🖼️</span><div><h3>My gallery</h3><p>View companion images saved in your chat gallery on this device.</p><small>OPEN GALLERY →</small></div></a>
+      <a class="hm-feature-card" href="/chat.html?girl=Aria&amp;prompt=Plan%20a%20sweet%20virtual%20date%20night%20with%20me"><span>🌙</span><div><h3>Virtual date night</h3><p>Start a date-night conversation and imagine a café, sunset walk or candlelit dinner.</p><small>PLAN A DATE →</small></div></a>
+      <a class="hm-feature-card" href="/chat.html?girl=Aria"><span>💗</span><div><h3>Relationship journey</h3><p>See your relationship progress and milestones inside companion chat.</p><small>VIEW PROGRESS IN CHAT →</small></div></a>
+      <a class="hm-feature-card" href="/membership.html"><span>👑</span><div><h3>VIP membership</h3><p>Review membership plans. Payment activation depends on secure gateway setup.</p><small>VIEW VIP PLANS →</small></div></a>
+      <a class="hm-feature-card" href="#companions"><span>🔎</span><div><h3>Explore companions</h3><p>Browse the companion collection and choose a personality you like.</p><small>DISCOVER COMPANIONS →</small></div></a>
+      <a class="hm-feature-card" href="/privacy.html"><span>🔐</span><div><h3>Privacy controls</h3><p>Read how account information and conversations are handled.</p><small>VIEW PRIVACY →</small></div></a>
     </div>
-
-    <p style="color:var(--muted);font-size:11px;margin-top:12px;">
-      These are planned experiences; more features will arrive as the site develops.
-    </p>
+    <div class="hm-coming-soon">
+      <strong>Coming next</strong>
+      <span>Personal dashboard</span><span>Favorites</span><span>Browser notifications</span><span>Coin wallet</span>
+      <p>These need additional account, notification and payment work before they can be enabled. No wallet balance or payment is simulated.</p>
+    </div>
   </section>
 
   <section class="section" id="companions">
