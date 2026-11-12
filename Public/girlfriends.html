@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#16070e">
+<meta name="description" content="Explore every fictional adult AI girlfriend in the Heartmate collection.">
+<title>All Girlfriends | Heartmate AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#16070e;--card:#27101d;--rose:#ff668d;--pink:#ff9db2;--gold:#f4c48f;--ink:#fff7f5;--muted:#d0b4bd;--line:#6d3349}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;padding-bottom:35px;color:var(--ink);font-family:'DM Sans',sans-serif;background:radial-gradient(ellipse at 50% 0%,#69233d 0,transparent 42%),linear-gradient(160deg,#16070e,#10070d 70%)}
+a{color:inherit;text-decoration:none}.wrap{width:min(1160px,92%);margin:auto}
+header{position:sticky;top:0;z-index:5;background:#16070eee;backdrop-filter:blur(14px);border-bottom:1px solid #ffffff18}
+nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:12px}.logo{font-size:23px;font-weight:800}.logo span{color:var(--pink)}
+.back{padding:10px 15px;border:1px solid #f49ab455;border-radius:30px;color:var(--pink);font-size:12px;font-weight:700}
+.hero{text-align:center;padding:54px 12px 28px}.eyebrow{color:var(--gold);font-size:10px;letter-spacing:2px;font-weight:800}.hero h1{font:600 clamp(37px,6vw,58px)/1.1 'Playfair Display',serif;margin:13px 0}.hero h1 span{color:var(--pink)}.hero p{max-width:600px;margin:0 auto;color:var(--muted);font-size:14px;line-height:1.7}
+.tools{display:flex;gap:10px;max-width:600px;margin:24px auto 28px}.tools input,.tools select{min-width:0;padding:14px 15px;border:1px solid #ffffff22;border-radius:14px;background:#2a1420;color:var(--ink);font:inherit;outline:none}.tools input{flex:1}.tools input::placeholder{color:#bda2ad}.tools select{width:130px}
+.count{margin:0 0 14px;color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:17px}
+.card{overflow:hidden;border:1px solid #ffffff20;border-radius:19px;background:linear-gradient(155deg,#321526,#1d0d17);box-shadow:0 12px 32px #0004;transition:transform .2s,border-color .2s}.card:hover{transform:translateY(-4px);border-color:#ff86a5aa}
+.photo{display:block;width:100%;height:235px;object-fit:cover;object-position:center 25%;background:linear-gradient(140deg,#71324d,#281321)}
+.fallback{height:235px;display:grid;place-items:center;background:linear-gradient(140deg,#71324d,#281321);font:65px 'Playfair Display',serif;color:var(--pink)}
+.info{padding:15px}.info h2{font:600 21px 'Playfair Display',serif;margin:0 0 7px}.info p{min-height:36px;margin:0;color:var(--muted);font-size:11px;line-height:1.6}
+.chat{display:block;margin-top:13px;padding:11px;text-align:center;border-radius:24px;background:linear-gradient(100deg,#ff799b,#f2b77e);color:#260d18;font-size:12px;font-weight:800}
+.empty{display:none;text-align:center;padding:35px;color:var(--muted)}
+footer{text-align:center;color:#a98d99;font-size:11px;padding:38px 0 10px}
+@media(max-width:850px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.photo,.fallback{height:180px}.info{padding:12px}.info h2{font-size:18px}.info p{font-size:10px}.hero{padding-top:40px}.tools select{width:112px}}
+@media(max-width:360px){.photo,.fallback{height:150px}.tools{gap:6px}.tools input,.tools select{padding:12px 9px;font-size:12px}}
+</style>
+</head>
+<body>
+<header><nav class="wrap"><a class="logo" href="/">Heartmate<span> AI</span></a><a class="back" href="/">← Back to Home</a></nav></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">THE HEARTMATE COLLECTION · 18+</div><h1>Meet your <span>girlfriends.</span></h1><p>One beautiful place to explore every fictional adult companion. Search by name, discover a personality and open her chat.</p></section>
+<div class="tools"><input id="search" type="search" placeholder="Search girlfriends..." aria-label="Search girlfriends"><select id="sort" aria-label="Sort girlfriends"><option value="featured">Default order</option><option value="az">A to Z</option></select></div>
+<p class="count" id="count"></p><section class="grid" id="grid" aria-live="polite"></section><p class="empty" id="empty">No girlfriends found. Try another name.</p>
+</main>
+<footer class="wrap">© 2026 Heartmate AI · Fictional adult AI companions · 18+ only</footer>
+<script>
+const companions = [
+  ["Aria","Warm, playful, affectionate and cheerful."],
+  ["Maya","Confident, witty and independent."],
+  ["Luna","Dreamy, gentle and thoughtful."],
+  ["Sofia","Romantic, elegant and caring."],
+  ["Ella","Cute, bubbly and optimistic."],
+  ["Nova","Adventurous, energetic and spontaneous."],
+  ["Zara","Charming, mysterious and intelligent."],
+  ["Ivy","Quiet, artistic and observant."],
+  ["Ruby","Passionate, expressive and confident."],
+  ["Chloe","Funny, mischievous and playful."],
+  ["Nina","Calm, mature and understanding."],
+  ["Lila","Assertive, confident and charismatic."],
+  ["Amber","Sunny, friendly and outdoorsy."],
+  ["Violet","Intellectual, mysterious and sophisticated."],
+  ["Scarlett","Bold, ambitious and energetic."],
+  ["Jade","Creative, relaxed and curious."],
+  ["Rose","Gentle, affectionate and deeply romantic."],
+  ["Stella","Glamorous, confident and stylish."],
+  ["Kira","Bold, funny and adventurous."],
+  ["Diana","Elegant, intelligent and composed."],
+  ["Freya","Independent, outdoorsy and adventurous."],
+  ["Sienna","Warm, nurturing and funny."],
+  ["Valentina","Expressive, passionate and sociable."],
+  ["Aurora","Imaginative, sweet and dreamy."],
+
+  ["Ananya","Graceful, confident and romantically affectionate."],
+  ["Aadhya","Lively, modern, cheerful and playful."],
+  ["Meera","Gentle, artistic, poetic and thoughtful."],
+  ["Kiara","Glamorous, ambitious, bold and witty."],
+  ["Ishita","Intelligent, independent and playfully sarcastic."],
+  ["Kavya","Creative, expressive and softly romantic."],
+  ["Diya","Bubbly, affectionate and mischievous."],
+  ["Riya","Energetic, outgoing and teasing."],
+  ["Nisha","Mysterious, sophisticated and subtly flirtatious."],
+  ["Pooja","Warm, caring, humorous and affectionate."],
+  ["Tara","Free-spirited, adventurous and imaginative."],
+  ["Priya","Confident, charming, expressive and passionate."],
+  ["Elena","Sophisticated, confident and warmly romantic."],
+  ["Amara","Creative, adventurous and playfully affectionate."],
+  ["Isabelle","Elegant, intelligent and quietly flirtatious."],
+  ["Celeste","Dreamy, glamorous and deeply curious."],
+  ["Layla","Bold, musical and charmingly mischievous."],
+  ["Mira","Warm, playful, affectionate and romantic."]
+];
+const grid=document.getElementById("grid"),search=document.getElementById("search"),sort=document.getElementById("sort"),count=document.getElementById("count"),empty=document.getElementById("empty");
+function render(){
+ let items=companions.filter(c=>(c[0]+" "+c[1]).toLowerCase().includes(search.value.trim().toLowerCase()));
+ if(sort.value==="az")items.sort((a,b)=>a[0].localeCompare(b[0]));
+ grid.replaceChildren();
+ items.forEach(([name,description])=>{
+  const slug=name.toLowerCase(),card=document.createElement("article");card.className="card";
+  const img=document.createElement("img");img.className="photo";img.alt=name+" portrait";img.loading="lazy";
+  img.src=slug==="aria"?"/images/aria-1.jpeg":"/images/"+slug+"/"+slug+"-1.jpeg";
+  img.onerror=function(){const fallback=document.createElement("div");fallback.className="fallback";fallback.textContent=name.charAt(0);this.replaceWith(fallback)};
+  const info=document.createElement("div");info.className="info";
+  const h=document.createElement("h2");h.textContent=name;
+  const p=document.createElement("p");p.textContent=description;
+  const link=document.createElement("a");link.className="chat";link.href="/chat.html?girl="+encodeURIComponent(name);link.textContent="Chat with "+name+" →";
+  info.append(h,p,link);card.append(img,info);grid.append(card);
+ });
+ count.textContent=items.length+" girlfriends in the collection";
+ empty.style.display=items.length?"none":"block";
+}
+search.addEventListener("input",render);sort.addEventListener("change",render);render();
+</script>
+</body></html>
