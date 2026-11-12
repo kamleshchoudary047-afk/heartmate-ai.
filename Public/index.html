@@ -729,6 +729,24 @@ body.intro-active #heartmateWelcome{display:flex;flex-direction:column}
  .hm-welcome-foot{display:none}
 }
 </style>
+<style id="heartmate-smooth-navigation">
+html{scroll-behavior:smooth;scroll-padding-top:88px;-webkit-overflow-scrolling:touch}
+body{overscroll-behavior-y:auto}
+main.container,.section,.closing{scroll-margin-top:92px}
+#heartmateWelcome{transition:opacity .28s ease,transform .28s ease}
+body.intro-active.hm-exiting #heartmateWelcome{opacity:0;transform:scale(1.012);pointer-events:none}
+a,button{-webkit-tap-highlight-color:transparent}
+@media(max-width:760px){
+ html{scroll-padding-top:70px}
+ main.container,.section,.closing{scroll-margin-top:74px}
+ body{padding-bottom:calc(82px + env(safe-area-inset-bottom))}
+ .bottom-nav{padding-bottom:env(safe-area-inset-bottom)}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *,*:before,*:after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}
+}
+</style>
 <style id="heartmate-premium-home">
 :root{--hm-gold:#e8bd8b;--hm-rose:#a83d55;--hm-ink:#10090d}
 body{background:radial-gradient(ellipse at 50% 0%,#321522 0%,#130b11 48%,#09070a 100%);color:#fff4ed}
@@ -1391,8 +1409,12 @@ onAuthStateChanged(auth,user => {
 <script>
 (function(){
   function enterHome(){
-    document.body.classList.remove('intro-active');
-    window.scrollTo({top:0,behavior:'instant'});
+    if(!document.body.classList.contains('intro-active')) return;
+    document.body.classList.add('hm-exiting');
+    window.setTimeout(function(){
+      document.body.classList.remove('intro-active','hm-exiting');
+      window.scrollTo({top:0,behavior:'smooth'});
+    },280);
   }
   document.querySelectorAll('[data-enter-home]').forEach(function(button){
     button.addEventListener('click',enterHome);
