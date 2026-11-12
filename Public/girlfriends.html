@@ -64,6 +64,43 @@ footer{color:#c5a5b3}
 @media(max-width:850px){.grid{gap:14px}.photo,.fallback{height:220px}}
 @media(max-width:600px){.hero{padding-top:45px}.grid{gap:12px}.photo,.fallback{height:190px}.info{padding:12px}.info h2{font-size:19px}.tools{margin-top:20px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.photo,.chat{transition:none}}
+
+<style id="heartmate-realistic-gallery-refresh">
+/* Premium portrait-card layout inspired by the approved Heartmate concept */
+:root{--rose:#ff668d;--gold:#f4c48f;--ink:#fff8f5}
+body{background:radial-gradient(ellipse at 50% -8%,#5b1b34 0,transparent 42%),#080507}
+header{background:#080507ed;border-bottom:1px solid #8c4056}
+nav{min-height:70px}
+.logo{font:500 25px 'Playfair Display',serif;letter-spacing:.2px}
+.logo span{color:#ff789b}
+.back{background:linear-gradient(100deg,#ff789b,#f4c48f);color:#250b15;border:0}
+.hero{padding:42px 10px 18px}
+.hero .eyebrow{color:#f4c48f;letter-spacing:2.5px}
+.hero h1{font-size:clamp(38px,6vw,62px);margin:10px 0}
+.hero h1 span{background:linear-gradient(100deg,#ffe4c8,#ff789b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:#e8cbd3}
+.tools{max-width:none;margin:20px 0 12px}
+.tools input,.tools select{background:#160d12;border:1px solid #704052;color:#fff5f1;border-radius:13px}
+.count{color:#f4c4d1;font-weight:700;margin:0 0 12px}
+.grid{grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.card{position:relative;border:1px solid #8b4059;border-radius:14px;overflow:hidden;min-width:0;background:#140b10;box-shadow:0 8px 22px #0008;counter-increment:girl}
+.card:before{content:counter(girl,decimal-leading-zero);position:absolute;z-index:2;top:8px;left:8px;padding:3px 6px;border-radius:6px;background:#10080dcc;border:1px solid #ffffff40;color:#fff;font-size:10px;font-weight:700}
+.grid{counter-reset:girl}
+.photo,.fallback{height:220px;width:100%;display:block;object-fit:cover;object-position:center 24%;background:linear-gradient(145deg,#71324d,#281321)}
+.card:after{content:"♡";position:absolute;z-index:2;right:9px;top:5px;color:#ff789b;font-size:24px;text-shadow:0 2px 9px #000}
+.info{position:absolute;z-index:1;left:0;right:0;bottom:0;padding:34px 10px 10px;background:linear-gradient(180deg,transparent 0%,#090508d9 34%,#090508f5 100%)}
+.info h2{font:600 18px 'Playfair Display',serif;margin:0 0 4px;color:#fff}
+.info p{min-height:0;height:30px;overflow:hidden;color:#f4dce2;font-size:10px;line-height:1.4}
+.chat{margin-top:8px;padding:8px 6px;border-radius:20px;background:linear-gradient(100deg,#f34c79,#a91d43);color:white;font-size:10px;box-shadow:0 4px 14px #f34c7940}
+.card:hover{transform:translateY(-3px);border-color:#ff9db2;box-shadow:0 12px 28px #0009,0 0 0 1px #ff789b33}
+.card:hover .photo{transform:scale(1.035)}
+.empty{border-color:#8b4059;background:#ffffff08}
+footer{color:#d3aeba}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.photo,.fallback{height:225px}}
+@media(max-width:650px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.photo,.fallback{height:210px}.info{padding:30px 9px 9px}.info h2{font-size:18px}.hero{padding-top:35px}.tools{gap:7px}}
+@media(max-width:360px){.photo,.fallback{height:180px}.info h2{font-size:16px}.info p{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.card:hover{transform:none}.card:hover .photo{transform:none}}
+</style>
 </style>
 </head>
 <body>
