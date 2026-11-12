@@ -805,6 +805,80 @@ footer{background:#09070a;color:#cdb8b6}
 .hm-coming-soon p{flex-basis:100%;margin:2px 0 0;color:#aF9da3;font-size:11px;line-height:1.5}
 @media(max-width:650px){.hm-feature-grid{grid-template-columns:1fr;gap:10px}.hm-feature-card{min-height:0;padding:16px}.hm-feature-card h3{font-size:17px}}
 </style>
+
+<style id="heartmate-simple-layout-refresh">
+:root{--hm-ink:#292238;--hm-muted:#716879;--hm-paper:#fbf7f2;--hm-card:#fff;--hm-accent:#a64f68;--hm-accent-dark:#78364f;--hm-line:#eadfe2}
+html{scroll-behavior:smooth;background:var(--hm-paper)}
+body{background:var(--hm-paper)!important;color:var(--hm-ink)!important}
+header{position:sticky;top:0;z-index:30;background:rgba(251,247,242,.96)!important;border-bottom:1px solid var(--hm-line)!important;backdrop-filter:blur(12px)}
+.navbar{min-height:64px!important}
+.logo,.logo span{color:var(--hm-accent-dark)!important}
+.nav-links a,.account-area,#accountStatus{color:var(--hm-ink)!important}
+.small-button{background:var(--hm-accent)!important;color:#fff!important;border:0!important;border-radius:999px!important}
+main.container{width:min(1120px,calc(100% - 32px))!important;max-width:1120px!important;padding:0 0 105px!important}
+main.container>.hero{min-height:430px!important;margin:22px 0 34px!important;padding:clamp(28px,5vw,58px)!important;border:0!important;border-radius:24px!important;box-shadow:0 14px 35px #38233318!important;background-image:linear-gradient(90deg,rgba(27,18,30,.84),rgba(27,18,30,.43) 60%,rgba(27,18,30,.08)),url('/heartmate-hero.jpg')!important;background-position:center 32%!important;background-size:cover!important}
+.hero-content{max-width:540px!important}
+.hero .eyebrow{color:#ffe4d9!important}
+.hero h1{font-size:clamp(36px,5vw,58px)!important;line-height:1.08!important}
+.hero h1 span{color:#ffd4c8!important}
+.hero p,.hero-note{color:#fff4ef!important}
+.primary-button,.chat-link{background:var(--hm-accent)!important;color:#fff!important;border:0!important;border-radius:999px!important;box-shadow:none!important}
+.section{margin:0 0 38px!important;padding:0!important}
+.section-heading{display:flex!important;align-items:end!important;justify-content:space-between!important;gap:14px!important;margin:0 0 17px!important}
+.section-heading h2,.closing h2{font-family:inherit!important;font-size:clamp(23px,3vw,31px)!important;font-weight:750!important;letter-spacing:-.6px!important;color:var(--hm-ink)!important;text-shadow:none!important;margin:5px 0!important}
+.section-kicker,.logo span,.daily-name,.section-heading>a{color:var(--hm-accent-dark)!important}
+.section-heading p{color:var(--hm-muted)!important;text-shadow:none!important;margin:5px 0 0!important}
+.daily-card,.companion-card,.experience-card,.hm-feature-card{background:var(--hm-card)!important;border:1px solid var(--hm-line)!important;border-radius:18px!important;box-shadow:0 6px 20px #3924370c!important;color:var(--hm-ink)!important}
+.daily-card{grid-template-columns:170px minmax(0,1fr)!important;gap:22px!important;padding:17px!important}
+.daily-photo{height:190px!important;border-radius:13px!important;object-fit:cover!important}
+.daily-name{font-size:22px!important}
+.daily-mood,.daily-message,.companion-info p,.experience-card p{color:var(--hm-muted)!important}
+.featured-grid{gap:14px!important}
+.companion-card{overflow:hidden!important;transition:transform .18s ease!important}
+.companion-card:hover{transform:translateY(-2px)!important;box-shadow:0 10px 24px #39243712!important}
+.avatar-photo,.avatar-fallback{border-radius:0!important}
+.companion-info h3{color:var(--hm-ink)!important}
+.companion-mood{color:var(--hm-accent-dark)!important}
+.experience-grid{gap:14px!important}
+.experience-card{padding:20px!important}
+.experience-card h3{color:var(--hm-ink)!important}
+.hm-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.hm-feature-card{min-height:0!important;padding:16px!important;align-items:center!important}
+.hm-feature-card>span{background:#f7e9ed!important;color:var(--hm-accent-dark)!important}
+.hm-feature-card h3{font-size:16px!important;color:var(--hm-ink)!important}
+.hm-feature-card p{color:var(--hm-muted)!important}
+.hm-feature-card small{color:var(--hm-accent-dark)!important}
+.hm-coming-soon{background:#f5edf0!important;border:1px solid var(--hm-line)!important}
+.hm-coming-soon strong{color:var(--hm-accent-dark)!important}
+.hm-coming-soon span{background:#fff!important;color:var(--hm-muted)!important}
+.hm-coming-soon p{color:var(--hm-muted)!important}
+.closing{margin:8px 0 35px!important;padding:36px 24px!important;border:1px solid var(--hm-line)!important;border-radius:20px!important;background:#f5e9ed!important;box-shadow:none!important}
+.closing h2{color:var(--hm-ink)!important}
+.closing p{color:var(--hm-muted)!important}
+footer{padding:24px 16px 95px!important;color:var(--hm-muted)!important;background:transparent!important}
+footer a{color:var(--hm-accent-dark)!important}
+.bottom-nav{background:rgba(255,255,255,.97)!important;border-top:1px solid var(--hm-line)!important;box-shadow:0 -5px 18px #3924370a!important;backdrop-filter:blur(12px)}
+.bottom-nav a{color:var(--hm-muted)!important}
+.bottom-nav a:hover,.bottom-nav a:focus{color:var(--hm-accent-dark)!important}
+@media(max-width:760px){
+ main.container{width:calc(100% - 24px)!important}
+ main.container>.hero{min-height:390px!important;margin:12px 0 28px!important;padding:22px 18px!important;border-radius:19px!important;background-image:linear-gradient(0deg,rgba(27,18,30,.9),rgba(27,18,30,.48) 62%,rgba(27,18,30,.08)),url('/heartmate-hero.jpg')!important;background-position:center 24%!important}
+ .hero h1{font-size:38px!important}
+ .section{margin-bottom:31px!important}
+ .section-heading{display:block!important;margin-bottom:13px!important}
+ .section-heading h2{font-size:24px!important}
+ .daily-card{grid-template-columns:104px minmax(0,1fr)!important;gap:13px!important;padding:12px!important}
+ .daily-photo{height:145px!important}
+ .daily-name{font-size:19px!important}
+ .featured-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+ .companion-info{padding:10px!important}
+ .hm-feature-grid{grid-template-columns:1fr!important;gap:9px!important}
+ .hm-feature-card{padding:13px!important}
+ .closing{padding:28px 18px!important}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.companion-card,.hm-feature-card{transition:none!important}}
+</style>
+
 </head>
 
 
