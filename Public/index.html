@@ -578,6 +578,29 @@ header{background:rgba(13,7,11,.9);border-bottom:1px solid rgba(232,196,154,.16)
 .bottom-nav a:focus,.bottom-nav a:hover{color:#f1d4b2}
 @media(max-width:760px){.hero{box-shadow:0 18px 50px #0008}.section-heading{gap:10px}.daily-card{box-shadow:0 12px 32px #0005}}
 </style>
+<style id="heartmate-fullscreen-redesign">
+body{position:relative;background:#090509;color:#fff7f1}
+body:before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(8,4,7,.86),rgba(8,4,7,.54) 48%,rgba(8,4,7,.3)),linear-gradient(0deg,rgba(8,4,7,.88),rgba(8,4,7,.12) 58%,rgba(8,4,7,.42)),url('/heartmate-hero.jpg') center 28%/cover no-repeat;transform:translateZ(0)}
+main.container{width:100%;max-width:none;margin:0}
+.hero{width:100%;min-height:calc(100svh - 72px);margin:0;padding:clamp(34px,7vw,100px) max(5vw,calc((100vw - 1320px)/2));border:0;border-radius:0;box-shadow:none;background:linear-gradient(90deg,rgba(8,4,7,.82),rgba(8,4,7,.52) 43%,rgba(8,4,7,.04)),url('/heartmate-hero.jpg') center 30%/cover no-repeat}
+.hero:before{background:linear-gradient(90deg,rgba(8,4,7,.18),transparent 72%)}
+.hero-content{max-width:min(570px,48vw)}
+.hero h1{font-size:clamp(44px,6.2vw,82px);text-shadow:0 3px 28px #0009}
+.hero p{font-size:clamp(15px,1.3vw,18px);color:#fff0e8;text-shadow:0 2px 15px #000}
+.section{position:relative;padding:64px max(4vw,calc((100vw - 1320px)/2));background:linear-gradient(180deg,rgba(12,6,10,.72),rgba(12,6,10,.84))}
+.section-heading h2,.section-heading p{text-shadow:0 2px 18px #000}
+.daily-card,.companion-card,.experience-card{backdrop-filter:blur(14px);background:rgba(28,13,22,.84)}
+.closing{margin:48px max(4vw,calc((100vw - 1320px)/2));border:1px solid #e8c49a55}
+@media(max-width:760px){
+ body:before{background-position:58% center}
+ .hero{min-height:calc(92svh - 62px);padding:44px 6%;background-position:58% center}
+ .hero-content{max-width:100%;padding:22px 18px;background:linear-gradient(90deg,rgba(8,4,7,.72),rgba(8,4,7,.18));border-radius:18px}
+ .hero h1{font-size:clamp(39px,11vw,58px)}
+ .section{padding:48px 5%}
+ .closing{margin:35px 5%}
+}
+</style>
+
 
 <style id="heartmate-candy-inspired-v2">
 :root{--hm-bg:#09080e;--hm-panel:#15121e;--hm-pink:#ff6fae;--hm-purple:#a98bff;--hm-muted:#aaa4b8}
