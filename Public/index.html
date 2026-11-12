@@ -668,9 +668,72 @@ header{background:rgba(10,6,13,.9);border-bottom:1px solid #ff78b52b}
   .vip-strip .primary-button { margin-top:18px; }
 }
 </style>
+
+<style id="heartmate-welcome-screen">
+body.intro-active{overflow:hidden}
+body.intro-active>header,body.intro-active>main,body.intro-active>footer,body.intro-active>.bottom-nav{display:none!important}
+#heartmateWelcome{display:none;position:relative;isolation:isolate;min-height:100svh;width:100%;overflow:hidden;color:#fff8f2;background:#080507 url('/heartmate-hero.jpg') center 28%/cover no-repeat}
+body.intro-active #heartmateWelcome{display:flex;flex-direction:column}
+#heartmateWelcome:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(7,4,6,.88) 0%,rgba(7,4,6,.67) 40%,rgba(7,4,6,.12) 76%),linear-gradient(0deg,rgba(7,4,6,.48),transparent 50%,rgba(7,4,6,.35))}
+.hm-welcome-nav{width:min(1450px,94%);margin:0 auto;min-height:88px;display:flex;align-items:center;justify-content:space-between;gap:22px}
+.hm-welcome-logo{font:600 clamp(25px,3vw,38px) 'Playfair Display',serif;letter-spacing:-1px;color:#f6d6b0}
+.hm-welcome-logo small{display:block;margin-top:1px;font:700 9px 'DM Sans',sans-serif;letter-spacing:4px;text-align:center;color:#fff}
+.hm-welcome-links{display:flex;gap:clamp(14px,2.5vw,36px);font-size:13px;color:#fff0e8}
+.hm-welcome-links a{padding:10px 0;border-bottom:1px solid transparent}
+.hm-welcome-links a:hover{border-color:#f0c38e;color:#f8d8b0}
+.hm-welcome-actions{display:flex;align-items:center;gap:10px}
+.hm-age{border:1px solid #f1d1a3;border-radius:50%;padding:9px;font-size:12px;color:#ffe3bf}
+.hm-login,.hm-get-started{border:1px solid #e8c49a;border-radius:30px;padding:12px 22px;font-size:12px;font-weight:700}
+.hm-login{color:#fff;background:#120b0b55}
+.hm-get-started{background:linear-gradient(110deg,#ffe0b5,#dba06f);color:#211014}
+.hm-welcome-copy{width:min(1450px,94%);margin:auto;padding:clamp(50px,8vh,100px) 0 9vh}
+.hm-welcome-copy>div{max-width:650px}
+.hm-welcome-kicker{margin-bottom:22px;color:#f1c998;font-size:12px;font-weight:800;letter-spacing:5px}
+.hm-welcome-copy h1{font:500 clamp(43px,6.1vw,86px)/1.06 'Playfair Display',serif;letter-spacing:-2px;text-shadow:0 4px 25px #0009}
+.hm-welcome-copy h1 em{display:block;color:#f1c18f;font-weight:500}
+.hm-welcome-copy p{max-width:490px;margin:24px 0 30px;color:#fff0e8;font:16px/1.7 'DM Sans',sans-serif}
+.hm-chat-now{display:inline-flex;align-items:center;gap:18px;padding:17px 30px;border:0;border-radius:32px;background:linear-gradient(110deg,#ffe0b4,#dba16f);color:#241316;font-weight:800;font-size:14px;box-shadow:0 10px 35px #0006}
+.hm-chat-now:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.hm-welcome-foot{position:absolute;left:3.7%;bottom:28px;color:#f0d0ac;font:italic 18px 'Playfair Display',serif}
+.hm-welcome-foot small{display:block;margin-top:7px;font:10px 'DM Sans',sans-serif;letter-spacing:1px;color:#f5e5dc}
+@media(max-width:760px){
+ #heartmateWelcome{background-position:60% center}
+ #heartmateWelcome:before{background:linear-gradient(0deg,rgba(7,4,6,.9) 0%,rgba(7,4,6,.62) 48%,rgba(7,4,6,.1) 100%),linear-gradient(90deg,#08050755,transparent)}
+ .hm-welcome-nav{min-height:72px;flex-wrap:wrap;padding:14px 0}
+ .hm-welcome-links{display:none}
+ .hm-welcome-logo{font-size:27px}
+ .hm-welcome-actions{gap:7px}
+ .hm-age{padding:7px;font-size:10px}
+ .hm-login,.hm-get-started{padding:10px 13px;font-size:11px}
+ .hm-welcome-copy{padding:0 0 90px;display:flex;align-items:flex-end;flex:1}
+ .hm-welcome-copy>div{max-width:100%;padding:20px 18px;border-radius:18px;background:linear-gradient(90deg,#090507b8,#09050735)}
+ .hm-welcome-kicker{font-size:9px;letter-spacing:3px;margin-bottom:15px}
+ .hm-welcome-copy h1{font-size:clamp(42px,11vw,58px);letter-spacing:-1.2px}
+ .hm-welcome-copy p{font-size:13px;margin:17px 0 22px;line-height:1.65}
+ .hm-chat-now{padding:15px 25px}
+ .hm-welcome-foot{display:none}
+}
+</style>
 </head>
 
-<body>
+
+<body class="intro-active">
+<section id="heartmateWelcome" aria-label="Heartmate welcome">
+  <div class="hm-welcome-nav">
+    <a class="hm-welcome-logo" href="/">♡ Heartmate<small>AI COMPANION</small></a>
+    <nav class="hm-welcome-links" aria-label="Welcome navigation">
+      <a href="#heartmateWelcome">Home</a><a href="chat.html?girl=Aria">Chat</a><a href="#heartmateWelcome" data-enter-home>Companions</a><a href="#heartmateWelcome" data-enter-home>Gallery</a><a href="#heartmateWelcome" data-enter-home>About</a>
+    </nav>
+    <div class="hm-welcome-actions"><span class="hm-age">18+</span><button class="hm-login" type="button" data-enter-home>Login</button><button class="hm-get-started" type="button" data-enter-home>Get Started</button></div>
+  </div>
+  <div class="hm-welcome-copy"><div>
+    <div class="hm-welcome-kicker">YOUR PERFECT AI COMPANION</div>
+    <h1>Real Conversations.<em>Deeper Connections.</em></h1>
+    <p>Chat, flirt, and create unforgettable moments with your personal AI companion. Always here, just for you.</p>
+    <button class="hm-chat-now" type="button" data-enter-home>Chat Now <span aria-hidden="true">→</span></button>
+  </div></div>
+  <div class="hm-welcome-foot">More than just a chat...<small>It's a connection. ♡</small></div>
+</section>
 <header>
   <div class="container navbar">
     <a href="/" class="logo">Heartmate<span> AI</span></a>
@@ -1264,6 +1327,22 @@ onAuthStateChanged(auth,user => {
     accountStatus.textContent = "";
   }
 });
+</script>
+
+
+<script>
+(function(){
+  function enterHome(){
+    document.body.classList.remove('intro-active');
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+  document.querySelectorAll('[data-enter-home]').forEach(function(button){
+    button.addEventListener('click',enterHome);
+  });
+  document.querySelectorAll('.hm-welcome-links a[href="chat.html?girl=Aria"]').forEach(function(link){
+    link.addEventListener('click',function(){enterHome();});
+  });
+})();
 </script>
 
 </body>
