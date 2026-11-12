@@ -1216,8 +1216,8 @@ export default {
         voiceChat: true,
         videoTaskOwnership: true,
         notifications: "preferences-only",
-        vipMembership: false,
-        razorpayConfigured: false
+        vipMembership: true,
+        razorpayConfigured: Boolean(env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET)
       });
     }
 
@@ -1253,11 +1253,15 @@ export default {
         await saveVisitor(env, user);
 
         if (url.pathname === "/api/membership") {
-          return json({ plan: "free", status: "free", isVip: false, expiresAt: null, premiumCompanions: [], razorpayConfigured: false });
+          return await handleMembership(request, env, user);
         }
 
-        if (url.pathname === "/api/billing/order" || url.pathname === "/api/billing/verify") {
-          return json({ error: "Paid memberships are disabled. Heartmate AI is free." }, 410);
+        if (url.pathname === "/api/billing/order") {
+          return await handleBillingOrder(request, env, user);
+        }
+
+        if (url.pathname === "/api/billing/verify") {
+          return await handleBillingVerify(request, env, user);
         }
 
         if (url.pathname === "/api/profile") {
