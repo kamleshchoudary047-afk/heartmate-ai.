@@ -4,10 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#10070c">
-<title>Heartmate AI — Free for Everyone</title>
+<title>Heartmate AI — VIP Membership</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:#10070c;color:#fff8f4;font:16px system-ui,sans-serif}.card{width:min(560px,100%);padding:32px;border:1px solid #e8b98255;border-radius:24px;background:linear-gradient(145deg,#321b27,#1a1017);text-align:center}h1{font-size:clamp(32px,7vw,48px)}p{color:#c7afb0;line-height:1.7}.button{display:inline-block;margin-top:16px;padding:13px 22px;border-radius:30px;background:linear-gradient(135deg,#e8b982,#e17b91);color:#1a1017;text-decoration:none;font-weight:800}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:28px 16px 60px;background:radial-gradient(ellipse at top,#4a1c31,#160d15 55%,#09070a);color:#fff5ef;font:15px 'DM Sans',sans-serif}.wrap{width:min(920px,100%);margin:auto}.top{text-align:center;margin:20px 0 30px}.brand{color:#f1c18f;font-weight:800;letter-spacing:2px}.top h1{font:500 clamp(36px,7vw,58px) 'Playfair Display',serif;margin:18px 0 10px}.top p{color:#dbc5c3;line-height:1.7}.plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.plan{padding:26px;border:1px solid #e4b78366;border-radius:22px;background:linear-gradient(145deg,#351a29,#1a1119);box-shadow:0 18px 45px #0005}.plan h2{font:500 26px 'Playfair Display',serif;color:#f2c895}.price{font-size:36px;font-weight:800;margin:15px 0}.price small{font-size:13px;color:#cdb6b5;font-weight:500}.plan p,.fine{color:#d6c0bf;line-height:1.7}.plan button,.action{width:100%;border:0;border-radius:28px;padding:15px 18px;margin-top:16px;background:linear-gradient(110deg,#f7d4a9,#c87982);color:#241016;font-weight:800;font-size:14px;cursor:pointer}.plan button:disabled,.action:disabled{opacity:.55;cursor:wait}.status{margin:20px 0;padding:15px;border:1px solid #d8aa7955;border-radius:14px;color:#f2d7c2;background:#24151e;line-height:1.6;white-space:pre-wrap}.fine{text-align:center;font-size:12px;margin:24px auto;max-width:680px}.back{display:block;text-align:center;color:#f0c18e;margin-top:20px}@media(max-width:650px){.plans{grid-template-columns:1fr}.plan{padding:22px}}
 </style>
 </head>
-<body><main class="card"><div>💗 Heartmate AI</div><h1>Everything is free.</h1><p>There are no VIP plans, subscriptions or paid memberships. All 41 fictional adult companions are available to explore. Some AI tools may have free usage limits, and availability depends on the free services powering them.</p><a class="button" href="/">Explore all companions</a></main></body>
-</html>
+<body><main class="wrap">
+<header class="top"><div class="brand">♡ HEARTMATE AI</div><h1>Unlock your VIP experience</h1><p>More room for conversations and access to VIP companions. Secure checkout powered by Razorpay.</p></header>
+<section class="plans">
+<article class="plan"><h2>VIP Monthly</h2><div class="price">₹299 <small>/ 30 days</small></div><p>VIP companion access and higher AI usage limits for one month.</p><button type="button" data-plan="monthly">Choose Monthly</button></article>
+<article class="plan"><h2>VIP Yearly</h2><div class="price">₹2,499 <small>/ year</small></div><p>VIP companion access and higher AI usage limits for 365 days.</p><button type="button" data-plan="yearly">Choose Yearly</button></article>
+</section>
+<div id="status" class="status" role="status" aria-live="polite">Sign in with Google when you choose a plan. Payments are currently set up for test mode only.</div>
+<p class="fine">One-time payment; no automatic renewal. VIP access is activated only after the server verifies a captured payment. Please do not share your payment credentials with anyone.</p>
+<a class="back" href="/">← Back to Heartmate</a>
+</main>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+const app=initializeApp({apiKey:"AIzaSyDUMIUJGsF2HCkibwIJOV3G8sQIGh0EQoo",authDomain:"heartmate-ai-bd441.firebaseapp.com",projectId:"heartmate-ai-bd441",storageBucket:"heartmate-ai-bd441.firebasestorage.app",messagingSenderId:"929844208432",appId:"1:929844208432:web:0afdab16bd82f11240def5",measurementId:"G-L0Z6XE8R8B"});
+const auth=getAuth(app),provider=new GoogleAuthProvider(),status=document.getElementById("status");
+function message(text){status.textContent=text}
+async function token(){let user=auth.currentUser;if(!user){message("Please sign in with Google to continue…");const result=await signInWithPopup(auth,provider);user=result.user}return user.getIdToken()}
+async function buy(plan,button){
+ const buttons=[...document.querySelectorAll("[data-plan]")];buttons.forEach(b=>b.disabled=true);
+ try{
+  const idToken=await token();
+  const orderRes=await fetch("/api/billing/order",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+idToken},body:JSON.stringify({plan})});
+  const order=await orderRes.json();if(!orderRes.ok)throw new Error(order.error||"Could not start checkout.");
+  if(!window.Razorpay)throw new Error("Razorpay Checkout did not load. Please refresh and try again.");
+  const checkout=new Razorpay({key:order.keyId,amount:order.amount,currency:order.currency,name:"Heartmate AI",description:order.name,order_id:order.orderId,prefill:{name:auth.currentUser?.displayName||"",email:auth.currentUser?.email||""},theme:{color:"#a83d55"},handler:async response=>{
+   try{
+    const verifyRes=await fetch("/api/billing/verify",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+await auth.currentUser.getIdToken()},body:JSON.stringify(response)});
+    const verified=await verifyRes.json();if(!verifyRes.ok)throw new Error(verified.error||"Payment verification failed.");
+    message("Payment verified! Your VIP membership is active. Enjoy Heartmate VIP.");
+   }catch(error){message(error.message+" If money was deducted, contact support with payment ID: "+(response.razorpay_payment_id||"not available"))}
+   buttons.forEach(b=>b.disabled=false);
+  }});
+  checkout.on("payment.failed",response=>{message("Payment was not completed: "+(response.error?.description||"Please try again."));buttons.forEach(b=>b.disabled=false)});
+  checkout.open();message("Checkout opened. Complete your payment securely in Razorpay.");
+ }catch(error){message(error.message);buttons.forEach(b=>b.disabled=false)}
+}
+document.querySelectorAll("[data-plan]").forEach(button=>button.addEventListener("click",()=>buy(button.dataset.plan,button)));
+</script>
+</body></html>
