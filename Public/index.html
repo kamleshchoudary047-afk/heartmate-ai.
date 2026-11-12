@@ -697,7 +697,22 @@ body.intro-active #heartmateWelcome{display:flex;flex-direction:column}
 .hm-welcome-foot{position:absolute;left:3.7%;bottom:28px;color:#f0d0ac;font:italic 18px 'Playfair Display',serif}
 .hm-welcome-foot small{display:block;margin-top:7px;font:10px 'DM Sans',sans-serif;letter-spacing:1px;color:#f5e5dc}
 @media(max-width:760px){
- #heartmateWelcome{background-position:60% center}
+ /* Mobile: show the complete hero artwork without cover-cropping */
+ #heartmateWelcome{
+   background-color:#080507;
+   background-image:url('/heartmate-hero.jpg');
+   background-size:100% auto;
+   background-position:center top;
+   background-repeat:no-repeat;
+ }
+ #heartmateWelcome:before{
+   background:linear-gradient(0deg,rgba(7,4,6,.98) 0%,rgba(7,4,6,.82) 42%,rgba(7,4,6,.05) 100%);
+ }
+ .hero{
+   background-size:100% auto,cover;
+   background-position:center top;
+   background-repeat:no-repeat;
+ }
  #heartmateWelcome:before{background:linear-gradient(0deg,rgba(7,4,6,.9) 0%,rgba(7,4,6,.62) 48%,rgba(7,4,6,.1) 100%),linear-gradient(90deg,#08050755,transparent)}
  .hm-welcome-nav{min-height:72px;flex-wrap:wrap;padding:14px 0}
  .hm-welcome-links{display:none}
