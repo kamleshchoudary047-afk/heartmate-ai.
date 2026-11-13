@@ -683,6 +683,42 @@ body[data-chat-theme="midnight"] #messageInput{background:#17233b;border-color:#
 }
 @media(max-width:360px){.chat-shortcut{font-size:9px;padding:5px 3px}.theme-wrap{font-size:8px}#chatTheme{width:60px;font-size:9px}}
 </style>
+
+<style id="heartmate-chat-shortcuts-refined">
+/* Compact, clearly separated Favorites / Dashboard / Theme controls */
+.chat-actions{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  margin-left:auto;padding:5px;border:1px solid rgba(244,196,143,.22);
+  border-radius:13px;background:rgba(255,255,255,.035);
+}
+.chat-shortcut{
+  min-height:29px;padding:6px 9px;border:1px solid rgba(255,157,178,.28);
+  border-radius:8px;background:rgba(255,120,155,.09);color:#ffe0bd;
+  font-size:10px;font-weight:700;letter-spacing:.1px;
+}
+.theme-wrap{
+  min-height:29px;padding:4px 7px;border:1px solid rgba(244,196,143,.3);
+  border-radius:8px;background:rgba(244,196,143,.08);gap:4px;
+  color:#ffe0bd;font-size:9px;
+}
+#chatTheme{width:68px;font-size:10px}
+@media(max-width:600px){
+  .chat-actions{
+    order:5;width:auto;max-width:100%;margin:2px auto 0;
+    display:flex;flex-wrap:nowrap;gap:6px;padding:4px 6px;
+  }
+  .chat-shortcut{min-height:28px;padding:5px 8px;font-size:10px}
+  .theme-wrap{min-height:28px;padding:4px 6px;font-size:9px}
+  #chatTheme{width:64px;font-size:10px}
+}
+@media(max-width:360px){
+  .chat-actions{gap:4px;padding:3px 4px}
+  .chat-shortcut{padding:5px 6px;font-size:9px}
+  .theme-wrap{padding:4px 5px;font-size:8px}
+  #chatTheme{width:58px;font-size:9px}
+}
+</style>
+
 </head>
 
 <body>
