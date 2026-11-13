@@ -648,6 +648,25 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
 #status{color:#ffc0dc}.modal-card{border-color:#ff83b855;background:linear-gradient(145deg,#35182e,#160e1c)}
 @media(max-width:699px){.tools button{font-size:10px}.message-voice{padding:6px 11px}}
 </style>
+<style id="heartmate-chat-themes">
+body[data-chat-theme="rose"]{background:radial-gradient(ellipse at 10% 0%,#6a294966,transparent 45%),radial-gradient(ellipse at 100% 40%,#b94c7650,transparent 40%),#180910}
+body[data-chat-theme="rose"] header,body[data-chat-theme="rose"] .footer{background:#210d19f2}
+body[data-chat-theme="rose"] .message.bot{background:linear-gradient(145deg,#482238,#2b1423);border-color:#ff9db233}
+body[data-chat-theme="rose"] .message.user{background:linear-gradient(135deg,#f06b91,#c05d9c)}
+body[data-chat-theme="rose"] .relationship-card{background:linear-gradient(135deg,#492039,#291522);border-color:#ff83bd55}
+body[data-chat-theme="rose"] #messageInput{background:#2a1422;border-color:#ff9db255}
+body[data-chat-theme="midnight"]{background:radial-gradient(ellipse at 15% 0%,#273d6b66,transparent 45%),#080d1a}
+body[data-chat-theme="midnight"] header,body[data-chat-theme="midnight"] .footer{background:#0c1425f2}
+body[data-chat-theme="midnight"] .message.bot{background:linear-gradient(145deg,#1d2d4b,#131d32);border-color:#8cb8ff33}
+body[data-chat-theme="midnight"] .message.user{background:linear-gradient(135deg,#5c83d6,#8767c9)}
+body[data-chat-theme="midnight"] .relationship-card{background:linear-gradient(135deg,#1c3152,#18233a);border-color:#8cb8ff55}
+body[data-chat-theme="midnight"] .relationship-fill{background:linear-gradient(90deg,#79aaff,#b69aff)}
+body[data-chat-theme="midnight"] #messageInput{background:#17233b;border-color:#8cb8ff55}
+#chatTheme{max-width:112px;padding:8px 9px;border:1px solid #ffffff25;border-radius:11px;background:#ffffff10;color:#fff;font:11px inherit}
+#chatTheme option{background:#1d152b;color:#fff}
+.chat-shortcut{color:#ffd0e2;text-decoration:none;font-size:11px;font-weight:700;padding:8px 9px;border:1px solid #ffffff22;border-radius:10px;white-space:nowrap}
+@media(max-width:430px){.chat-shortcut{font-size:10px;padding:7px 6px}#chatTheme{max-width:95px;font-size:10px;padding:7px 5px}}
+</style>
 </head>
 
 <body>
@@ -659,6 +678,9 @@ header,.footer{background:rgba(12,7,15,.96);border-color:#ff75b533}.back{color:#
     <h3 id="girlName">Your Heartmate</h3>
     <small>● Here with you</small>
   </div>
+  <a class="chat-shortcut" href="/favorites.html">♡ Favorites</a>
+  <a class="chat-shortcut" href="/dashboard.html">Dashboard</a>
+  <select id="chatTheme" aria-label="Chat colour theme"><option value="classic">Classic</option><option value="rose">Rose</option><option value="midnight">Midnight</option></select>
   <div id="account">
     <button class="small-button" id="signIn">Sign in</button>
     <button class="small-button" id="signOut" hidden>Sign out</button>
@@ -1354,6 +1376,14 @@ const names = {
 const requested = (params.get("girl") || "aria").toLowerCase();
 const character = names[requested] ? requested : "aria";
 let girlName = names[character] || "Your companion";
+// Keep a small on-device list for the personal dashboard; message history itself
+// continues to be restored securely by the signed-in chat API.
+try {
+  const recentKey="heartmate-recent-companions";
+  const recent=JSON.parse(localStorage.getItem(recentKey)||"[]");
+  const updated=[girlName,...(Array.isArray(recent)?recent.filter(name=>name!==girlName):[])].slice(0,8);
+  localStorage.setItem(recentKey,JSON.stringify(updated));
+} catch(error) { console.warn("Could not save recent companion:",error); }
 
 const $ = id => document.getElementById(id);
 $("girlName").textContent = girlName;
@@ -2600,5 +2630,19 @@ onAuthStateChanged(auth, async currentUser => {
 });
 </script>
 
+<script>
+(function(){
+ const select=document.getElementById("chatTheme");
+ if(!select)return;
+ const key="heartmate-chat-theme";
+ const saved=localStorage.getItem(key)||"classic";
+ select.value=["classic","rose","midnight"].includes(saved)?saved:"classic";
+ document.body.dataset.chatTheme=select.value;
+ select.addEventListener("change",function(){
+   document.body.dataset.chatTheme=select.value;
+   try{localStorage.setItem(key,select.value)}catch(error){}
+ });
+})();
+</script>
 </body>
 </html>
