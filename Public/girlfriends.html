@@ -165,8 +165,16 @@ function render(){
  items.forEach(([name,description])=>{
   const slug=name.toLowerCase(),card=document.createElement("article");card.className="card";
   const img=document.createElement("img");img.className="photo";img.alt=name+" portrait";img.loading="lazy";
+  // First check the flat filename; if it is absent, try the existing per-girlfriend folder.
   img.src="/images/"+slug+"-1.jpeg";
-  img.onerror=function(){const fallback=document.createElement("div");fallback.className="fallback";fallback.textContent=name.charAt(0);this.replaceWith(fallback)};
+  img.onerror=function(){
+   if(!this.dataset.triedFolder){
+    this.dataset.triedFolder="yes";
+    this.src="/images/"+slug+"/"+slug+"-1.jpeg";
+    return;
+   }
+   const fallback=document.createElement("div");fallback.className="fallback";fallback.textContent=name.charAt(0);this.replaceWith(fallback);
+  };
   const info=document.createElement("div");info.className="info";
   const h=document.createElement("h2");h.textContent=name;
   const p=document.createElement("p");p.textContent=description;
