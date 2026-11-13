@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10070d"><title>Heartmate After Dark</title>
+<style>
+:root{--bg:#10070d;--panel:#21101a;--rose:#ff789b;--gold:#f4c48f;--text:#fff7f5;--muted:#d0b4bd}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 0%,#69233d 0,transparent 42%),var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif}
+header{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:14px 5%;background:#10070df0;border-bottom:1px solid #f4c48f33;backdrop-filter:blur(15px)}
+a{color:inherit;text-decoration:none}.back{color:var(--gold);font-size:13px}.logo{font:600 21px Georgia,serif}.logo span{color:var(--rose)}
+main{width:min(900px,92%);margin:30px auto 60px}.hero{text-align:center;padding:22px 10px 28px}.eyebrow{color:var(--gold);font-size:10px;letter-spacing:2px;font-weight:800}.hero h1{font:600 clamp(38px,7vw,58px) Georgia,serif;margin:12px 0}.hero h1 span{color:var(--rose)}.hero p{max-width:600px;margin:auto;color:var(--muted);font-size:13px;line-height:1.7}
+.panel{margin:16px 0;padding:20px;border:1px solid #f4c48f35;border-radius:20px;background:linear-gradient(145deg,#2b1420,#190d14);box-shadow:0 12px 30px #0004}
+.panel h2{font:600 24px Georgia,serif;margin:0 0 8px}.desc{color:var(--muted);font-size:12px;line-height:1.6;margin:0 0 15px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.choice,.action{display:block;width:100%;padding:13px;border:1px solid #ff9db255;border-radius:13px;background:#ffffff09;color:var(--text);text-align:left;font:600 12px system-ui;cursor:pointer}
+.choice small{display:block;margin-top:5px;color:var(--muted);font-weight:400;line-height:1.45}.choice[aria-pressed=true]{border-color:var(--gold);background:#f4c48f18;box-shadow:0 0 0 1px #f4c48f33}
+.action{width:auto;text-align:center;background:linear-gradient(100deg,#ff789b,#f4c48f);border:0;color:#260d18;font-weight:800;padding:11px 17px}
+.output{min-height:54px;padding:14px;border:1px solid #ffffff20;border-radius:13px;background:#09050866;color:#ffe2e9;font:16px/1.5 Georgia,serif;margin:12px 0}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.note{color:#bda6ad;font-size:10px;line-height:1.6;margin-top:12px}
+select{padding:12px;border:1px solid #f4c48f55;border-radius:12px;background:#160b12;color:white;font:13px system-ui;max-width:100%}
+@media(max-width:420px){.grid{grid-template-columns:1fr}.panel{padding:16px}.hero{padding-top:12px}}
+</style></head>
+<body>
+<header><a class="back" href="/chat.html?girl=Aria">‹ Back to chat</a><div class="logo">Heartmate <span>After Dark</span></div><a class="back" href="/girlfriends.html">Companions</a></header>
+<main>
+<section class="hero"><div class="eyebrow">A LITTLE MORE ROMANCE</div><h1>Heartmate <span>After Dark</span> 🌹</h1><p>Set the mood, plan a fantasy date and play flirty games with your fictional adult companion. Keep it playful, mutual and comfortable.</p></section>
+<section class="panel"><h2>🔥 Passion Mode</h2><p class="desc">Choose the conversation vibe you want to explore. This sets a local preference for this device.</p><div class="grid" id="moods">
+<button class="choice" data-mood="Sweet & romantic" aria-pressed="true">🌹 Sweet & romantic<small>Warm compliments and affectionate moments</small></button>
+<button class="choice" data-mood="Playfully teasing" aria-pressed="false">😉 Playfully teasing<small>Cheeky banter and flirty challenges</small></button>
+<button class="choice" data-mood="Bold & confident" aria-pressed="false">🔥 Bold & confident<small>Confident flirting and dramatic chemistry</small></button>
+<button class="choice" data-mood="Slow-burn romance" aria-pressed="false">💋 Slow-burn romance<small>Gentle tension and meaningful connection</small></button>
+</div><p class="note" id="moodStatus">Selected mood: Sweet & romantic</p></section>
+<section class="panel"><h2>🕯️ Private Fantasy Dates</h2><p class="desc">Pick a setting to inspire your next roleplay scene.</p><div class="grid" id="dates">
+<button class="choice" data-date="Candlelight dinner in a rooftop restaurant">🥂 Rooftop dinner<small>City lights, soft music and a candlelit table</small></button>
+<button class="choice" data-date="Moonlit walk on a quiet beach">🌙 Moonlit beach<small>Waves, starlight and a peaceful stroll</small></button>
+<button class="choice" data-date="Cozy movie night with blankets and snacks">🎬 Cozy movie night<small>A favorite film and playful conversation</small></button>
+<button class="choice" data-date="Weekend getaway at a mountain resort">🏞️ Weekend getaway<small>Fresh air, scenic views and time together</small></button>
+</div><div class="output" id="dateOutput" aria-live="polite">Choose a date setting to preview your scene.</div><a class="action" id="dateChat" href="/chat.html?girl=Aria">Start with Aria</a></section>
+<section class="panel"><h2>🎲 Flirty Truth or Dare</h2><p class="desc">Light-hearted prompts. Skip anything that doesn't feel right.</p><div class="row"><button class="action" id="truth">Truth</button><button class="action" id="dare">Dare</button><button class="choice" id="nextPrompt" style="width:auto">Surprise me ✨</button></div><div class="output" id="gameOutput" aria-live="polite">Choose Truth, Dare or Surprise me.</div></section>
+<section class="panel"><h2>✨ Outfit & Mood Studio</h2><p class="desc">Choose a fully clothed fashion look and a scene mood for your companion's roleplay description.</p><div class="grid"><label class="choice">Fashion look<br><select id="outfit"><option>Elegant satin evening dress</option><option>Chic black cocktail dress</option><option>Glamorous saree</option><option>Luxury lounge set</option><option>Classic date-night gown</option></select></label><label class="choice">Scene mood<br><select id="sceneMood"><option>Confident and playful</option><option>Soft and romantic</option><option>Mysterious and glamorous</option><option>Warm and affectionate</option></select></label></div><div class="output" id="lookOutput" aria-live="polite">Your selected look will appear here.</div><button class="action" id="saveLook">Save my style</button></section>
+<section class="panel"><h2>💗 Romance Journey</h2><p class="desc">A playful local progress tracker for date ideas and affectionate moments. It does not unlock paid content or change AI capabilities.</p><div class="output" id="progress">Romance moments saved: 0</div><button class="action" id="addMoment">Save a romance moment +1</button><p class="note">Your selections and progress are stored only in this browser on this device. Clear this browser's site data to reset them.</p></section>
+</main>
+<script>
+const read=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}};
+const write=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+document.querySelectorAll('#moods .choice').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#moods .choice').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');write('heartmate-afterdark-mood',b.dataset.mood);document.getElementById('moodStatus').textContent='Selected mood: '+b.dataset.mood;}));
+const savedMood=read('heartmate-afterdark-mood','Sweet & romantic');document.querySelectorAll('#moods .choice').forEach(b=>{b.setAttribute('aria-pressed',String(b.dataset.mood===savedMood));});document.getElementById('moodStatus').textContent='Selected mood: '+savedMood;
+let currentDate='';document.querySelectorAll('#dates .choice').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#dates .choice').forEach(x=>x.setAttribute('aria-pressed','false'));b.setAttribute('aria-pressed','true');currentDate=b.dataset.date;document.getElementById('dateOutput').textContent='Tonight’s scene: '+currentDate+'. Your companion is ready to imagine this moment with you.';write('heartmate-afterdark-date',currentDate);document.getElementById('dateChat').href='/chat.html?girl=Aria';}));
+const truths=['What is the sweetest compliment that always makes you smile?','What would your perfect romantic evening look like?','Which little gesture makes you feel appreciated?','What song would you choose for a slow dance?','What is your favorite kind of playful flirting?'];
+const dares=['Send your companion a creative compliment.','Choose a song for your imaginary date.','Describe your dream candlelit dinner in three details.','Give your companion a playful nickname.','Plan a surprise date in one sentence.'];
+function prompt(type){const a=type==='truth'?truths:type==='dare'?dares:[...truths,...dares];document.getElementById('gameOutput').textContent=a[Math.floor(Math.random()*a.length)];}
+document.getElementById('truth').onclick=()=>prompt('truth');document.getElementById('dare').onclick=()=>prompt('dare');document.getElementById('nextPrompt').onclick=()=>prompt('random');
+function updateLook(){document.getElementById('lookOutput').textContent=document.getElementById('outfit').value+' · '+document.getElementById('sceneMood').value;}
+document.getElementById('outfit').onchange=updateLook;document.getElementById('sceneMood').onchange=updateLook;document.getElementById('saveLook').onclick=()=>{const v={outfit:document.getElementById('outfit').value,mood:document.getElementById('sceneMood').value};write('heartmate-afterdark-look',v);updateLook();document.getElementById('lookOutput').textContent+=' — saved on this device.';};
+const progressKey='heartmate-afterdark-moments';let count=read(progressKey,0);const show=()=>document.getElementById('progress').textContent='Romance moments saved: '+count;show();document.getElementById('addMoment').onclick=()=>{count++;write(progressKey,count);show();};
+</script></body></html>
