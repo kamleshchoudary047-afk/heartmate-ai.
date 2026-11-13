@@ -102,12 +102,22 @@ footer{color:#d3aeba}
 @media(prefers-reduced-motion:reduce){.card:hover{transform:none}.card:hover .photo{transform:none}}
 </style>
 </style>
+<style id="heartmate-favorites-tags">
+.card:after{content:none!important}
+.favorite-btn{position:absolute;z-index:4;right:9px;top:9px;width:36px;height:36px;border:1px solid #ffffff70;border-radius:50%;background:#10080dcc;color:#fff;font-size:21px;line-height:1;cursor:pointer;display:grid;place-items:center;backdrop-filter:blur(8px)}
+.favorite-btn[aria-pressed="true"]{background:#ff668d;color:#fff;border-color:#ffb4c8}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0 2px}
+.tag{padding:4px 7px;border:1px solid #f4c48f55;border-radius:20px;color:#ffdfc0;background:#5b2a3b99;font-size:9px;font-weight:700;letter-spacing:.2px}
+.info p{height:auto;min-height:0;max-height:30px}
+.chat{display:block;width:100%;padding:10px 8px;font-size:11px;letter-spacing:.2px;background:linear-gradient(100deg,#ff668d,#f4b978);color:#260d18}
+@media(max-width:600px){.favorite-btn{width:33px;height:33px;font-size:20px}.tag{font-size:8px;padding:4px 6px}.chat{padding:10px 5px}}
+</style>
 </head>
 <body>
 <header><nav class="wrap"><a class="logo" href="/">Heartmate<span> AI</span></a><a class="back" href="/">← Back to Home</a></nav></header>
 <main class="wrap">
 <section class="hero"><div class="eyebrow">THE HEARTMATE COLLECTION · 18+</div><h1>Meet your <span>girlfriends.</span></h1><p>One beautiful place to explore every fictional adult companion. Search by name, discover a personality and open her chat.</p></section>
-<div class="tools"><input id="search" type="search" placeholder="Search girlfriends..." aria-label="Search girlfriends"><select id="sort" aria-label="Sort girlfriends"><option value="featured">Default order</option><option value="az">A to Z</option></select></div>
+<div class="tools"><input id="search" type="search" placeholder="Search girlfriends..." aria-label="Search girlfriends"><select id="sort" aria-label="Sort girlfriends"><option value="featured">Default order</option><option value="az">A to Z</option><option value="favorites">♥ Favorites</option></select></div>
 <p class="count" id="count"></p><section class="grid" id="grid" aria-live="polite"></section><p class="empty" id="empty">No girlfriends found. Try another name.</p>
 </main>
 <footer class="wrap">© 2026 Heartmate AI · Fictional adult AI companions · 18+ only</footer>
@@ -158,9 +168,17 @@ const companions = [
   ["Mira","Warm, playful, affectionate and romantic."]
 ];
 const grid=document.getElementById("grid"),search=document.getElementById("search"),sort=document.getElementById("sort"),count=document.getElementById("count"),empty=document.getElementById("empty");
+const FAVORITES_KEY="heartmate-favorite-companions";
+function getFavorites(){try{return JSON.parse(localStorage.getItem(FAVORITES_KEY)||"[]")}catch(e){return []}}
+function saveFavorites(items){try{localStorage.setItem(FAVORITES_KEY,JSON.stringify(items))}catch(e){}}
+function personalityTags(description){
+ return description.split(",").slice(0,2).map(tag=>tag.trim()).filter(Boolean);
+}
 function render(){
+ const favorites=getFavorites();
  let items=companions.filter(c=>(c[0]+" "+c[1]).toLowerCase().includes(search.value.trim().toLowerCase()));
  if(sort.value==="az")items.sort((a,b)=>a[0].localeCompare(b[0]));
+ if(sort.value==="favorites")items=items.filter(c=>favorites.includes(c[0]));
  grid.replaceChildren();
  items.forEach(([name,description])=>{
   const slug=name.toLowerCase(),card=document.createElement("article");card.className="card";
@@ -177,13 +195,21 @@ function render(){
    const fallback=document.createElement("div");fallback.className="fallback";fallback.textContent=name.charAt(0);this.replaceWith(fallback);
   };
   img.src=portraitPaths[0];
+  const favorite=document.createElement("button");favorite.type="button";favorite.className="favorite-btn";favorite.setAttribute("aria-label",(favorites.includes(name)?"Remove ":"Add ")+name+" "+ "from favorites");favorite.setAttribute("aria-pressed",String(favorites.includes(name)));favorite.textContent=favorites.includes(name)?"♥":"♡";
+  favorite.addEventListener("click",()=>{
+   const updated=getFavorites(),index=updated.indexOf(name);
+   if(index>=0)updated.splice(index,1);else updated.push(name);
+   saveFavorites(updated);render();
+  });
   const info=document.createElement("div");info.className="info";
   const h=document.createElement("h2");h.textContent=name;
   const p=document.createElement("p");p.textContent=description;
-  const link=document.createElement("a");link.className="chat";link.href="/chat.html?girl="+encodeURIComponent(name);link.textContent="Chat with "+name+" →";
-  info.append(h,p,link);card.append(img,info);grid.append(card);
+  const tags=document.createElement("div");tags.className="tags";tags.setAttribute("aria-label","Personality traits");
+  personalityTags(description).forEach(label=>{const tag=document.createElement("span");tag.className="tag";tag.textContent=label;tags.append(tag)});
+  const link=document.createElement("a");link.className="chat";link.href="/chat.html?girl="+encodeURIComponent(name);link.textContent="Chat Now →";
+  info.append(h,p,tags,link);card.append(img,favorite,info);grid.append(card);
  });
- count.textContent=items.length+" girlfriends in the collection";
+ count.textContent=items.length+(sort.value==="favorites"?" favorite companions":" girlfriends in the collection");
  empty.style.display=items.length?"none":"block";
 }
 search.addEventListener("input",render);sort.addEventListener("change",render);render();
