@@ -761,6 +761,19 @@ body>#typing{flex-shrink:0}
   body>.footer{padding-left:10px;padding-right:10px}
 }
 
+
+/* Chat search */
+#chatSearchModal{display:none;position:fixed;inset:0;z-index:120;background:#08050dcc;backdrop-filter:blur(8px);padding:18px;align-items:flex-start;justify-content:center;overflow-y:auto}
+#chatSearchModal.open{display:flex}
+.chat-search-card{width:min(100%,520px);margin:8vh auto 20px;padding:18px;border:1px solid #ff83bd55;border-radius:18px;background:linear-gradient(145deg,#302039,#160f20);box-shadow:0 18px 60px #0009}
+.chat-search-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:13px}
+.chat-search-head h3{margin:0;color:#ffe0ed;font-size:16px}
+#chatSearchInput{width:100%;padding:13px;border:1px solid #ff9db255;border-radius:11px;background:#100b18;color:#fff;font:inherit;outline:none}
+#chatSearchResults{display:grid;gap:8px;margin-top:12px;max-height:55vh;overflow:auto}
+.chat-search-result{width:100%;padding:11px;text-align:left;border:1px solid #ffffff20;border-radius:11px;background:#ffffff0a;color:#fff;line-height:1.45}
+.chat-search-result small{display:block;color:#ffc0dc;margin-bottom:4px}
+.chat-search-empty{padding:16px;text-align:center;color:#c5b5d5;font-size:12px}
+.message.search-match{outline:2px solid #ffd27d;box-shadow:0 0 0 5px #ffd27d22}
 </style>
 
 </head>
@@ -841,6 +854,11 @@ body>#typing{flex-shrink:0}
             <button id="voiceToggle" type="button" onclick="toggleVoice()" aria-pressed="false">🔇 Voice off · tap to enable</button>
             <button onclick="toggleRecording()">🎙️ Voice input</button>
           </div>
+        </section>
+        <section class="chat-tool-group">
+          <h4>🔎 Find in conversation</h4>
+          <div class="chat-tool-grid"><button type="button" onclick="openChatSearch()">🔎 Search messages</button></div>
+          <p class="memory-hint">Find a word or phrase in this companion's saved chat.</p>
         </section>
         <section class="chat-tool-group">
           <h4>💾 Your conversation</h4>
@@ -1490,6 +1508,14 @@ body>#typing{flex-shrink:0}
   </div>
 </div>
 
+
+<div id="chatSearchModal" role="dialog" aria-modal="true" aria-labelledby="chatSearchTitle">
+  <div class="chat-search-card">
+    <div class="chat-search-head"><h3 id="chatSearchTitle">🔎 Search this conversation</h3><button type="button" class="small-button" onclick="closeChatSearch()">Close</button></div>
+    <input id="chatSearchInput" type="search" placeholder="Search messages…" autocomplete="off" aria-label="Search chat messages">
+    <div id="chatSearchResults" aria-live="polite"><div class="chat-search-empty">Type a word or phrase to find messages.</div></div>
+  </div>
+</div>
 <script>
 const params = new URLSearchParams(location.search);
 const liveModeRequested = params.get("live") === "1";
@@ -1625,6 +1651,7 @@ async function refreshRelationship() {
 function addMessage(text, sender) {
   const div = document.createElement("div");
   div.className = "message " + sender;
+  div.dataset.historyIndex = String(messages.querySelectorAll(".message").length);
   const content = document.createElement("span");
   content.textContent = text;
   div.appendChild(content);
@@ -2027,6 +2054,48 @@ async function loadChatHistory() {
 
   status.textContent = "";
 }
+
+/* CHAT SEARCH */
+function openChatSearch(){
+  const modal=$("chatSearchModal");
+  modal.classList.add("open");
+  $("chatSearchInput").value="";
+  $("chatSearchResults").innerHTML='<div class="chat-search-empty">Type a word or phrase to find messages.</div>';
+  setTimeout(()=>$("chatSearchInput").focus(),40);
+}
+function closeChatSearch(){$("chatSearchModal").classList.remove("open");}
+function searchChatHistory(){
+  const query=$("chatSearchInput").value.trim().toLocaleLowerCase();
+  const results=$("chatSearchResults");
+  results.replaceChildren();
+  if(!query){results.innerHTML='<div class="chat-search-empty">Type a word or phrase to find messages.</div>';return;}
+  const matches=[];
+  chatHistory.forEach((item,index)=>{
+    const content=String(item.content||"");
+    const position=content.toLocaleLowerCase().indexOf(query);
+    if(position!==-1){
+      const start=Math.max(0,position-65),end=Math.min(content.length,position+query.length+100);
+      const snippet=(start?"…":"")+content.slice(start,end).replace(/\\s+/g," ")+(end<content.length?"…":"");
+      matches.push({index,speaker:item.role==="user"?"You":girlName,snippet});
+    }
+  });
+  if(!matches.length){results.innerHTML='<div class="chat-search-empty">No matching messages found.</div>';return;}
+  const count=document.createElement("div");count.className="chat-search-empty";count.textContent=matches.length+" matching message"+(matches.length===1?"":"s");results.appendChild(count);
+  matches.slice(0,100).reverse().forEach(match=>{
+    const button=document.createElement("button");button.type="button";button.className="chat-search-result";
+    const speaker=document.createElement("small");speaker.textContent=match.speaker+" · Message "+(match.index+1);
+    const excerpt=document.createElement("span");excerpt.textContent=match.snippet;
+    button.append(speaker,excerpt);
+    button.addEventListener("click",()=>{
+      closeChatSearch();
+      const target=messages.querySelector('.message[data-history-index="'+match.index+'"]');
+      if(target){document.querySelectorAll(".message.search-match").forEach(el=>el.classList.remove("search-match"));target.scrollIntoView({behavior:"smooth",block:"center"});target.classList.add("search-match");setTimeout(()=>target.classList.remove("search-match"),2600);}
+    });
+    results.appendChild(button);
+  });
+}
+$("chatSearchInput").addEventListener("input",searchChatHistory);
+$("chatSearchModal").addEventListener("click",event=>{if(event.target===$("chatSearchModal"))closeChatSearch();});
 
 /* CHAT BACKUP */
 
