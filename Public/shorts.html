@@ -109,6 +109,17 @@ header{background:linear-gradient(180deg,#09080ef5,#09080e99,transparent)}
 .overlay h2{font-family:Inter,sans-serif;font-weight:800;color:#fff}.overlay p{color:#f4dce9}
 .controls button{background:#17131fcc;border:1px solid #ffffff30;border-radius:50%;backdrop-filter:blur(15px)}
 .message{color:#ff9ac8;font-family:Inter,sans-serif}
+.series-screen{min-height:100dvh;padding:100px 18px 32px;max-width:760px;margin:0 auto}
+.series-heading{font-family:Georgia,serif;font-size:30px;margin:8px 0;color:#ffe1c8}
+.series-subtitle{color:#d8c3cf;font-size:14px;line-height:1.6;margin:0 0 24px}
+.series-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.series-card{padding:20px;border:1px solid #ff80b84d;border-radius:20px;background:linear-gradient(135deg,#291724,#15111c);box-shadow:0 12px 32px #0005}
+.series-card h2{margin:0 0 8px;font-size:20px;color:#fff}
+.series-card p{margin:0 0 16px;color:#d9c6d2;font-size:13px}
+.series-card button,.series-back{border:1px solid #f0c6a866;border-radius:24px;padding:11px 17px;background:#321b2b;color:#ffe1c8;font-weight:700}
+.series-card button:disabled{opacity:.45}
+.series-back{position:fixed;top:72px;left:16px;z-index:12}
+[hidden]{display:none!important}
 </style>
 </head>
 
@@ -119,7 +130,14 @@ header{background:linear-gradient(180deg,#09080ef5,#09080e99,transparent)}
   <a href="/chat.html">Back to Chat</a>
 </header>
 
-<main class="feed" id="feed">
+<main class="series-screen" id="seriesScreen">
+  <h1 class="series-heading">Choose a series</h1>
+  <p class="series-subtitle">Pick a collection and watch its episodes in order. New series can be added whenever you like.</p>
+  <div class="series-grid" id="seriesGrid"></div>
+  <div class="message" id="seriesMessage">Loading your series…</div>
+</main>
+<button class="series-back" id="seriesBack" type="button" hidden>← All series</button>
+<main class="feed" id="feed" hidden>
   <div class="message" id="message">
     Your Shorts videos will appear here.
     <br><br>
@@ -128,129 +146,123 @@ header{background:linear-gradient(180deg,#09080ef5,#09080e99,transparent)}
 </main>
 
 <script>
-const feed = document.getElementById("feed");
-const message = document.getElementById("message");
-const MAX_SHORTS = 100;
+const feed=document.getElementById("feed");
+const seriesScreen=document.getElementById("seriesScreen");
+const seriesGrid=document.getElementById("seriesGrid");
+const seriesMessage=document.getElementById("seriesMessage");
+const seriesBack=document.getElementById("seriesBack");
+const MAX_SHORTS=100;
+let loadedSeries=[];
+
+async function checkEpisodeFiles(episodes){
+  const checks=await Promise.all(episodes.map(async item=>{
+    try{const response=await fetch(item.file,{method:"HEAD",cache:"no-store"});return response.ok?item:null;}
+    catch(_){return null;}
+  }));
+  return checks.filter(Boolean);
+}
+
+function normalizeSeries(data){
+  if(Array.isArray(data.series)){
+    return data.series.map((series,index)=>({
+      title:series.title||`Series ${index+1}`,
+      description:series.description||"Watch this series episode by episode.",
+      episodes:(Array.isArray(series.episodes)?series.episodes:[]).map((episode,i)=>({...episode,episodeNumber:episode.episodeNumber||i+1}))
+    }));
+  }
+  const videos=Array.isArray(data)?data:(Array.isArray(data.videos)?data.videos:[]);
+  return videos.length?[{title:"All Shorts",description:"Your short videos",episodes:videos}]:[];
+}
+
+function showSeriesList(){
+  feed.hidden=true;
+  seriesScreen.hidden=false;
+  seriesBack.hidden=true;
+  feed.innerHTML="";
+  window.scrollTo(0,0);
+}
+
+function openSeries(index){
+  const series=loadedSeries[index];
+  if(!series)return;
+  seriesScreen.hidden=true;
+  feed.hidden=false;
+  seriesBack.hidden=false;
+  feed.innerHTML="";
+  const episodes=series.availableEpisodes;
+  if(!episodes.length){
+    const empty=document.createElement("div");
+    empty.className="message";
+    empty.textContent="No episodes uploaded in this series yet. Add its MP4 files to Public/shorts and refresh.";
+    feed.append(empty);
+    return;
+  }
+  episodes.forEach((item,i)=>{
+    const card=document.createElement("section");
+    card.className="video-card";
+    const video=document.createElement("video");
+    video.src=item.file;video.autoplay=i===0;video.loop=true;video.muted=true;video.playsInline=true;video.preload=i===0?"metadata":"none";
+    const overlay=document.createElement("div");overlay.className="overlay";
+    const heading=document.createElement("h2");heading.textContent=item.name||series.title;
+    const caption=document.createElement("p");caption.textContent=item.caption||`${series.title} · Episode ${item.episodeNumber||i+1}`;
+    overlay.append(heading,caption);
+    const controls=document.createElement("div");controls.className="controls";
+    const mute=document.createElement("button");mute.textContent="🔇";mute.setAttribute("aria-label","Toggle sound");
+    mute.onclick=()=>{video.muted=!video.muted;mute.textContent=video.muted?"🔇":"🔊";};
+    const play=document.createElement("button");play.textContent="Ⅱ";play.setAttribute("aria-label","Play or pause");
+    play.onclick=()=>{if(video.paused){video.play().catch(()=>{});play.textContent="Ⅱ";}else{video.pause();play.textContent="▶";}};
+    controls.append(mute,play);card.append(video,overlay,controls);feed.append(card);
+  });
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      const video=entry.target.querySelector("video");
+      const play=entry.target.querySelector('[aria-label="Play or pause"]');
+      if(entry.isIntersecting){
+        feed.querySelectorAll(".video-card video").forEach(other=>{if(other!==video)other.pause();});
+        video.play().then(()=>{if(play)play.textContent="Ⅱ";}).catch(()=>{});
+      }else video.pause();
+    });
+  },{root:feed,threshold:0.65});
+  feed.querySelectorAll(".video-card").forEach(card=>observer.observe(card));
+  feed.scrollTop=0;
+}
+
+function renderSeriesCards(){
+  seriesGrid.innerHTML="";
+  loadedSeries.forEach((series,index)=>{
+    const card=document.createElement("article");card.className="series-card";
+    const title=document.createElement("h2");title.textContent=series.title;
+    const description=document.createElement("p");
+    description.textContent=`${series.availableEpisodes.length} of ${series.episodes.length} episodes uploaded · ${series.description}`;
+    const button=document.createElement("button");button.type="button";
+    button.textContent=series.availableEpisodes.length?"Watch series →":"Episodes coming soon";
+    button.disabled=series.availableEpisodes.length===0;
+    button.addEventListener("click",()=>openSeries(index));
+    card.append(title,description,button);seriesGrid.append(card);
+  });
+  seriesMessage.hidden=loadedSeries.length>0;
+  if(!loadedSeries.length)seriesMessage.textContent="No series listed yet. Add series and episodes in shorts/videos.json.";
+}
 
 async function loadShorts(){
-  try {
-    const response = await fetch("/shorts/videos.json", {cache:"no-store"});
-    if(!response.ok) throw new Error("Could not load the Shorts list.");
-    const data = await response.json();
-    // Supports grouped series (each with episodes) and the older flat videos list.
-    const flatVideos = Array.isArray(data)
-      ? data
-      : (Array.isArray(data.videos) ? data.videos : []);
-    const groupedVideos = Array.isArray(data.series)
-      ? data.series.flatMap(series => {
-          const episodes = Array.isArray(series.episodes) ? series.episodes : [];
-          return episodes.map((episode,index) => ({
-            ...episode,
-            name: episode.name || series.title || "Heartmate Shorts",
-            caption: episode.caption || `${series.title || "Series"} · Episode ${episode.episodeNumber || index + 1}`
-          }));
-        })
-      : [];
-    const videos = groupedVideos.length ? groupedVideos : flatVideos;
-    const listedVideos = videos.filter(item =>
-      item &&
-      typeof item.file === "string" &&
-      item.file.startsWith("/shorts/") &&
-      item.file.toLowerCase().endsWith(".mp4")
-    ).slice(0, MAX_SHORTS);
-
-    // Ignore episode slots until their matching MP4 files have actually been uploaded.
-    const availability = await Promise.all(listedVideos.map(async item => {
-      try {
-        const check = await fetch(item.file, { method: "HEAD", cache: "no-store" });
-        return check.ok ? item : null;
-      } catch (_) {
-        return null;
-      }
+  try{
+    const response=await fetch("/shorts/videos.json",{cache:"no-store"});
+    if(!response.ok)throw new Error("Could not load series list.");
+    const data=await response.json();
+    const seriesList=normalizeSeries(data);
+    loadedSeries=await Promise.all(seriesList.map(async series=>{
+      const episodes=series.episodes.filter(item=>item&&typeof item.file==="string"&&item.file.startsWith("/shorts/")&&item.file.toLowerCase().endsWith(".mp4")).slice(0,MAX_SHORTS);
+      return {...series,episodes,availableEpisodes:await checkEpisodeFiles(episodes)};
     }));
-    const validVideos = availability.filter(Boolean);
-
-    if(!validVideos.length){
-      message.textContent = "Your 10 episode slots are ready. Upload episode-01.mp4 through episode-10.mp4 into Public/shorts to make them appear here.";
-      return;
-    }
-
-    message.remove();
-    validVideos.forEach((item,index) => {
-      const card = document.createElement("section");
-      card.className = "video-card";
-
-      const video = document.createElement("video");
-      video.src = item.file;
-      video.autoplay = index === 0;
-      video.loop = true;
-      video.muted = true;
-      video.playsInline = true;
-      video.preload = index === 0 ? "metadata" : "none";
-
-      const overlay = document.createElement("div");
-      overlay.className = "overlay";
-      const heading = document.createElement("h2");
-      heading.textContent = item.name || "Your Companion";
-      const caption = document.createElement("p");
-      caption.textContent = item.caption || "A little moment just for you ♥";
-      overlay.append(heading,caption);
-
-      const controls = document.createElement("div");
-      controls.className = "controls";
-
-      const mute = document.createElement("button");
-      mute.textContent = "🔇";
-      mute.setAttribute("aria-label","Toggle sound");
-      mute.onclick = () => {
-        video.muted = !video.muted;
-        mute.textContent = video.muted ? "🔇" : "🔊";
-      };
-
-      const play = document.createElement("button");
-      play.textContent = "Ⅱ";
-      play.setAttribute("aria-label","Play or pause");
-      play.onclick = () => {
-        if(video.paused){
-          video.play().catch(() => {});
-          play.textContent = "Ⅱ";
-        }else{
-          video.pause();
-          play.textContent = "▶";
-        }
-      };
-
-      controls.append(mute,play);
-      card.append(video,overlay,controls);
-      feed.append(card);
-    });
-
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        const video = entry.target.querySelector("video");
-        const play = entry.target.querySelector('[aria-label="Play or pause"]');
-        if(entry.isIntersecting){
-          document.querySelectorAll(".video-card video").forEach(v => {
-            if(v !== video) v.pause();
-          });
-          video.play().then(() => {
-            if(play) play.textContent = "Ⅱ";
-          }).catch(() => {});
-        }else{
-          video.pause();
-        }
-      });
-    },{root:feed,threshold:0.65});
-
-    document.querySelectorAll(".video-card").forEach(card => observer.observe(card));
-  } catch(error) {
-    message.textContent = "Couldn't load Shorts right now. Please refresh and try again.";
+    renderSeriesCards();
+  }catch(error){
+    seriesMessage.textContent="Couldn't load your series right now. Please refresh and try again.";
     console.error(error);
   }
 }
-
+seriesBack.addEventListener("click",showSeriesList);
 loadShorts();
-</script>
+</script>>
 
 </body>
 </html>
