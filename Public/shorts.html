@@ -137,8 +137,21 @@ async function loadShorts(){
     const response = await fetch("/shorts/videos.json", {cache:"no-store"});
     if(!response.ok) throw new Error("Could not load the Shorts list.");
     const data = await response.json();
-    const videos = Array.isArray(data) ? data : data.videos;
-    if(!Array.isArray(videos)) throw new Error("The Shorts list is not valid.");
+    // Supports grouped series (each with episodes) and the older flat videos list.
+    const flatVideos = Array.isArray(data)
+      ? data
+      : (Array.isArray(data.videos) ? data.videos : []);
+    const groupedVideos = Array.isArray(data.series)
+      ? data.series.flatMap(series => {
+          const episodes = Array.isArray(series.episodes) ? series.episodes : [];
+          return episodes.map((episode,index) => ({
+            ...episode,
+            name: episode.name || series.title || "Heartmate Shorts",
+            caption: episode.caption || `${series.title || "Series"} · Episode ${episode.episodeNumber || index + 1}`
+          }));
+        })
+      : [];
+    const videos = groupedVideos.length ? groupedVideos : flatVideos;
     const listedVideos = videos.filter(item =>
       item &&
       typeof item.file === "string" &&
