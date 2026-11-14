@@ -2032,6 +2032,9 @@ async function sendChat() {
     return;
   }
 
+  const wantsCompanionPhoto = /\b(send|show|share|take|make|create)\b.{0,35}\b(me\s+)?(a\s+)?(photo|picture|pic|image|selfie)\b|\b(photo|picture|pic|image|selfie)\b.{0,25}\b(me|please)\b/i.test(message);
+  let contextPhotoScene = null;
+
   busy = true;
   sendButton.disabled = true;
   addMessage(message, "user");
@@ -2054,6 +2057,20 @@ async function sendChat() {
 
     addMessage(data.reply, "bot");
     chatHistory.push({role:"assistant", content:data.reply});
+
+    // A direct photo request turns the recent fictional conversation into a fresh companion image.
+    if (wantsCompanionPhoto) {
+      const recentContext = chatHistory.slice(-8)
+        .map(item => (item.role === "user" ? "User: " : girlName + ": ") + item.content)
+        .join("\n");
+      contextPhotoScene =
+        "A candid, natural in-the-moment photo of " + girlName +
+        " showing the activity she just described in our conversation. " +
+        "Match the scene, setting, outfit, pose and mood from the chat. " +
+        "Make it feel like a spontaneous personal photo, not a fashion catalogue.";
+      contextPhotoScene = contextPhotoScene.slice(0, 400);
+      window.heartmatePendingPhotoContext = recentContext.slice(0, 1800);
+    }
 
     // Sweet, non-explicit voice reactions for romantic messages.
     if (voiceReplies) {
@@ -2090,6 +2107,12 @@ async function sendChat() {
       const surprise = levelPhotoQueue.shift();
       addMessage(surprise.message, "bot");
       await generateImage(surprise.scene);
+    }
+
+    if (contextPhotoScene) {
+      addMessage("📸 Let me capture that moment for you…", "bot");
+      await generateImage(contextPhotoScene, window.heartmatePendingPhotoContext || "");
+      window.heartmatePendingPhotoContext = "";
     }
   }
 }
@@ -2371,7 +2394,7 @@ $("createMediaButton").addEventListener("click", async () => {
   }
 });
 
-async function generateImage(scene) {
+async function generateImage(scene, context = "") {
   if (busy) return;
   busy = true;
   status.textContent = "Creating your image…";
@@ -2384,7 +2407,7 @@ async function generateImage(scene) {
         "Content-Type":"application/json",
         Authorization:"Bearer " + token
       },
-      body:JSON.stringify({character, scene})
+      body:JSON.stringify({character, scene, context})
     });
 
     if (!response.ok) {
