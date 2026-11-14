@@ -1,0 +1,19 @@
+{
+  "videos": [
+    {
+      "file": "/shorts/day-01.mp4",
+      "name": "Your Companion",
+      "caption": "A little moment just for you ♥"
+    },
+    {
+      "file": "/shorts/day-02.mp4",
+      "name": "Your Companion",
+      "caption": "Welcome back ♥"
+    },
+    {
+      "file": "/shorts/day-03.mp4",
+      "name": "Your Companion",
+      "caption": "Let's spend some time together."
+    }
+  ]
+}
