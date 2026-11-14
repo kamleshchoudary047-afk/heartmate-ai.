@@ -841,6 +841,7 @@ body>#typing{flex-shrink:0}
             <button type="button" onclick="openPersonalityStudio()">💗 Personality</button>
             <button type="button" onclick="openVoiceRomanceStudio()">🎙️ Voice Romance</button>
             <button type="button" onclick="openDateNightStudio()">🌹 Date Night</button>
+            <button type="button" id="adultRomanceToggle" onclick="toggleAdultRomanceMode()" aria-pressed="true">🔥 Adult Romance: On</button>
           </div>
         </section>
         <section class="chat-tool-group">
@@ -2191,6 +2192,35 @@ async function exportChatHistory() {
 
 /* CHAT */
 
+/* OPTIONAL ADULT ROMANCE MODE — saved separately for each companion */
+function adultRomanceStorageKey(){return "heartmate-adult-romance-"+character;}
+function isAdultRomanceModeEnabled(){
+  try {
+    const saved=localStorage.getItem(adultRomanceStorageKey());
+    return saved===null ? true : saved==="on";
+  } catch(error) { return true; }
+}
+function updateAdultRomanceButton(){
+  const button=$("adultRomanceToggle");
+  if(!button)return;
+  const enabled=isAdultRomanceModeEnabled();
+  button.textContent=enabled?"🔥 Adult Romance: On":"🌷 Adult Romance: Off";
+  button.setAttribute("aria-pressed",String(enabled));
+  button.title=enabled
+    ?"Mature, consensual, non-explicit romantic tone is enabled for "+girlName
+    :"Standard chat tone is enabled for "+girlName;
+}
+function toggleAdultRomanceMode(){
+  const enabled=!isAdultRomanceModeEnabled();
+  try { localStorage.setItem(adultRomanceStorageKey(),enabled?"on":"off"); }
+  catch(error) { status.textContent="This browser could not save the setting."; return; }
+  updateAdultRomanceButton();
+  status.textContent=enabled
+    ? "Adult Romance Mode is on for "+girlName+". Mature, consensual and non-explicit."
+    : "Adult Romance Mode is off for "+girlName+". Your other chat settings are unchanged.";
+}
+updateAdultRomanceButton();
+
 async function sendChat() {
   const message = input.value.trim();
   if (!message || busy) return;
@@ -2217,7 +2247,8 @@ async function sendChat() {
         character,
         message,
         history:chatHistory,
-        personalitySettings:loadPersonalitySettings()
+        personalitySettings:loadPersonalitySettings(),
+        adultRomanceMode:isAdultRomanceModeEnabled()
       })
     });
 
