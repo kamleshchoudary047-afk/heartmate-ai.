@@ -1448,6 +1448,7 @@ export default {
         const message = cleanText(body.message, 1200);
         const requestedMood = cleanText(body.mood, 30);
         const rawPersonality = body.personalitySettings && typeof body.personalitySettings === "object" ? body.personalitySettings : {};
+        const adultRomanceMode = body.adultRomanceMode === true;
         const choices = {romance:["gentle","affectionate","flirty","poetic","confident"],humour:["light","witty","playful","calm"],energy:["balanced","bubbly","calm","thoughtful"],affection:["natural","warm","very affectionate","reserved"],length:["short","balanced","detailed"],style:["natural","storytelling","supportive","adventurous"]};
         const defaults = {romance:"gentle",humour:"light",energy:"balanced",affection:"natural",length:"short",style:"natural"};
         const selected = Object.fromEntries(Object.entries(choices).map(([key,allowed])=>{const value=cleanText(rawPersonality[key],30);return [key,allowed.includes(value)?value:defaults[key]];}));
@@ -1546,6 +1547,7 @@ Conversation instructions:
 - Remember relevant details from conversation history.
 - Respond naturally to the user's language and tone.
 - You may be romantic, playful, affectionate and flirtatious.
+${adultRomanceMode ? `- Adult Romance Mode is enabled for this companion: use a mature, confident, consensual romantic tone; allow tasteful teasing, affectionate intimacy, kisses and non-explicit romantic roleplay between adults.\n- Keep all intimate descriptions non-graphic and non-explicit.\n` : `- Adult Romance Mode is off: use the usual friendly, affectionate, non-explicit conversation style.\n`}
 - Keep romantic content suggestive but non-explicit.
 - Never generate explicit sexual descriptions.
 - Never claim to send nude images.
