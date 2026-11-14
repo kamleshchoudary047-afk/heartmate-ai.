@@ -725,7 +725,7 @@ body[data-chat-theme="midnight"] #messageInput{background:#17233b;border-color:#
 
 <header>
   <a class="back" href="index.html">‹</a>
-  <div class="avatar">💗</div>
+  <div class="avatar" id="companionAvatar" aria-label="Companion portrait">💗</div>
   <div class="profile">
     <h3 id="girlName">Your Heartmate</h3>
     <small>● Here with you</small>
@@ -1443,6 +1443,30 @@ try {
 const $ = id => document.getElementById(id);
 $("girlName").textContent = girlName;
 $("typingName").textContent = girlName;
+
+// Show the selected companion's uploaded portrait in the chat header.
+const companionAvatar = $("companionAvatar");
+if (companionAvatar) {
+  const portraitPaths = character === "aria"
+    ? ["/images/aria-1.jpeg"]
+    : [`/images/${character}-1.jpeg`,`/images/${character}-1.jpng`,`/images/${character}/${character}-1.jpeg`];
+  if (character === "ishita") portraitPaths.splice(2,0,"/images/ ishita-1.jpng");
+  const portrait = document.createElement("img");
+  portrait.alt = girlName + " portrait";
+  portrait.style.cssText = "width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block";
+  let portraitAttempt = 0;
+  portrait.onerror = function() {
+    portraitAttempt++;
+    if (portraitAttempt < portraitPaths.length) {
+      portrait.src = portraitPaths[portraitAttempt];
+    } else {
+      companionAvatar.textContent = "💗";
+    }
+  };
+  companionAvatar.textContent = "";
+  companionAvatar.appendChild(portrait);
+  portrait.src = portraitPaths[0];
+}
 
 const messages = $("messages");
 const input = $("messageInput");
