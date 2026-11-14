@@ -829,6 +829,7 @@ body>#typing{flex-shrink:0}
             <button onclick="openMedia('midnight')">🌙 Midnight Studio</button>
             <button onclick="openMedia('transition')">👙 Dress-to-Bikini</button>
             <button onclick="openMedia('image')">📸 Create image</button>
+            <button type="button" onclick="surpriseSelfie()">💌 Surprise Selfie</button>
             <button onclick="openMedia('video')">🎬 Create video</button>
           </div>
         </section>
@@ -2527,6 +2528,27 @@ $("createMediaButton").addEventListener("click", async () => {
     await generateImage(scene);
   }
 });
+
+async function surpriseSelfie() {
+  if (busy) {
+    status.textContent = "Please wait for the current creation to finish.";
+    return;
+  }
+
+  const selfieScenes = [
+    "A spontaneous mirror selfie in a luxurious softly lit dressing room, wearing an elegant fitted burgundy evening dress with opaque full coverage, holding a modern phone naturally, relaxed confident smile.",
+    "A cozy good-morning selfie beside a bright window, wearing a tasteful silky opaque robe securely tied over a fully covered outfit, soft natural sunlight and a warm sleepy smile.",
+    "A glamorous getting-ready selfie before a night out, wearing a chic black cocktail dress with opaque full coverage, polished hair, subtle makeup and warm vanity lighting.",
+    "A playful café selfie at a stylish rooftop café, wearing a fashionable fitted top and elegant skirt, fully clothed, candid smile and golden-hour city background.",
+    "A romantic evening selfie with soft rose-pink lighting, wearing an elegant satin-look evening gown with opaque full coverage, gentle smile and cinematic bokeh.",
+    "A sunny holiday selfie by a resort pool, wearing a tasteful fully covering one-piece swimsuit with a light wrap, bright natural light and a relaxed vacation mood."
+  ];
+  const scene = selfieScenes[Math.floor(Math.random() * selfieScenes.length)] +
+    " Create a natural personal selfie, not a catalogue pose. Keep her recognizable face and identity consistent with her existing companion portrait. Fictional adult woman aged 25 or older, realistic anatomy, opaque clothing and full intimate coverage, non-explicit, no text or watermark.";
+
+  addMessage("💌 I took a little surprise selfie for you…", "bot");
+  await generateImage(scene);
+}
 
 async function generateImage(scene, context = "") {
   if (busy) return;
