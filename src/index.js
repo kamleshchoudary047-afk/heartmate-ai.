@@ -906,6 +906,58 @@ async function handleProfile(request, env, user) {
   return json({ error: "Method not allowed." }, 405);
 }
 
+// Private companion memory manager API. Every query is scoped to the signed-in user.
+async function handleCompanionMemory(request, env, user) {
+  const url = new URL(request.url);
+  const characterId = cleanText(
+    request.method === "GET" ? url.searchParams.get("character") : "",
+    40
+  ).toLowerCase();
+
+  let body = {};
+  if (request.method !== "GET" && request.method !== "DELETE") {
+    try { body = await request.json(); }
+    catch { return json({ error: "Invalid JSON request." }, 400); }
+  }
+  const id = characterId || cleanText(body.character, 40).toLowerCase();
+  if (!characters[id]) return json({ error: "Choose a valid companion." }, 400);
+
+  if (request.method === "GET") {
+    const row = await env.DB.prepare(`
+      SELECT memory, updated_at FROM memories
+      WHERE uid = ? AND character_id = ? LIMIT 1
+    `).bind(user.uid, id).first();
+    return json({ character: id, memory: cleanText(row?.memory, 4000), updatedAt: row?.updated_at || null });
+  }
+
+  if (request.method === "PUT") {
+    const memory = typeof body.memory === "string" ? body.memory.trim() : "";
+    if (memory.length > 4000) return json({ error: "Memory must be 4,000 characters or fewer." }, 400);
+    const existing = await env.DB.prepare(`
+      SELECT id FROM memories WHERE uid = ? AND character_id = ? LIMIT 1
+    `).bind(user.uid, id).first();
+    if (existing) {
+      await env.DB.prepare(`
+        UPDATE memories SET memory = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
+      `).bind(memory, existing.id).run();
+    } else if (memory) {
+      await env.DB.prepare(`
+        INSERT INTO memories (uid, character_id, memory) VALUES (?, ?, ?)
+      `).bind(user.uid, id, memory).run();
+    }
+    return json({ ok: true, character: id, memory });
+  }
+
+  if (request.method === "DELETE") {
+    await env.DB.prepare(`
+      DELETE FROM memories WHERE uid = ? AND character_id = ?
+    `).bind(user.uid, id).run();
+    return json({ ok: true, character: id, memory: "" });
+  }
+
+  return json({ error: "Method not allowed." }, 405);
+}
+
 // Relationship API.
 async function handleRelationship(env, user, characterId) {
   if (!characters[characterId]) {
@@ -1227,6 +1279,7 @@ export default {
       "/api/companion-customization",
       "/api/daily-mission",
       "/api/relationship",
+      "/api/memory",
       "/api/daily-photo",
       "/api/voice-settings",
       "/api/transcribe",
@@ -1274,6 +1327,10 @@ export default {
 
         if (url.pathname === "/api/daily-mission") {
           return await handleDailyMission(request, env, user);
+        }
+
+        if (url.pathname === "/api/memory") {
+          return await handleCompanionMemory(request, env, user);
         }
 
         if (url.pathname === "/api/relationship") {
