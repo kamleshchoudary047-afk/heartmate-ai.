@@ -139,15 +139,26 @@ async function loadShorts(){
     const data = await response.json();
     const videos = Array.isArray(data) ? data : data.videos;
     if(!Array.isArray(videos)) throw new Error("The Shorts list is not valid.");
-    const validVideos = videos.filter(item =>
+    const listedVideos = videos.filter(item =>
       item &&
       typeof item.file === "string" &&
       item.file.startsWith("/shorts/") &&
       item.file.toLowerCase().endsWith(".mp4")
     ).slice(0, MAX_SHORTS);
 
+    // Ignore episode slots until their matching MP4 files have actually been uploaded.
+    const availability = await Promise.all(listedVideos.map(async item => {
+      try {
+        const check = await fetch(item.file, { method: "HEAD", cache: "no-store" });
+        return check.ok ? item : null;
+      } catch (_) {
+        return null;
+      }
+    }));
+    const validVideos = availability.filter(Boolean);
+
     if(!validVideos.length){
-      message.textContent = "No Shorts uploaded yet. Add MP4 videos to Public/shorts and list them in videos.json.";
+      message.textContent = "Your 10 episode slots are ready. Upload episode-01.mp4 through episode-10.mp4 into Public/shorts to make them appear here.";
       return;
     }
 
