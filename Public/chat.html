@@ -534,6 +534,7 @@ header {
   border-top-color:rgba(240,140,175,.2);
   box-shadow:0 -12px 35px rgba(0,0,0,.15);
 }
+.studio-modal-topbar{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:-18px -18px 14px;padding:12px 14px;background:linear-gradient(110deg,#241421f5,#30203bf5);border-bottom:1px solid #f4c48f44;border-radius:18px 18px 0 0;backdrop-filter:blur(12px)}.studio-modal-topbar span{color:#eac9d8;font-size:11px;font-weight:700;letter-spacing:.4px}.studio-back-button{border:1px solid #f4c48f66;border-radius:20px;padding:9px 13px;background:#ffffff10;color:#ffe5ee;font-size:12px;font-weight:800;cursor:pointer}.studio-back-button:active{transform:scale(.97)}@media(max-width:520px){.studio-modal-topbar{margin:-14px -14px 12px;padding:11px 12px}}
 .tools { scrollbar-width:none; }
 .tools::-webkit-scrollbar { display:none; }
 .tools button {
@@ -895,6 +896,7 @@ body>#typing{flex-shrink:0}
 
 <div class="modal" id="mediaModal">
   <div class="modal-card">
+    <div class="studio-modal-topbar"><button type="button" class="studio-back-button" onclick="closeMedia()" aria-label="Back to chat">‹ Back to chat</button><span>Heartmate Studio</span></div>
     <h3 id="modalTitle">Create something lovely ✨</h3>
     <p id="modalDescription">Describe what you want to create.</p>
     <div id="outfitControls" hidden>
