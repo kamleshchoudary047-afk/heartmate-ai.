@@ -1394,14 +1394,21 @@ document.getElementById("dailyMood").textContent =
 document.getElementById("dailyMessage").textContent =
   "“" + dailyMood.message + " " + note[2][noteIndex] + "”";
 
-document.getElementById("dailyPhoto").src =
-  noteSlug === "aria"
-    ? "/images/aria-1.jpeg"
-    : `/images/${noteSlug}/${noteSlug}-1.jpeg`;
-
-document.getElementById("dailyPhoto").onerror = function() {
-  this.src = "/images/aria-1.jpeg";
+const dailyPhoto = document.getElementById("dailyPhoto");
+const dailyPortraitPaths = noteSlug === "aria"
+  ? ["/images/aria-1.jpeg"]
+  : [`/images/${noteSlug}-1.jpeg`,`/images/${noteSlug}-1.jpng`,`/images/${noteSlug}/${noteSlug}-1.jpeg`];
+if (noteSlug === "ishita") dailyPortraitPaths.splice(2,0,"/images/ ishita-1.jpng");
+let dailyPortraitAttempt = 0;
+dailyPhoto.onerror = function() {
+  dailyPortraitAttempt++;
+  if (dailyPortraitAttempt < dailyPortraitPaths.length) {
+    this.src = dailyPortraitPaths[dailyPortraitAttempt];
+  } else {
+    this.src = "/images/aria-1.jpeg";
+  }
 };
+dailyPhoto.src = dailyPortraitPaths[0];
 
 document.getElementById("dailyChat").href =
   "chat.html?girl=" + encodeURIComponent(note[0]);
@@ -1420,9 +1427,26 @@ function makeCard(name,description) {
   image.alt = name + " portrait";
   image.loading = "lazy";
 
-  image.src = slug === "aria"
-    ? "/images/aria-1.jpeg"
-    : `/images/${slug}/${slug}-1.jpeg`;
+  const portraitPaths = slug === "aria"
+    ? ["/images/aria-1.jpeg"]
+    : [`/images/${slug}-1.jpeg`,`/images/${slug}-1.jpng`,`/images/${slug}/${slug}-1.jpeg`];
+  if (slug === "ishita") portraitPaths.splice(2,0,"/images/ ishita-1.jpng");
+  let portraitAttempt = 0;
+  image.onerror = function() {
+    portraitAttempt++;
+    if (portraitAttempt < portraitPaths.length) {
+      image.src = portraitPaths[portraitAttempt];
+      return;
+    }
+    image.style.display = "none";
+    if (!card.querySelector(".avatar-fallback")) {
+      const fallback = document.createElement("div");
+      fallback.className = "avatar-fallback";
+      fallback.textContent = name.charAt(0);
+      card.insertBefore(fallback,info);
+    }
+  };
+  image.src = portraitPaths[0];
 
   const info = document.createElement("div");
   info.className = "companion-info";
@@ -1448,17 +1472,6 @@ function makeCard(name,description) {
     premiumLock.className = "premium-lock";
     premiumLock.textContent = "AVAILABLE FREE";
   }
-
-  image.onerror = function() {
-    this.style.display = "none";
-
-    if (!card.querySelector(".avatar-fallback")) {
-      const fallback = document.createElement("div");
-      fallback.className = "avatar-fallback";
-      fallback.textContent = name.charAt(0);
-      card.insertBefore(fallback,info);
-    }
-  };
 
   info.append(heading,moodBadge,paragraph);
   if (premiumLock) info.appendChild(premiumLock);
