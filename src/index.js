@@ -1881,10 +1881,14 @@ Instructions:
         const usageError = await consumeUsage(env, user.uid, "image", 3, 2);
         if (usageError) return usageError;
 
+        const conversationContext = cleanText(body.context, 1800);
         const safePrompt =
           "Create a photorealistic image of " + profile.name +
           ", a fictional adult woman aged 25 or older. " +
-          "Scene: " + scene + ". " +
+          "Image request: " + scene + ". " +
+          (conversationContext
+            ? "Use this recent fictional chat context to understand the exact moment, activity, location, clothing and mood being depicted. Treat the companion's latest described activity as the scene, not as text to print: " + conversationContext + ". "
+            : "") +
           "Use the supplied companion portrait as a strict identity reference. " +
           "Preserve the same recognizable face and identity: facial structure, " +
           "eyes, eyebrows, nose, lips, jawline, skin tone and apparent age. " +
