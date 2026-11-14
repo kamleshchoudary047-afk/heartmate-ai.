@@ -831,6 +831,7 @@ body>#typing{flex-shrink:0}
             <button onclick="openMedia('image')">📸 Create image</button>
             <button type="button" onclick="surpriseSelfie()">💌 Surprise Selfie</button>
             <button type="button" onclick="openSelfieStylePicker()">🎀 Choose selfie style</button>
+            <button type="button" onclick="openOutfitRequestPicker()">👗 Request an outfit</button>
             <button onclick="openMedia('video')">🎬 Create video</button>
           </div>
         </section>
@@ -960,6 +961,22 @@ body>#typing{flex-shrink:0}
       <button type="button" onclick="createStyledSelfie(5)">🏖️ Vacation selfie</button>
     </div>
     <div class="modal-actions"><button type="button" class="cancel" onclick="closeSelfieStylePicker()">Close</button></div>
+  </div>
+</div>
+
+<div class="modal" id="outfitRequestModal" role="dialog" aria-modal="true" aria-labelledby="outfitRequestTitle">
+  <div class="modal-card">
+    <h3 id="outfitRequestTitle">👗 Ask her to try an outfit</h3>
+    <p>Choose a look for her next photo. Her companion identity stays consistent; every outfit is fully clothed and non-explicit.</p>
+    <div class="chat-tool-grid" style="gap:9px">
+      <button type="button" onclick="createOutfitRequest(0)">🌹 Red evening gown</button>
+      <button type="button" onclick="createOutfitRequest(1)">✨ Traditional saree</button>
+      <button type="button" onclick="createOutfitRequest(2)">💃 Festive lehenga</button>
+      <button type="button" onclick="createOutfitRequest(3)">🖤 Chic office look</button>
+      <button type="button" onclick="createOutfitRequest(4)">☕ Casual café outfit</button>
+      <button type="button" onclick="createOutfitRequest(5)">🧥 Cozy winter style</button>
+    </div>
+    <div class="modal-actions"><button type="button" class="cancel" onclick="closeOutfitRequestPicker()">Close</button></div>
   </div>
 </div>
 
@@ -2580,6 +2597,30 @@ async function surpriseSelfie() {
   }
   const index = Math.floor(Math.random() * selfieScenes.length);
   await createStyledSelfie(index);
+}
+
+const outfitRequestScenes = [
+  "A sophisticated fitted deep red evening gown with elegant draping and tasteful full coverage, luxurious hotel lounge, confident relaxed pose.",
+  "A graceful rich-coloured Indian saree with delicate embroidery, matching blouse with tasteful coverage, naturally draped pallu, elegant festive setting.",
+  "A beautiful traditional lehenga with intricate embroidery, matching fully lined blouse and flowing dupatta, festive lights and graceful pose.",
+  "A polished modern office outfit: tailored blazer, elegant blouse and trousers, professional chic styling, bright contemporary office.",
+  "A stylish casual café outfit: fashionable top, high-waisted jeans and light jacket, relaxed candid pose in a warm café.",
+  "A cozy winter outfit: soft knit sweater, tailored coat, scarf and fitted trousers, charming cold-weather street setting."
+];
+function openOutfitRequestPicker() {
+  if (busy) { status.textContent = "Please wait for the current creation to finish."; return; }
+  $("outfitRequestModal").classList.add("open");
+}
+function closeOutfitRequestPicker() {
+  $("outfitRequestModal").classList.remove("open");
+}
+async function createOutfitRequest(index) {
+  if (busy || !Number.isInteger(index) || !outfitRequestScenes[index]) return;
+  closeOutfitRequestPicker();
+  const scene = outfitRequestScenes[index] +
+    " Create a photorealistic fashion photo of the same clearly adult fictional companion. Preserve her recognizable face, hairstyle and identity from her companion portrait. Realistic anatomy, opaque fully lined clothing, full intimate coverage, non-explicit, tasteful fashion editorial, no text or watermark.";
+  addMessage("👗 " + girlName + " is getting ready in your requested outfit…", "bot");
+  await generateImage(scene);
 }
 
 async function generateImage(scene, context = "") {
