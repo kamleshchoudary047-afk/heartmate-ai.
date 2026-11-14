@@ -1895,8 +1895,9 @@ Instructions:
           "Do not redesign, beautify into a different person, or alter facial features. " +
           "Only change the requested clothing, pose, body styling and background. " +
           "Use realistic skin texture, natural anatomy and cinematic lighting. " +
-          "Keep clothing opaque and appropriately covering. " +
-          "No nudity, exposed intimate areas or sexual activity. " +
+          "If the conversation says she is naked, nude, undressed or changing, interpret that only as a non-explicit mood cue: depict her tastefully wrapped in a bath towel, dressing gown, robe, or opaque lingerie, with intimate areas fully covered. " +
+          "Keep all clothing opaque and appropriately covering. " +
+          "Never depict nudity, exposed intimate areas or sexual activity. " +
           "No text, captions or watermarks.";
 
         const form = new FormData();
