@@ -1,19 +1,54 @@
 {
   "videos": [
     {
-      "file": "/shorts/day-01.mp4",
-      "name": "Your Companion",
-      "caption": "A little moment just for you ♥"
+      "file": "/shorts/episode-01.mp4",
+      "name": "Episode 1",
+      "caption": "Heartmate Shorts · Episode 1 ♥"
     },
     {
-      "file": "/shorts/day-02.mp4",
-      "name": "Your Companion",
-      "caption": "Welcome back ♥"
+      "file": "/shorts/episode-02.mp4",
+      "name": "Episode 2",
+      "caption": "Heartmate Shorts · Episode 2 ♥"
     },
     {
-      "file": "/shorts/day-03.mp4",
-      "name": "Your Companion",
-      "caption": "Let's spend some time together."
+      "file": "/shorts/episode-03.mp4",
+      "name": "Episode 3",
+      "caption": "Heartmate Shorts · Episode 3 ♥"
+    },
+    {
+      "file": "/shorts/episode-04.mp4",
+      "name": "Episode 4",
+      "caption": "Heartmate Shorts · Episode 4 ♥"
+    },
+    {
+      "file": "/shorts/episode-05.mp4",
+      "name": "Episode 5",
+      "caption": "Heartmate Shorts · Episode 5 ♥"
+    },
+    {
+      "file": "/shorts/episode-06.mp4",
+      "name": "Episode 6",
+      "caption": "Heartmate Shorts · Episode 6 ♥"
+    },
+    {
+      "file": "/shorts/episode-07.mp4",
+      "name": "Episode 7",
+      "caption": "Heartmate Shorts · Episode 7 ♥"
+    },
+    {
+      "file": "/shorts/episode-08.mp4",
+      "name": "Episode 8",
+      "caption": "Heartmate Shorts · Episode 8 ♥"
+    },
+    {
+      "file": "/shorts/episode-09.mp4",
+      "name": "Episode 9",
+      "caption": "Heartmate Shorts · Episode 9 ♥"
+    },
+    {
+      "file": "/shorts/episode-10.mp4",
+      "name": "Episode 10",
+      "caption": "Heartmate Shorts · Episode 10 ♥"
     }
   ]
 }
