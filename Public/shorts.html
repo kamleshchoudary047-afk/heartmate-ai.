@@ -128,103 +128,104 @@ header{background:linear-gradient(180deg,#09080ef5,#09080e99,transparent)}
 </main>
 
 <script>
-const videos = [
-  {
-    file: "/shorts/day-01.mp4",
-    name: "Your Companion",
-    caption: "A little moment just for you ♥"
-  },
-  {
-    file: "/shorts/day-02.mp4",
-    name: "Your Companion",
-    caption: "Welcome back ♥"
-  },
-  {
-    file: "/shorts/day-03.mp4",
-    name: "Your Companion",
-    caption: "Let's spend some time together."
-  }
-];
-
 const feed = document.getElementById("feed");
 const message = document.getElementById("message");
+const MAX_SHORTS = 100;
 
-function showVideos(){
-  const today = Math.floor(Date.now() / 86400000);
-  const ordered = videos.map((_,i) =>
-    videos[(i + today) % videos.length]
-  );
+async function loadShorts(){
+  try {
+    const response = await fetch("/shorts/videos.json", {cache:"no-store"});
+    if(!response.ok) throw new Error("Could not load the Shorts list.");
+    const data = await response.json();
+    const videos = Array.isArray(data) ? data : data.videos;
+    if(!Array.isArray(videos)) throw new Error("The Shorts list is not valid.");
+    const validVideos = videos.filter(item =>
+      item &&
+      typeof item.file === "string" &&
+      item.file.startsWith("/shorts/") &&
+      item.file.toLowerCase().endsWith(".mp4")
+    ).slice(0, MAX_SHORTS);
 
-  message.remove();
+    if(!validVideos.length){
+      message.textContent = "No Shorts uploaded yet. Add MP4 videos to Public/shorts and list them in videos.json.";
+      return;
+    }
 
-  ordered.forEach(item => {
-    const card = document.createElement("section");
-    card.className = "video-card";
+    message.remove();
+    validVideos.forEach((item,index) => {
+      const card = document.createElement("section");
+      card.className = "video-card";
 
-    const video = document.createElement("video");
-    video.src = item.file;
-    video.autoplay = true;
-    video.loop = true;
-    video.muted = true;
-    video.playsInline = true;
-    video.preload = "metadata";
+      const video = document.createElement("video");
+      video.src = item.file;
+      video.autoplay = index === 0;
+      video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = index === 0 ? "metadata" : "none";
 
-    const overlay = document.createElement("div");
-    overlay.className = "overlay";
-    overlay.innerHTML =
-      "<h2></h2><p></p>";
-    overlay.querySelector("h2").textContent = item.name;
-    overlay.querySelector("p").textContent = item.caption;
+      const overlay = document.createElement("div");
+      overlay.className = "overlay";
+      const heading = document.createElement("h2");
+      heading.textContent = item.name || "Your Companion";
+      const caption = document.createElement("p");
+      caption.textContent = item.caption || "A little moment just for you ♥";
+      overlay.append(heading,caption);
 
-    const controls = document.createElement("div");
-    controls.className = "controls";
+      const controls = document.createElement("div");
+      controls.className = "controls";
 
-    const mute = document.createElement("button");
-    mute.textContent = "🔇";
-    mute.setAttribute("aria-label","Toggle sound");
-    mute.onclick = () => {
-      video.muted = !video.muted;
-      mute.textContent = video.muted ? "🔇" : "🔊";
-    };
+      const mute = document.createElement("button");
+      mute.textContent = "🔇";
+      mute.setAttribute("aria-label","Toggle sound");
+      mute.onclick = () => {
+        video.muted = !video.muted;
+        mute.textContent = video.muted ? "🔇" : "🔊";
+      };
 
-    const play = document.createElement("button");
-    play.textContent = "Ⅱ";
-    play.setAttribute("aria-label","Play or pause");
-    play.onclick = () => {
-      if(video.paused){
-        video.play();
-        play.textContent = "Ⅱ";
-      }else{
-        video.pause();
-        play.textContent = "▶";
-      }
-    };
+      const play = document.createElement("button");
+      play.textContent = "Ⅱ";
+      play.setAttribute("aria-label","Play or pause");
+      play.onclick = () => {
+        if(video.paused){
+          video.play().catch(() => {});
+          play.textContent = "Ⅱ";
+        }else{
+          video.pause();
+          play.textContent = "▶";
+        }
+      };
 
-    controls.append(mute,play);
-    card.append(video,overlay,controls);
-    feed.append(card);
-  });
-
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      const video = entry.target.querySelector("video");
-      if(entry.isIntersecting){
-        document.querySelectorAll(".video-card video").forEach(v => {
-          if(v !== video) v.pause();
-        });
-        video.play().catch(() => {});
-      }else{
-        video.pause();
-      }
+      controls.append(mute,play);
+      card.append(video,overlay,controls);
+      feed.append(card);
     });
-  },{root:feed,threshold:0.65});
 
-  document.querySelectorAll(".video-card").forEach(card =>
-    observer.observe(card)
-  );
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const video = entry.target.querySelector("video");
+        const play = entry.target.querySelector('[aria-label="Play or pause"]');
+        if(entry.isIntersecting){
+          document.querySelectorAll(".video-card video").forEach(v => {
+            if(v !== video) v.pause();
+          });
+          video.play().then(() => {
+            if(play) play.textContent = "Ⅱ";
+          }).catch(() => {});
+        }else{
+          video.pause();
+        }
+      });
+    },{root:feed,threshold:0.65});
+
+    document.querySelectorAll(".video-card").forEach(card => observer.observe(card));
+  } catch(error) {
+    message.textContent = "Couldn't load Shorts right now. Please refresh and try again.";
+    console.error(error);
+  }
 }
 
-showVideos();
+loadShorts();
 </script>
 
 </body>
