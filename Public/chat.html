@@ -842,6 +842,13 @@ body>#typing{flex-shrink:0}
             <button onclick="toggleRecording()">🎙️ Voice input</button>
           </div>
         </section>
+        <section class="chat-tool-group">
+          <h4>💾 Your conversation</h4>
+          <div class="chat-tool-grid">
+            <button type="button" onclick="exportChatHistory()">📥 Export this chat</button>
+          </div>
+          <p class="memory-hint">Save a copy of your conversation with this companion to your iPhone.</p>
+        </section>
       </div>
     </details>
   </div>
@@ -2019,6 +2026,63 @@ async function loadChatHistory() {
   }
 
   status.textContent = "";
+}
+
+/* CHAT BACKUP */
+
+async function exportChatHistory() {
+  const entries = Array.isArray(chatHistory) ? chatHistory : [];
+  if (!entries.length) {
+    status.textContent = "There are no messages to export yet.";
+    return;
+  }
+
+  const exportedAt = new Date();
+  const safeName = girlName.replace(/[^a-z0-9_-]/gi, "-").toLowerCase();
+  const lines = [
+    "HEARTMATE CHAT BACKUP",
+    "Companion: " + girlName,
+    "Exported: " + exportedAt.toLocaleString(),
+    "",
+    ...entries.map(item => {
+      const speaker = item.role === "user" ? "You" : girlName;
+      return speaker + ":\n" + String(item.content || "").trim() + "\n";
+    })
+  ];
+  const file = new File(
+    [lines.join("\n")],
+    "heartmate-" + safeName + "-chat-" + exportedAt.toISOString().slice(0,10) + ".txt",
+    {type:"text/plain;charset=utf-8"}
+  );
+
+  try {
+    if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) {
+      await navigator.share({
+        files:[file],
+        title:"Heartmate chat with " + girlName,
+        text:"Your saved conversation with " + girlName
+      });
+      status.textContent = "Your chat backup is ready to save or share.";
+      return;
+    }
+  } catch (error) {
+    if (error?.name === "AbortError") {
+      status.textContent = "Chat export cancelled.";
+      return;
+    }
+    console.warn("Native file sharing unavailable; using download instead.", error);
+  }
+
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = file.name;
+  link.hidden = true;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  status.textContent = "Chat backup prepared. Check your browser downloads.";
 }
 
 /* CHAT */
