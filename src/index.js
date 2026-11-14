@@ -1894,6 +1894,9 @@ Instructions:
           "eyes, eyebrows, nose, lips, jawline, skin tone and apparent age. " +
           "Do not redesign, beautify into a different person, or alter facial features. " +
           "Only change the requested clothing, pose, body styling and background. " +
+          "Use a glamorous, sensual adult fashion-editorial aesthetic: naturally curvy hourglass silhouette, fuller but proportionate bust, shapely hips and thighs, and a defined waist, with realistic anatomy and believable proportions. " +
+          "Use confident flattering poses and stylish fitted outfits such as elegant bodycon dresses, opaque lingerie, or tasteful swimwear when appropriate to the scene. " +
+          "Keep the result photorealistic, polished and alluring rather than exaggerated or cartoonish. " +
           "Use realistic skin texture, natural anatomy and cinematic lighting. " +
           "If the conversation says she is naked, nude, undressed or changing, interpret that only as a non-explicit mood cue: depict her tastefully wrapped in a bath towel, dressing gown, robe, or opaque lingerie, with intimate areas fully covered. " +
           "Keep all clothing opaque and appropriately covering. " +
