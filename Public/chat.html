@@ -2500,6 +2500,13 @@ function updateVoiceButton() {
 function toggleVoice() {
   voiceReplies = !voiceReplies;
   if (!voiceReplies && "speechSynthesis" in window) window.speechSynthesis.cancel();
+  if (!voiceReplies && activeSpeechAudio) {
+    activeSpeechAudio.pause();
+    activeSpeechAudio = null;
+    if (activeSpeechObjectUrl) URL.revokeObjectURL(activeSpeechObjectUrl);
+    activeSpeechObjectUrl = null;
+    status.textContent = "Voice playback stopped.";
+  }
   updateVoiceButton();
   status.textContent = voiceReplies
     ? "Cute voice replies are on. Tap again to turn them off."
@@ -2569,7 +2576,10 @@ function unlockSpeechPlayback() {
   }
 }
 
-function speak(text) {
+let activeSpeechAudio = null;
+let activeSpeechObjectUrl = null;
+
+function speakWithDeviceVoice(text) {
   if (!("speechSynthesis" in window)) {
     status.textContent = "Voice playback is not supported in this browser.";
     return;
@@ -2584,12 +2594,72 @@ function speak(text) {
   utterance.rate=Number(settings.rate)||preset.rate;
   utterance.pitch=Number(settings.pitch)||preset.pitch;
   utterance.volume=Number(settings.volume??1);
-  utterance.onstart = () => { status.textContent = " " + girlName + " is speaking…"; };
+  utterance.onstart = () => { status.textContent = girlName + " is speaking…"; };
   utterance.onend = () => { status.textContent = ""; };
   utterance.onerror = () => {
-    status.textContent = "Automatic voice playback was blocked. Tap “Hear her” to listen.";
+    status.textContent = "Voice playback was blocked. Tap “Hear her” to listen.";
   };
   window.speechSynthesis.speak(utterance);
+}
+
+async function speak(text) {
+  const spokenText = String(text || "").trim().slice(0, 1000);
+  if (!spokenText) return;
+
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  if (activeSpeechAudio) {
+    activeSpeechAudio.pause();
+    activeSpeechAudio = null;
+  }
+  if (activeSpeechObjectUrl) {
+    URL.revokeObjectURL(activeSpeechObjectUrl);
+    activeSpeechObjectUrl = null;
+  }
+
+  status.textContent = girlName + " is preparing her voice…";
+  try {
+    const token = await authToken();
+    const response = await fetch("/api/speech", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({text: spokenText})
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Generated voice is temporarily unavailable.");
+    }
+
+    const audioBlob = await response.blob();
+    if (!audioBlob.size) throw new Error("The voice service returned empty audio.");
+
+    activeSpeechObjectUrl = URL.createObjectURL(audioBlob);
+    activeSpeechAudio = new Audio(activeSpeechObjectUrl);
+    activeSpeechAudio.volume = Number(loadVoiceRomanceSettings().volume ?? 1);
+    activeSpeechAudio.onended = () => {
+      status.textContent = "";
+      if (activeSpeechObjectUrl) URL.revokeObjectURL(activeSpeechObjectUrl);
+      activeSpeechObjectUrl = null;
+      activeSpeechAudio = null;
+    };
+    activeSpeechAudio.onerror = () => {
+      status.textContent = "Generated voice could not be played. Using your device voice.";
+      if (activeSpeechObjectUrl) URL.revokeObjectURL(activeSpeechObjectUrl);
+      activeSpeechObjectUrl = null;
+      activeSpeechAudio = null;
+      speakWithDeviceVoice(spokenText);
+    };
+
+    await activeSpeechAudio.play();
+    status.textContent = girlName + " is speaking…";
+  } catch (error) {
+    console.warn("Generated voice unavailable; falling back to device speech:", error);
+    status.textContent = "Using your device voice…";
+    speakWithDeviceVoice(spokenText);
+  }
 }
 
 if ("speechSynthesis" in window) {
