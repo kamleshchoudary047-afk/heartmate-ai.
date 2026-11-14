@@ -209,6 +209,7 @@ button {
   margin:0 auto 10px;
   overflow-x:auto;
 }
+.tools{display:flex;align-items:center;gap:8px;max-width:760px;margin:0 auto 9px;overflow:visible}.tools .gallery-quick{flex:0 0 auto;min-height:39px;padding:8px 13px;border:1px solid #f4c48f66;border-radius:12px;background:linear-gradient(120deg,#422235,#30203b);color:#ffe4ed;font-size:11px;font-weight:750}.chat-tool-drawer{position:relative;flex:1;min-width:0}.chat-tool-drawer>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:39px;padding:8px 13px;border:1px solid #f4c48f66;border-radius:12px;background:linear-gradient(120deg,#342039,#241a30);color:#ffe4ed;font-size:11px;font-weight:800;cursor:pointer}.chat-tool-drawer>summary::-webkit-details-marker{display:none}.chat-tool-drawer>summary:after{content:"⌄";color:#f4c48f;font-size:15px}.chat-tool-drawer[open]>summary:after{content:"⌃"}.chat-tool-drawer>summary small{color:#cdb5c6;font-size:9px;font-weight:500}.chat-tool-groups{position:absolute;left:0;right:0;bottom:calc(100% + 9px);max-height:min(48dvh,390px);overflow-y:auto;padding:12px;border:1px solid #f4c48f55;border-radius:17px;background:linear-gradient(155deg,#211421f7,#171321fa);box-shadow:0 14px 38px #0009;backdrop-filter:blur(18px)}.chat-tool-group+.chat-tool-group{margin-top:13px;padding-top:12px;border-top:1px solid #ffffff16}.chat-tool-group h4{margin:0 0 8px;color:#f4c48f;font-size:10px;letter-spacing:.35px}.chat-tool-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.chat-tool-grid button,.chat-tool-grid .tool-link{display:flex;align-items:center;min-height:38px;padding:8px 10px;border:1px solid #ffffff1c;border-radius:10px;background:#ffffff0b;color:#f8eaf2;text-align:left;text-decoration:none;font-size:10px;font-weight:650;white-space:normal}.chat-tool-grid button:active,.chat-tool-grid .tool-link:active{background:#a94f7d55}.tools .chat-tool-grid button{white-space:normal;padding:8px 10px;font-size:10px}.tools .chat-tool-grid .tool-link{white-space:normal}@media(max-width:380px){.chat-tool-drawer>summary small{display:none}.chat-tool-groups{max-height:52dvh}}
 .tools button {
   white-space:nowrap;
   padding:8px 11px;
@@ -804,20 +805,45 @@ body>#typing{flex-shrink:0}
 
 <footer class="footer">
   <div class="tools">
-    <a class="tool-link" href="/heartmate-world.html" style="display:inline-flex;align-items:center;padding:8px 11px;border:1px solid #f4c48f55;border-radius:12px;background:#3a1b2b;color:#ffe0bd;font-size:11px;white-space:nowrap;text-decoration:none">✨ Heartmate World</a>
-    <button onclick="openGallery()">♡ My Gallery</button>
-    <a class="tool-link" href="/after-dark.html" style="display:inline-flex;align-items:center;padding:8px 11px;border:1px solid #f4c48f55;border-radius:12px;background:#3a1b2b;color:#ffe0bd;font-size:11px;white-space:nowrap;text-decoration:none">🔥 After Dark</a>
-    <a class="tool-link" href="/heartmate-studio.html" style="display:inline-flex;align-items:center;padding:8px 11px;border:1px solid #ffffff20;border-radius:12px;background:#2b203b;color:white;font-size:11px;white-space:nowrap;text-decoration:none">💗 Companion Studio</a>
-    <button type="button" onclick="openPersonalityStudio()">💗 Personality Studio</button>
-    <button type="button" onclick="openVoiceRomanceStudio()">🎙️ Voice Romance Studio</button>
-    <button type="button" onclick="openDateNightStudio()">🌹 Date Night Studio</button>
-    <button onclick="openMedia('outfit')">✨ Outfit Studio</button>
-    <button onclick="openMedia('midnight')">🌙 Midnight Intimacy Studio</button>
-    <button onclick="openMedia('transition')">👙 Dress-to-Bikini Studio</button>
-    <button onclick="openMedia('image')">📸 Create image</button>
-    <button onclick="openMedia('video')">🎬 Create video</button>
-    <button id="voiceToggle" type="button" onclick="toggleVoice()" aria-pressed="false">🔇 Voice off · tap to enable</button>
-    <button onclick="toggleRecording()">🎙️ Voice input</button>
+    <button class="gallery-quick" onclick="openGallery()">♡ My Gallery</button>
+    <details class="chat-tool-drawer">
+      <summary><span>✨ More tools</span><small>Studios · Voice · Explore</small></summary>
+      <div class="chat-tool-groups">
+        <section class="chat-tool-group">
+          <h4>🎨 Create & customise</h4>
+          <div class="chat-tool-grid">
+            <button onclick="openMedia('outfit')">✨ Outfit Studio</button>
+            <button onclick="openMedia('midnight')">🌙 Midnight Studio</button>
+            <button onclick="openMedia('transition')">👙 Dress-to-Bikini</button>
+            <button onclick="openMedia('image')">📸 Create image</button>
+            <button onclick="openMedia('video')">🎬 Create video</button>
+          </div>
+        </section>
+        <section class="chat-tool-group">
+          <h4>💗 Personalise & connect</h4>
+          <div class="chat-tool-grid">
+            <button type="button" onclick="openPersonalityStudio()">💗 Personality</button>
+            <button type="button" onclick="openVoiceRomanceStudio()">🎙️ Voice Romance</button>
+            <button type="button" onclick="openDateNightStudio()">🌹 Date Night</button>
+          </div>
+        </section>
+        <section class="chat-tool-group">
+          <h4>🌟 Explore Heartmate</h4>
+          <div class="chat-tool-grid">
+            <a class="tool-link" href="/heartmate-world.html">✨ Heartmate World</a>
+            <a class="tool-link" href="/after-dark.html">🔥 After Dark</a>
+            <a class="tool-link" href="/heartmate-studio.html">💗 Companion Studio</a>
+          </div>
+        </section>
+        <section class="chat-tool-group">
+          <h4>🎧 Voice controls</h4>
+          <div class="chat-tool-grid">
+            <button id="voiceToggle" type="button" onclick="toggleVoice()" aria-pressed="false">🔇 Voice off · tap to enable</button>
+            <button onclick="toggleRecording()">🎙️ Voice input</button>
+          </div>
+        </section>
+      </div>
+    </details>
   </div>
   <div id="status"></div>
   <div class="composer">
