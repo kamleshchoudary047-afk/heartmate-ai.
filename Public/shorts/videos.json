@@ -1,54 +1,49 @@
 {
-  "videos": [
+  "series": [
     {
-      "file": "/shorts/episode-01.mp4",
-      "name": "Episode 1",
-      "caption": "Heartmate Shorts · Episode 1 ♥"
-    },
-    {
-      "file": "/shorts/episode-02.mp4",
-      "name": "Episode 2",
-      "caption": "Heartmate Shorts · Episode 2 ♥"
-    },
-    {
-      "file": "/shorts/episode-03.mp4",
-      "name": "Episode 3",
-      "caption": "Heartmate Shorts · Episode 3 ♥"
-    },
-    {
-      "file": "/shorts/episode-04.mp4",
-      "name": "Episode 4",
-      "caption": "Heartmate Shorts · Episode 4 ♥"
-    },
-    {
-      "file": "/shorts/episode-05.mp4",
-      "name": "Episode 5",
-      "caption": "Heartmate Shorts · Episode 5 ♥"
-    },
-    {
-      "file": "/shorts/episode-06.mp4",
-      "name": "Episode 6",
-      "caption": "Heartmate Shorts · Episode 6 ♥"
-    },
-    {
-      "file": "/shorts/episode-07.mp4",
-      "name": "Episode 7",
-      "caption": "Heartmate Shorts · Episode 7 ♥"
-    },
-    {
-      "file": "/shorts/episode-08.mp4",
-      "name": "Episode 8",
-      "caption": "Heartmate Shorts · Episode 8 ♥"
-    },
-    {
-      "file": "/shorts/episode-09.mp4",
-      "name": "Episode 9",
-      "caption": "Heartmate Shorts · Episode 9 ♥"
-    },
-    {
-      "file": "/shorts/episode-10.mp4",
-      "name": "Episode 10",
-      "caption": "Heartmate Shorts · Episode 10 ♥"
+      "title": "Series 1",
+      "episodes": [
+        {
+          "file": "/shorts/series-01-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-01-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-01-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-01-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-01-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-01-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-01-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-01-episode-08.mp4",
+          "episodeNumber": 8
+        },
+        {
+          "file": "/shorts/series-01-episode-09.mp4",
+          "episodeNumber": 9
+        },
+        {
+          "file": "/shorts/series-01-episode-10.mp4",
+          "episodeNumber": 10
+        }
+      ]
     }
   ]
 }
