@@ -1,7 +1,7 @@
 {
   "series": [
     {
-      "title": "Series 1",
+      "title": "Bullet Series 1",
       "episodes": [
         {
           "file": "/shorts/series-01-episode-01.mp4",
@@ -26,22 +26,1479 @@
         {
           "file": "/shorts/series-01-episode-06.mp4",
           "episodeNumber": 6
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 2",
+      "episodes": [
+        {
+          "file": "/shorts/series-02-episode-01.mp4",
+          "episodeNumber": 1
         },
         {
-          "file": "/shorts/series-01-episode-07.mp4",
+          "file": "/shorts/series-02-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-02-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-02-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-02-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-02-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-02-episode-07.mp4",
+          "episodeNumber": 7
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 3",
+      "episodes": [
+        {
+          "file": "/shorts/series-03-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-03-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-03-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-03-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-03-episode-05.mp4",
+          "episodeNumber": 5
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 4",
+      "episodes": [
+        {
+          "file": "/shorts/series-04-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-04-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-04-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-04-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-04-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-04-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-04-episode-07.mp4",
+          "episodeNumber": 7
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 5",
+      "episodes": [
+        {
+          "file": "/shorts/series-05-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-05-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-05-episode-03.mp4",
+          "episodeNumber": 3
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 6",
+      "episodes": [
+        {
+          "file": "/shorts/series-06-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-06-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-06-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-06-episode-04.mp4",
+          "episodeNumber": 4
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 7",
+      "episodes": [
+        {
+          "file": "/shorts/series-07-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-07-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-07-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-07-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-07-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-07-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-07-episode-07.mp4",
           "episodeNumber": 7
         },
         {
-          "file": "/shorts/series-01-episode-08.mp4",
+          "file": "/shorts/series-07-episode-08.mp4",
           "episodeNumber": 8
         },
         {
-          "file": "/shorts/series-01-episode-09.mp4",
+          "file": "/shorts/series-07-episode-09.mp4",
           "episodeNumber": 9
         },
         {
-          "file": "/shorts/series-01-episode-10.mp4",
+          "file": "/shorts/series-07-episode-10.mp4",
           "episodeNumber": 10
+        },
+        {
+          "file": "/shorts/series-07-episode-11.mp4",
+          "episodeNumber": 11
+        },
+        {
+          "file": "/shorts/series-07-episode-12.mp4",
+          "episodeNumber": 12
+        },
+        {
+          "file": "/shorts/series-07-episode-13.mp4",
+          "episodeNumber": 13
+        },
+        {
+          "file": "/shorts/series-07-episode-14.mp4",
+          "episodeNumber": 14
+        },
+        {
+          "file": "/shorts/series-07-episode-15.mp4",
+          "episodeNumber": 15
+        },
+        {
+          "file": "/shorts/series-07-episode-16.mp4",
+          "episodeNumber": 16
+        },
+        {
+          "file": "/shorts/series-07-episode-17.mp4",
+          "episodeNumber": 17
+        },
+        {
+          "file": "/shorts/series-07-episode-18.mp4",
+          "episodeNumber": 18
+        },
+        {
+          "file": "/shorts/series-07-episode-19.mp4",
+          "episodeNumber": 19
+        },
+        {
+          "file": "/shorts/series-07-episode-20.mp4",
+          "episodeNumber": 20
+        },
+        {
+          "file": "/shorts/series-07-episode-21.mp4",
+          "episodeNumber": 21
+        },
+        {
+          "file": "/shorts/series-07-episode-22.mp4",
+          "episodeNumber": 22
+        },
+        {
+          "file": "/shorts/series-07-episode-23.mp4",
+          "episodeNumber": 23
+        },
+        {
+          "file": "/shorts/series-07-episode-24.mp4",
+          "episodeNumber": 24
+        },
+        {
+          "file": "/shorts/series-07-episode-25.mp4",
+          "episodeNumber": 25
+        },
+        {
+          "file": "/shorts/series-07-episode-26.mp4",
+          "episodeNumber": 26
+        },
+        {
+          "file": "/shorts/series-07-episode-27.mp4",
+          "episodeNumber": 27
+        },
+        {
+          "file": "/shorts/series-07-episode-28.mp4",
+          "episodeNumber": 28
+        },
+        {
+          "file": "/shorts/series-07-episode-29.mp4",
+          "episodeNumber": 29
+        },
+        {
+          "file": "/shorts/series-07-episode-30.mp4",
+          "episodeNumber": 30
+        },
+        {
+          "file": "/shorts/series-07-episode-31.mp4",
+          "episodeNumber": 31
+        },
+        {
+          "file": "/shorts/series-07-episode-32.mp4",
+          "episodeNumber": 32
+        },
+        {
+          "file": "/shorts/series-07-episode-33.mp4",
+          "episodeNumber": 33
+        },
+        {
+          "file": "/shorts/series-07-episode-34.mp4",
+          "episodeNumber": 34
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 8",
+      "episodes": [
+        {
+          "file": "/shorts/series-08-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-08-episode-02.mp4",
+          "episodeNumber": 2
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 9",
+      "episodes": [
+        {
+          "file": "/shorts/series-09-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-09-episode-02.mp4",
+          "episodeNumber": 2
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 10",
+      "episodes": [
+        {
+          "file": "/shorts/series-10-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-10-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-10-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-10-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-10-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-10-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-10-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-10-episode-08.mp4",
+          "episodeNumber": 8
+        },
+        {
+          "file": "/shorts/series-10-episode-09.mp4",
+          "episodeNumber": 9
+        },
+        {
+          "file": "/shorts/series-10-episode-10.mp4",
+          "episodeNumber": 10
+        },
+        {
+          "file": "/shorts/series-10-episode-11.mp4",
+          "episodeNumber": 11
+        },
+        {
+          "file": "/shorts/series-10-episode-12.mp4",
+          "episodeNumber": 12
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 11",
+      "episodes": [
+        {
+          "file": "/shorts/series-11-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-11-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-11-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-11-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-11-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-11-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-11-episode-07.mp4",
+          "episodeNumber": 7
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 12",
+      "episodes": [
+        {
+          "file": "/shorts/series-12-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-12-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-12-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-12-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-12-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-12-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-12-episode-07.mp4",
+          "episodeNumber": 7
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 13",
+      "episodes": [
+        {
+          "file": "/shorts/series-13-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-13-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-13-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-13-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-13-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-13-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-13-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-13-episode-08.mp4",
+          "episodeNumber": 8
+        },
+        {
+          "file": "/shorts/series-13-episode-09.mp4",
+          "episodeNumber": 9
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 14",
+      "episodes": [
+        {
+          "file": "/shorts/series-14-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-14-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-14-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-14-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-14-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-14-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-14-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-14-episode-08.mp4",
+          "episodeNumber": 8
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 15",
+      "episodes": [
+        {
+          "file": "/shorts/series-15-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-15-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-15-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-15-episode-04.mp4",
+          "episodeNumber": 4
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 16",
+      "episodes": [
+        {
+          "file": "/shorts/series-16-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-16-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-16-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-16-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-16-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-16-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-16-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-16-episode-08.mp4",
+          "episodeNumber": 8
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 17",
+      "episodes": [
+        {
+          "file": "/shorts/series-17-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-17-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-17-episode-03.mp4",
+          "episodeNumber": 3
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 18",
+      "episodes": [
+        {
+          "file": "/shorts/series-18-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-18-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-18-episode-03.mp4",
+          "episodeNumber": 3
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 19",
+      "episodes": [
+        {
+          "file": "/shorts/series-19-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-19-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-19-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-19-episode-04.mp4",
+          "episodeNumber": 4
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 20",
+      "episodes": [
+        {
+          "file": "/shorts/series-20-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-20-episode-02.mp4",
+          "episodeNumber": 2
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 21",
+      "episodes": [
+        {
+          "file": "/shorts/series-21-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-21-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-21-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-21-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-21-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-21-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-21-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-21-episode-08.mp4",
+          "episodeNumber": 8
+        },
+        {
+          "file": "/shorts/series-21-episode-09.mp4",
+          "episodeNumber": 9
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 22",
+      "episodes": [
+        {
+          "file": "/shorts/series-22-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-22-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-22-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-22-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-22-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-22-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-22-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-22-episode-08.mp4",
+          "episodeNumber": 8
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 23",
+      "episodes": [
+        {
+          "file": "/shorts/series-23-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-23-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-23-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-23-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-23-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-23-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-23-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-23-episode-08.mp4",
+          "episodeNumber": 8
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 24",
+      "episodes": [
+        {
+          "file": "/shorts/series-24-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-24-episode-02.mp4",
+          "episodeNumber": 2
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 25",
+      "episodes": [
+        {
+          "file": "/shorts/series-25-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-25-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-25-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-25-episode-04.mp4",
+          "episodeNumber": 4
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 26",
+      "episodes": [
+        {
+          "file": "/shorts/series-26-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-26-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-26-episode-03.mp4",
+          "episodeNumber": 3
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 27",
+      "episodes": [
+        {
+          "file": "/shorts/series-27-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-27-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-27-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-27-episode-04.mp4",
+          "episodeNumber": 4
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 28",
+      "episodes": [
+        {
+          "file": "/shorts/series-28-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-28-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-28-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-28-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-28-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-28-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-28-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-28-episode-08.mp4",
+          "episodeNumber": 8
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 29",
+      "episodes": [
+        {
+          "file": "/shorts/series-29-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-29-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-29-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-29-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-29-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-29-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-29-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-29-episode-08.mp4",
+          "episodeNumber": 8
+        },
+        {
+          "file": "/shorts/series-29-episode-09.mp4",
+          "episodeNumber": 9
+        },
+        {
+          "file": "/shorts/series-29-episode-10.mp4",
+          "episodeNumber": 10
+        },
+        {
+          "file": "/shorts/series-29-episode-11.mp4",
+          "episodeNumber": 11
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 30",
+      "episodes": [
+        {
+          "file": "/shorts/series-30-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-30-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-30-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-30-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-30-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-30-episode-06.mp4",
+          "episodeNumber": 6
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 31",
+      "episodes": [
+        {
+          "file": "/shorts/series-31-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-31-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-31-episode-03.mp4",
+          "episodeNumber": 3
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 32",
+      "episodes": [
+        {
+          "file": "/shorts/series-32-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-32-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-32-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-32-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-32-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-32-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-32-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-32-episode-08.mp4",
+          "episodeNumber": 8
+        },
+        {
+          "file": "/shorts/series-32-episode-09.mp4",
+          "episodeNumber": 9
+        },
+        {
+          "file": "/shorts/series-32-episode-10.mp4",
+          "episodeNumber": 10
+        },
+        {
+          "file": "/shorts/series-32-episode-11.mp4",
+          "episodeNumber": 11
+        },
+        {
+          "file": "/shorts/series-32-episode-12.mp4",
+          "episodeNumber": 12
+        },
+        {
+          "file": "/shorts/series-32-episode-13.mp4",
+          "episodeNumber": 13
+        },
+        {
+          "file": "/shorts/series-32-episode-14.mp4",
+          "episodeNumber": 14
+        },
+        {
+          "file": "/shorts/series-32-episode-15.mp4",
+          "episodeNumber": 15
+        },
+        {
+          "file": "/shorts/series-32-episode-16.mp4",
+          "episodeNumber": 16
+        },
+        {
+          "file": "/shorts/series-32-episode-17.mp4",
+          "episodeNumber": 17
+        },
+        {
+          "file": "/shorts/series-32-episode-18.mp4",
+          "episodeNumber": 18
+        },
+        {
+          "file": "/shorts/series-32-episode-19.mp4",
+          "episodeNumber": 19
+        },
+        {
+          "file": "/shorts/series-32-episode-20.mp4",
+          "episodeNumber": 20
+        },
+        {
+          "file": "/shorts/series-32-episode-21.mp4",
+          "episodeNumber": 21
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 33",
+      "episodes": [
+        {
+          "file": "/shorts/series-33-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-33-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-33-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-33-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-33-episode-05.mp4",
+          "episodeNumber": 5
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 34",
+      "episodes": [
+        {
+          "file": "/shorts/series-34-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-34-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-34-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-34-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-34-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-34-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-34-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-34-episode-08.mp4",
+          "episodeNumber": 8
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 35",
+      "episodes": [
+        {
+          "file": "/shorts/series-35-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-35-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-35-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-35-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-35-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-35-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-35-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-35-episode-08.mp4",
+          "episodeNumber": 8
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 36",
+      "episodes": [
+        {
+          "file": "/shorts/series-36-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-36-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-36-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-36-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-36-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-36-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-36-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-36-episode-08.mp4",
+          "episodeNumber": 8
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 37",
+      "episodes": [
+        {
+          "file": "/shorts/series-37-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-37-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-37-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-37-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-37-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-37-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-37-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-37-episode-08.mp4",
+          "episodeNumber": 8
+        },
+        {
+          "file": "/shorts/series-37-episode-09.mp4",
+          "episodeNumber": 9
+        },
+        {
+          "file": "/shorts/series-37-episode-10.mp4",
+          "episodeNumber": 10
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 38",
+      "episodes": [
+        {
+          "file": "/shorts/series-38-episode-01.mp4",
+          "episodeNumber": 1
+        },
+        {
+          "file": "/shorts/series-38-episode-02.mp4",
+          "episodeNumber": 2
+        },
+        {
+          "file": "/shorts/series-38-episode-03.mp4",
+          "episodeNumber": 3
+        },
+        {
+          "file": "/shorts/series-38-episode-04.mp4",
+          "episodeNumber": 4
+        },
+        {
+          "file": "/shorts/series-38-episode-05.mp4",
+          "episodeNumber": 5
+        },
+        {
+          "file": "/shorts/series-38-episode-06.mp4",
+          "episodeNumber": 6
+        },
+        {
+          "file": "/shorts/series-38-episode-07.mp4",
+          "episodeNumber": 7
+        },
+        {
+          "file": "/shorts/series-38-episode-08.mp4",
+          "episodeNumber": 8
+        },
+        {
+          "file": "/shorts/series-38-episode-09.mp4",
+          "episodeNumber": 9
+        },
+        {
+          "file": "/shorts/series-38-episode-10.mp4",
+          "episodeNumber": 10
+        },
+        {
+          "file": "/shorts/series-38-episode-11.mp4",
+          "episodeNumber": 11
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 39",
+      "episodes": [
+        {
+          "file": "/shorts/series-39-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 40",
+      "episodes": [
+        {
+          "file": "/shorts/series-40-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 41",
+      "episodes": [
+        {
+          "file": "/shorts/series-41-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 42",
+      "episodes": [
+        {
+          "file": "/shorts/series-42-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 43",
+      "episodes": [
+        {
+          "file": "/shorts/series-43-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 44",
+      "episodes": [
+        {
+          "file": "/shorts/series-44-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 45",
+      "episodes": [
+        {
+          "file": "/shorts/series-45-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 46",
+      "episodes": [
+        {
+          "file": "/shorts/series-46-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 47",
+      "episodes": [
+        {
+          "file": "/shorts/series-47-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 48",
+      "episodes": [
+        {
+          "file": "/shorts/series-48-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 49",
+      "episodes": [
+        {
+          "file": "/shorts/series-49-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 50",
+      "episodes": [
+        {
+          "file": "/shorts/series-50-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 51",
+      "episodes": [
+        {
+          "file": "/shorts/series-51-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 52",
+      "episodes": [
+        {
+          "file": "/shorts/series-52-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 53",
+      "episodes": [
+        {
+          "file": "/shorts/series-53-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 54",
+      "episodes": [
+        {
+          "file": "/shorts/series-54-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 55",
+      "episodes": [
+        {
+          "file": "/shorts/series-55-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 56",
+      "episodes": [
+        {
+          "file": "/shorts/series-56-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 57",
+      "episodes": [
+        {
+          "file": "/shorts/series-57-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 58",
+      "episodes": [
+        {
+          "file": "/shorts/series-58-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 59",
+      "episodes": [
+        {
+          "file": "/shorts/series-59-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 60",
+      "episodes": [
+        {
+          "file": "/shorts/series-60-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 61",
+      "episodes": [
+        {
+          "file": "/shorts/series-61-episode-01.mp4",
+          "episodeNumber": 1
+        }
+      ]
+    },
+    {
+      "title": "Bullet Series 62",
+      "episodes": [
+        {
+          "file": "/shorts/series-62-episode-01.mp4",
+          "episodeNumber": 1
         }
       ]
     }
