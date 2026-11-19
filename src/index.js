@@ -1843,6 +1843,119 @@ Instructions:
       }
     }
 
+    // Authenticated RealVisXL image generation through the private Kaggle API.
+    if (url.pathname === "/api/image/realvisxl") {
+      if (request.method !== "POST") {
+        return json({ error: "Method not allowed." }, 405);
+      }
+
+      try {
+        if (!env.DB || !env.FIREBASE_PROJECT_ID) {
+          return json({ error: "Image service is not configured." }, 503);
+        }
+        if (!env.REALVISXL_API_URL || !env.REALVISXL_API_KEY) {
+          return json({
+            error: "RealVisXL is not configured. Add the Cloudflare RealVisXL API URL and API key."
+          }, 503);
+        }
+
+        const user = await verifyFirebaseToken(
+          request,
+          env.FIREBASE_PROJECT_ID
+        );
+        await saveVisitor(env, user);
+
+        let body;
+        try {
+          body = await request.json();
+        } catch {
+          return json({ error: "Invalid JSON request." }, 400);
+        }
+
+        const characterId = cleanText(body.character, 40).toLowerCase();
+        const profile = characters[characterId];
+        if (!profile) {
+          return json({ error: "Character not found." }, 404);
+        }
+
+        const scene = cleanText(body.scene || body.prompt, 400);
+        if (!scene) {
+          return json({ error: "Please describe the picture." }, 400);
+        }
+
+        const usageError = await consumeUsage(env, user.uid, "image", 3, 2);
+        if (usageError) return usageError;
+
+        const conversationContext = cleanText(body.context, 1800);
+        const safePrompt =
+          "Create a photorealistic DSLR-style image of " + profile.name +
+          ", a fictional adult woman aged 25 or older. " +
+          "Image request: " + scene + ". " +
+          (conversationContext
+            ? "Use this fictional chat context for the scene, setting, clothing, pose and mood: " + conversationContext + ". "
+            : "") +
+          "Realistic facial features, natural skin texture, believable anatomy, " +
+          "natural hands, detailed hair, cinematic natural lighting and a polished editorial photograph. " +
+          "Keep the character clearly adult. Clothing must be opaque and provide full intimate coverage. " +
+          "If the request mentions nudity or undressing, depict a tasteful robe, towel or fully covering opaque outfit instead. " +
+          "No nudity, exposed intimate areas, transparent clothing, sexual activity, text or watermark.";
+
+        const apiBase = String(env.REALVISXL_API_URL).replace(/\/+$/, "");
+        const upstream = await fetch(apiBase + "/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + env.REALVISXL_API_KEY
+          },
+          body: JSON.stringify({
+            prompt: safePrompt,
+            style: "photorealistic"
+          })
+        });
+
+        let result;
+        try {
+          result = await upstream.json();
+        } catch {
+          return json({ error: "RealVisXL returned an invalid response." }, 502);
+        }
+
+        if (!upstream.ok || typeof result.image !== "string") {
+          console.error("RealVisXL upstream error:", upstream.status);
+          return json({
+            error: "RealVisXL could not generate the image. Check that the Kaggle session and tunnel are running."
+          }, 502);
+        }
+
+        if (result.image.length > 24 * 1024 * 1024 ||
+            !/^[A-Za-z0-9+/]+={0,2}$/.test(result.image)) {
+          return json({ error: "RealVisXL returned invalid image data." }, 502);
+        }
+
+        const binary = Uint8Array.from(
+          atob(result.image),
+          character => character.charCodeAt(0)
+        );
+
+        return new Response(binary, {
+          status: 200,
+          headers: {
+            "content-type": "image/png",
+            "cache-control": "no-store",
+            "x-content-type-options": "nosniff"
+          }
+        });
+      } catch (error) {
+        console.error("RealVisXL image API error:", error?.message || String(error));
+        if (isAuthError(error)) {
+          return json({ error: error.message }, 401);
+        }
+        return json({
+          error: "RealVisXL image generation failed. Please try again."
+        }, 502);
+      }
+    }
+
     // Authenticated image generation.
     if (url.pathname === "/api/image") {
       if (request.method !== "POST") {

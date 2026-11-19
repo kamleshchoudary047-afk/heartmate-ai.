@@ -1536,6 +1536,13 @@ body>#typing{flex-shrink:0}
       </details>
       <p class="customizer-note">All outfits remain opaque and fully covering. Romantic kissing, cuddling and embraces are supported; nudity and explicit sexual activity are not.</p>
     </div>
+    <label class="customizer-field" style="display:block;margin:0 0 10px">Image model
+      <select id="imageModelSelector">
+        <option value="flux">FLUX · Existing generator</option>
+        <option value="realvisxl">RealVisXL · Kaggle GPU</option>
+      </select>
+    </label>
+    <p class="customizer-note" style="margin:0 0 10px">RealVisXL needs your Kaggle notebook and Cloudflare Tunnel to stay running. It currently generates from text prompts and does not use the companion portrait as an identity reference.</p>
     <textarea id="sceneInput" placeholder="Add optional details…"></textarea>
     <div class="modal-actions">
       <button class="cancel" onclick="closeMedia()">Cancel</button>
@@ -1581,6 +1588,19 @@ try {
 } catch(error) { console.warn("Could not save recent companion:",error); }
 
 const $ = id => document.getElementById(id);
+const imageModelPreferenceKey = "heartmate-image-provider";
+function selectedImageProvider() {
+  return localStorage.getItem(imageModelPreferenceKey) === "realvisxl"
+    ? "realvisxl"
+    : "flux";
+}
+const imageModelSelector = $("imageModelSelector");
+if (imageModelSelector) {
+  imageModelSelector.value = selectedImageProvider();
+  imageModelSelector.addEventListener("change", () => {
+    localStorage.setItem(imageModelPreferenceKey, imageModelSelector.value);
+  });
+}
 $("girlName").textContent = girlName;
 $("typingName").textContent = girlName;
 
@@ -2661,7 +2681,10 @@ async function generateImage(scene, context = "") {
 
   try {
     const token = await authToken();
-    const response = await fetch("/api/image", {
+    const imageEndpoint = selectedImageProvider() === "realvisxl"
+      ? "/api/image/realvisxl"
+      : "/api/image";
+    const response = await fetch(imageEndpoint, {
       method:"POST",
       headers:{
         "Content-Type":"application/json",
