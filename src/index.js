@@ -1900,7 +1900,7 @@ Instructions:
           "If the request mentions nudity or undressing, depict a tasteful robe, towel or fully covering opaque outfit instead. " +
           "No nudity, exposed intimate areas, transparent clothing, sexual activity, text or watermark.";
 
-        const apiBase = String(env.REALVISXL_API_URL).replace(/\\/+$/, "");
+        const apiBase = String(env.REALVISXL_API_URL).replace(/\/+$/, "");
         const upstream = await fetch(apiBase + "/generate", {
           method: "POST",
           headers: {
