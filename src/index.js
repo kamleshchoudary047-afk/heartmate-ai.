@@ -1905,10 +1905,15 @@ Instructions:
             ? "RECENT CHAT CONTEXT FOR RESOLVING UNSPECIFIED DETAILS: " + conversationContext + ". " +
               "Use this context only to clarify details that the current image request does not specify. The current image request takes priority. "
             : "") +
-          "Photographic realism: lifelike facial structure, realistic skin pores and texture, natural hair " +
-          "strands, believable anatomy and hands, physically plausible posture, detailed fabric texture, " +
-          "natural lighting and realistic camera optics. Match the requested scene rather than adding " +
-          "unrequested props, poses, clothing or camera angles. " +
+          "PHOTOGRAPHIC STYLE: create the result as a convincing real photograph, not an illustration, " +
+          "painting, 3D render or beauty-filtered synthetic image. Use natural human proportions and " +
+          "anatomically coherent joints, hands, fingers and facial features. Preserve fine skin microtexture, " +
+          "subtle pores, natural tonal variation, realistic hair strands and individual fabric fibers; avoid " +
+          "waxy, airbrushed or plastic-looking skin. Use physically consistent light and shadows, natural " +
+          "window or environmental light when it fits the scene, realistic highlight roll-off, true-to-life " +
+          "color, restrained photographic contrast, and the depth and perspective of a real camera lens. " +
+          "Keep the composition believable and candid/editorial rather than overly polished or CGI-like. " +
+          "Match the requested scene rather than adding unrequested props, poses, clothing or camera angles. " +
           "Keep the character clearly adult. Clothing must be opaque and provide full intimate coverage. " +
           "If the request mentions nudity or undressing, depict a tasteful robe, towel or fully covering opaque outfit instead. " +
           "No nudity, exposed intimate areas, transparent clothing, sexual activity, text or watermark.";
