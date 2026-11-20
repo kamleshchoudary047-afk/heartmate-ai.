@@ -338,12 +338,12 @@ async function consumeUsage(env, uid, action, dailyLimit, minuteLimit) {
       message: "You're sending requests too quickly. Please wait a moment.",
       retryAfter: 60 - Math.floor((now % 60000) / 1000)
     },
-    {
+    ...(dailyLimit == null ? [] : [{
       key: `day:${day}`,
       limit: dailyLimit,
       message: "You've reached today's free usage limit for this feature. Please try again after the daily reset.",
       retryAfter: Math.ceil((Date.parse(`${day}T00:00:00.000Z`) + 86400000 - now) / 1000)
-    }
+    }])
   ];
 
   for (const window of windows) {
@@ -1883,7 +1883,7 @@ Instructions:
           return json({ error: "Please describe the picture." }, 400);
         }
 
-        const usageError = await consumeUsage(env, user.uid, "image", 3, 2);
+        const usageError = await consumeUsage(env, user.uid, "realvisxl-image", null, 2);
         if (usageError) return usageError;
 
         const conversationContext = cleanText(body.context, 1800);
