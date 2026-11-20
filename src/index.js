@@ -1888,14 +1888,26 @@ Instructions:
 
         const conversationContext = cleanText(body.context, 1800);
         const requestText = scene + " " + conversationContext;
-        const kneelingRequested = /\b(kneel(?:ing)?|on (?:her|both) knees|both knees (?:on|resting on))\\b/i.test(requestText);
-        const rearFacingRequested = /\b(facing away|back[- ]facing|back view|from behind|over[- ]the[- ]shoulder)\\b/i.test(requestText);
-        const poseGuidance = kneelingRequested
-          ? "POSE GEOMETRY — KNEELING: show her lower body clearly supported by the bed. Both knees make visible contact with the mattress; both shins rest along the mattress; her feet extend behind her; her hips are positioned above her heels. Keep the knees bent and the body weight visibly supported by the knees and shins. " +
-            (rearFacingRequested
-              ? "CAMERA AND ORIENTATION: place the camera behind her; her back and rear-facing body orientation face the camera, while she turns her head over her shoulder to look toward the camera. Keep the full body visible when requested. "
-              : "")
-          : "POSE PRIORITY: reproduce the user's explicitly requested body position and action as written. Preserve the requested body orientation, camera viewpoint, framing and full-body visibility. Do not replace the requested action with a generic pose. ";
+        const poseChoice = cleanText(body.pose, 40).toLowerCase();
+        const posePresets = {
+          standing: "Stand naturally with relaxed shoulders, balanced weight, a comfortable stance and anatomically natural arms and hands.",
+          seated: "Sit naturally on a chair with the back comfortably upright, legs positioned plausibly, feet supported and hands resting naturally.",
+          sofa: "Sit comfortably on a sofa with relaxed posture, natural leg placement and hands resting casually.",
+          walking: "Capture a natural walking mid-step with believable weight transfer, balanced limbs and realistic foot placement.",
+          over_shoulder: "Turn the upper body slightly away from the camera and look back over one shoulder; keep the neck and spine anatomically natural.",
+          kneeling: "Use a stable editorial kneeling pose with both knees and lower legs visibly supporting the body; keep the pose balanced and non-sexual."
+        };
+        const selectedPoseGuidance = posePresets[poseChoice] || "";
+        const kneelingRequested = /\b(kneel(?:ing)?|on (?:her|both) knees|both knees (?:on|resting on))\b/i.test(requestText);
+        const rearFacingRequested = /\b(facing away|back[- ]facing|back view|from behind|over[- ]the[- ]shoulder)\b/i.test(requestText);
+        const poseGuidance = selectedPoseGuidance
+          ? "SELECTED POSE PRESET: " + selectedPoseGuidance + " The user's explicit scene description takes priority if it specifies a conflicting pose. "
+          : kneelingRequested
+            ? "POSE GEOMETRY — KNEELING: show her lower body clearly supported by the bed. Both knees make visible contact with the mattress; both shins rest along the mattress; her feet extend behind her; her hips are positioned above her heels. Keep the knees bent and the body weight visibly supported by the knees and shins. " +
+              (rearFacingRequested
+                ? "CAMERA AND ORIENTATION: place the camera behind her; her back and rear-facing body orientation face the camera, while she turns her head over her shoulder to look toward the camera. Keep the full body visible when requested. "
+                : "")
+            : "POSE PRIORITY: reproduce the user's explicitly requested body position and action as written. Preserve the requested body orientation, camera viewpoint, framing and full-body visibility. Do not replace the requested action with a generic pose. ";
         const safePrompt =
           "Create a highly photorealistic image of " + profile.name +
           ", a clearly adult fictional woman aged 25 or older. " +
