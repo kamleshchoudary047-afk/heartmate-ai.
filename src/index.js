@@ -1937,9 +1937,23 @@ Instructions:
         });
 
         if (!upstream.ok) {
-          console.error("RealVisXL upstream error:", upstream.status);
+          let upstreamError = "";
+
+          try {
+            upstreamError = await upstream.text();
+          } catch {
+            upstreamError = "Could not read Kaggle error response.";
+          }
+
+          console.error("RealVisXL upstream failure:", {
+            status: upstream.status,
+            statusText: upstream.statusText,
+            details: upstreamError.slice(0, 2000)
+          });
+
           return json({
-            error: "RealVisXL could not generate the image. Check that the Kaggle session and tunnel are running."
+            error: "RealVisXL generation failed. Check Cloudflare logs for the upstream error.",
+            upstreamStatus: upstream.status
           }, 502);
         }
 
