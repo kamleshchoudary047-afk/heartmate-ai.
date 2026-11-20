@@ -14,7 +14,7 @@
   },
   "vars": {
     "FIREBASE_PROJECT_ID": "heartmate-ai-bd441",
-    "REALVISXL_API_URL": "https://YOUR-ACTIVE-TUNNEL.trycloudflare.com/generate"
+    "REALVISXL_API_URL": "https://adaptation-bye-manual-discrimination.trycloudflare.com/generate"
   },
   "d1_databases": [
     {
