@@ -1542,7 +1542,18 @@ body>#typing{flex-shrink:0}
         <option value="realvisxl">RealVisXL · Kaggle GPU</option>
       </select>
     </label>
-    <p class="customizer-note" style="margin:0 0 10px">RealVisXL needs your Kaggle notebook and Cloudflare Tunnel to stay running. It currently generates from text prompts and does not use the companion portrait as an identity reference.</p>
+    <label class="customizer-field" style="display:block;margin:0 0 10px">RealVisXL pose
+      <select id="realvisxlPoseSelector">
+        <option value="auto">Automatic · Follow my scene description</option>
+        <option value="standing">Standing · Natural full-body pose</option>
+        <option value="seated">Seated · Relaxed chair pose</option>
+        <option value="sofa">Sitting · Relaxed sofa pose</option>
+        <option value="walking">Walking · Natural mid-step pose</option>
+        <option value="over_shoulder">Over the shoulder · Turned-back portrait</option>
+        <option value="kneeling">Kneeling · Editorial portrait pose</option>
+      </select>
+    </label>
+    <p class="customizer-note" style="margin:0 0 10px">RealVisXL needs your Kaggle notebook and Cloudflare Tunnel to stay running. Pose presets guide the composition; full OpenPose reference control requires the matching Kaggle API update.</p>
     <textarea id="sceneInput" placeholder="Add optional details…"></textarea>
     <div class="modal-actions">
       <button class="cancel" onclick="closeMedia()">Cancel</button>
@@ -2694,7 +2705,12 @@ async function generateImage(scene, context = "") {
         "Content-Type":"application/json",
         Authorization:"Bearer " + token
       },
-      body:JSON.stringify({character, scene, context})
+      body:JSON.stringify({
+        character,
+        scene,
+        context,
+        pose: $("realvisxlPoseSelector")?.value || "auto"
+      })
     });
 
     if (!response.ok) {
