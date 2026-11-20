@@ -1888,8 +1888,8 @@ Instructions:
 
         const conversationContext = cleanText(body.context, 1800);
         const requestText = scene + " " + conversationContext;
-        const kneelingRequested = /\\b(kneel(?:ing)?|on (?:her|both) knees|both knees (?:on|resting on))\\b/i.test(requestText);
-        const rearFacingRequested = /\\b(facing away|back[- ]facing|back view|from behind|over[- ]the[- ]shoulder)\\b/i.test(requestText);
+        const kneelingRequested = /\b(kneel(?:ing)?|on (?:her|both) knees|both knees (?:on|resting on))\b/i.test(requestText);
+        const rearFacingRequested = /\b(facing away|back[- ]facing|back view|from behind|over[- ]the[- ]shoulder)\b/i.test(requestText);
         const poseGuidance = kneelingRequested
           ? "POSE GEOMETRY — KNEELING: show her lower body clearly supported by the bed. Both knees make visible contact with the mattress; both shins rest along the mattress; her feet extend behind her; her hips are positioned above her heels. Keep the knees bent and the body weight visibly supported by the knees and shins. " +
             (rearFacingRequested
