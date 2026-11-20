@@ -1931,14 +1931,18 @@ Instructions:
           "Keep the character clearly an adult (25+). " +
           "No text, watermark, logo or signature.";
 
-        const apiBase = String(env.REALVISXL_API_URL).trim().replace(/\/+$/, "");
+        const configuredApiUrl = String(env.REALVISXL_API_URL).trim().replace(/\/+$/, "");
+        // Accept either the tunnel base URL or a URL already ending in /generate.
+        const generateUrl = configuredApiUrl.endsWith("/generate")
+          ? configuredApiUrl
+          : configuredApiUrl + "/generate";
         // API keys must be a single-line HTTP header value. Remove accidental
         // whitespace/control characters introduced when copying the secret.
         const apiKey = String(env.REALVISXL_API_KEY).replace(/[\s\u0000-\u001F\u007F]+/g, "");
         if (!apiKey) {
           throw new Error("REALVISXL_API_KEY is empty after trimming whitespace. Re-save the Cloudflare secret.");
         }
-        const upstream = await fetch(apiBase + "/generate", {
+        const upstream = await fetch(generateUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1950,8 +1954,8 @@ Instructions:
             width: 768,
             height: 1024,
             steps: 20,
-            guidance_scale: 6,
-            controlnet_scale: 0
+            cfg: 6,
+            seed: -1
           })
         });
 
