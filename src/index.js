@@ -1895,11 +1895,12 @@ Instructions:
           sofa: "Sit comfortably on a sofa with relaxed posture, natural leg placement and hands resting casually.",
           walking: "Capture a natural walking mid-step with believable weight transfer, balanced limbs and realistic foot placement.",
           over_shoulder: "Turn the upper body slightly away from the camera and look back over one shoulder; keep the neck and spine anatomically natural.",
-          kneeling: "Use a stable editorial kneeling pose with both knees and lower legs visibly supporting the body; keep the pose balanced and non-sexual."
+          kneeling: "Use a stable editorial kneeling pose with both knees and lower legs visibly supporting the body; keep the pose balanced."
         };
         const selectedPoseGuidance = posePresets[poseChoice] || "";
         const kneelingRequested = /\b(kneel(?:ing)?|on (?:her|both) knees|both knees (?:on|resting on))\b/i.test(requestText);
         const rearFacingRequested = /\b(facing away|back[- ]facing|back view|from behind|over[- ]the[- ]shoulder)\b/i.test(requestText);
+        
         const poseGuidance = selectedPoseGuidance
           ? "SELECTED POSE PRESET: " + selectedPoseGuidance + " The user's explicit scene description takes priority if it specifies a conflicting pose. "
           : kneelingRequested
@@ -1908,6 +1909,8 @@ Instructions:
                 ? "CAMERA AND ORIENTATION: place the camera behind her; her back and rear-facing body orientation face the camera, while she turns her head over her shoulder to look toward the camera. Keep the full body visible when requested. "
                 : "")
             : "POSE PRIORITY: reproduce the user's explicitly requested body position and action as written. Preserve the requested body orientation, camera viewpoint, framing and full-body visibility. Do not replace the requested action with a generic pose. ";
+
+        // === UPDATED PROMPT (allows explicit adult content) ===
         const safePrompt =
           "Create a highly photorealistic image of " + profile.name +
           ", a clearly adult fictional woman aged 25 or older. " +
@@ -1920,15 +1923,13 @@ Instructions:
           "PHOTOGRAPHIC STYLE: create the result as a convincing real photograph, not an illustration, " +
           "painting, 3D render or beauty-filtered synthetic image. Use natural human proportions and " +
           "anatomically coherent joints, hands, fingers and facial features. Preserve fine skin microtexture, " +
-          "subtle pores, natural tonal variation, realistic hair strands and individual fabric fibers; avoid " +
-          "waxy, airbrushed or plastic-looking skin. Use physically consistent light and shadows, natural " +
-          "window or environmental light when it fits the scene, realistic highlight roll-off, true-to-life " +
-          "color, restrained photographic contrast, and the depth and perspective of a real camera lens. " +
-          "Keep the composition believable and candid/editorial rather than overly polished or CGI-like. " +
-          "Match the requested scene rather than adding unrequested props, poses, clothing or camera angles. " +
-          "Keep the character clearly adult. Clothing must be opaque and provide full intimate coverage. " +
-          "If the request mentions nudity or undressing, depict a tasteful robe, towel or fully covering opaque outfit instead. " +
-          "No nudity, exposed intimate areas, transparent clothing, sexual activity, text or watermark.";
+          "subtle pores, natural tonal variation, realistic hair strands and individual fabric fibers. " +
+          "Use physically consistent light and shadows, realistic highlight roll-off, true-to-life color, " +
+          "and the depth and perspective of a real camera lens. " +
+          "Match the requested scene exactly, including clothing, nudity, body position, sexual acts, " +
+          "camera angle and composition when the user asks for them. " +
+          "Keep the character clearly an adult (25+). " +
+          "No text, watermark, logo or signature.";
 
         const apiBase = String(env.REALVISXL_API_URL).trim().replace(/\/+$/, "");
         // API keys must be a single-line HTTP header value. Remove accidental
