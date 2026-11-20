@@ -1888,8 +1888,8 @@ Instructions:
 
         const conversationContext = cleanText(body.context, 1800);
         const requestText = scene + " " + conversationContext;
-        const kneelingRequested = /\b(kneel(?:ing)?|on (?:her|both) knees|both knees (?:on|resting on))\b/i.test(requestText);
-        const rearFacingRequested = /\b(facing away|back[- ]facing|back view|from behind|over[- ]the[- ]shoulder)\b/i.test(requestText);
+        const kneelingRequested = /\\b(kneel(?:ing)?|on (?:her|both) knees|both knees (?:on|resting on))\\b/i.test(requestText);
+        const rearFacingRequested = /\\b(facing away|back[- ]facing|back view|from behind|over[- ]the[- ]shoulder)\\b/i.test(requestText);
         const poseGuidance = kneelingRequested
           ? "POSE GEOMETRY — KNEELING: show her lower body clearly supported by the bed. Both knees make visible contact with the mattress; both shins rest along the mattress; her feet extend behind her; her hips are positioned above her heels. Keep the knees bent and the body weight visibly supported by the knees and shins. " +
             (rearFacingRequested
@@ -1918,47 +1918,46 @@ Instructions:
           "If the request mentions nudity or undressing, depict a tasteful robe, towel or fully covering opaque outfit instead. " +
           "No nudity, exposed intimate areas, transparent clothing, sexual activity, text or watermark.";
 
-        const apiBase = String(env.REALVISXL_API_URL).replace(/\/+$/, "");
+        const apiBase = String(env.REALVISXL_API_URL).replace(/\\/+$/, "");
         const upstream = await fetch(apiBase + "/generate", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + env.REALVISXL_API_KEY
+            "X-API-Key": env.REALVISXL_API_KEY
           },
           body: JSON.stringify({
             prompt: safePrompt,
-            style: "photorealistic"
+            negative_prompt: "low quality, blurry, distorted anatomy, extra fingers, malformed hands, text, watermark",
+            width: 768,
+            height: 1024,
+            steps: 20,
+            guidance_scale: 6,
+            controlnet_scale: 0
           })
         });
 
-        let result;
-        try {
-          result = await upstream.json();
-        } catch {
-          return json({ error: "RealVisXL returned an invalid response." }, 502);
-        }
-
-        if (!upstream.ok || typeof result.image !== "string") {
+        if (!upstream.ok) {
           console.error("RealVisXL upstream error:", upstream.status);
           return json({
             error: "RealVisXL could not generate the image. Check that the Kaggle session and tunnel are running."
           }, 502);
         }
 
-        if (result.image.length > 24 * 1024 * 1024 ||
-            !/^[A-Za-z0-9+/]+={0,2}$/.test(result.image)) {
-          return json({ error: "RealVisXL returned invalid image data." }, 502);
+        const contentType = upstream.headers.get("content-type") || "";
+        if (!contentType.toLowerCase().startsWith("image/")) {
+          console.error("RealVisXL returned unexpected content type:", contentType);
+          return json({ error: "RealVisXL returned an invalid image response." }, 502);
         }
 
-        const binary = Uint8Array.from(
-          atob(result.image),
-          character => character.charCodeAt(0)
-        );
+        const imageBytes = await upstream.arrayBuffer();
+        if (!imageBytes.byteLength || imageBytes.byteLength > 20 * 1024 * 1024) {
+          return json({ error: "RealVisXL returned an empty or oversized image." }, 502);
+        }
 
-        return new Response(binary, {
+        return new Response(imageBytes, {
           status: 200,
           headers: {
-            "content-type": "image/png",
+            "content-type": contentType,
             "cache-control": "no-store",
             "x-content-type-options": "nosniff"
           }
