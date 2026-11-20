@@ -1983,12 +1983,19 @@ Instructions:
           }
         });
       } catch (error) {
-        console.error("RealVisXL image API error:", error?.message || String(error));
+        const rawError = String(error?.message || error || "Unknown error");
+        const safeError = rawError
+          .replace(/(api[_-]?key|authorization|token|secret)\s*[:=]\s*[^\s,;]+/gi, "$1=[redacted]")
+          .replace(/Bearer\s+[^\s]+/gi, "Bearer [redacted]")
+          .slice(0, 800);
+
+        console.error("RealVisXL image API exception:", safeError);
+
         if (isAuthError(error)) {
           return json({ error: error.message }, 401);
         }
         return json({
-          error: "RealVisXL image generation failed. Please try again."
+          error: "RealVisXL internal error: " + safeError
         }, 502);
       }
     }
