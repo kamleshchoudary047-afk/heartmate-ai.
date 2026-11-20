@@ -1888,14 +1888,24 @@ Instructions:
 
         const conversationContext = cleanText(body.context, 1800);
         const safePrompt =
-          "Create a photorealistic DSLR-style image of " + profile.name +
-          ", a fictional adult woman aged 25 or older. " +
-          "Image request: " + scene + ". " +
+          "Create a highly photorealistic image of " + profile.name +
+          ", a clearly adult fictional woman aged 25 or older. " +
+          "USER'S IMAGE REQUEST — FOLLOW THIS FIRST AND LITERALLY: " + scene + ". " +
+          "Preserve every explicit instruction in the user's request, especially the requested viewpoint, " +
+          "body orientation, pose, action, camera position, framing, outfit, setting and composition. " +
+          "Do not replace a specific requested pose or viewpoint with a generic front-facing portrait. " +
+          "If the request says back view, show the subject from behind with her back facing the camera " +
+          "and the camera positioned behind her; do not turn her toward the camera unless requested. " +
+          "If it says side view or profile, show a true side angle. If it says full body, include the entire " +
+          "figure from head to feet. If it specifies close-up, waist-up, sitting, standing, walking or looking " +
+          "over a shoulder, reproduce that exact framing and pose. " +
           (conversationContext
-            ? "Use this fictional chat context for the scene, setting, clothing, pose and mood: " + conversationContext + ". "
+            ? "OPTIONAL CONVERSATION CONTEXT (secondary to the user's explicit image request): " + conversationContext + ". "
             : "") +
-          "Realistic facial features, natural skin texture, believable anatomy, " +
-          "natural hands, detailed hair, cinematic natural lighting and a polished editorial photograph. " +
+          "Photographic realism: lifelike facial structure, realistic skin pores and texture, natural hair " +
+          "strands, believable anatomy and hands, physically plausible posture, detailed fabric texture, " +
+          "natural lighting and realistic camera optics. Match the requested scene rather than adding " +
+          "unrequested props, poses, clothing or camera angles. " +
           "Keep the character clearly adult. Clothing must be opaque and provide full intimate coverage. " +
           "If the request mentions nudity or undressing, depict a tasteful robe, towel or fully covering opaque outfit instead. " +
           "No nudity, exposed intimate areas, transparent clothing, sexual activity, text or watermark.";
