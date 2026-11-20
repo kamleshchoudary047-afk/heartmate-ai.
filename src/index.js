@@ -1929,7 +1929,7 @@ Instructions:
           }
         }
 
-const apiBase = String(env.REALVISXL_API_URL).replace(/\/+$/, "");
+        const apiBase = String(env.REALVISXL_API_URL).replace(/\/+$/, "");
         const upstream = await fetch(apiBase + "/generate", {
           method: "POST",
           headers: {
