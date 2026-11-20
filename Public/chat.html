@@ -2283,12 +2283,16 @@ async function sendChat() {
         .map(item => (item.role === "user" ? "User: " : girlName + ": ") + item.content)
         .join("\n");
       contextPhotoScene =
-        "A candid, natural in-the-moment photo of " + girlName +
-        " showing the activity she just described in our conversation. " +
-        "Match the scene, setting, outfit, pose and mood from the chat. " +
-        "If she described being naked or undressed, make the photo an intimate but non-explicit moment with her wrapped in a soft towel or robe, or wearing opaque lingerie, fully covered. " +
+        "Create one candid, photorealistic personal photograph of " + girlName + ". " +
+        "Follow the user's most recent explicit photo request and pose instruction in our conversation literally. " +
+        "Preserve the requested action, body position, body orientation, camera viewpoint, framing, outfit and setting. " +
+        "If the user requested kneeling, sitting, crouching, squatting, reclining, lying down, leaning, walking, " +
+        "a back view, a side view or an over-the-shoulder pose, show that exact pose instead of a generic standing pose. " +
+        "Use the latest explicit user instruction in the attached conversation context when the latest message only asks for a photo. " +
+        "If no specific pose was requested, use a natural candid pose. " +
+        "The subject is a fictional adult woman aged 25 or older, wearing opaque clothing with full intimate coverage. " +
         "Make it feel like a spontaneous personal photo, not a fashion catalogue.";
-      contextPhotoScene = contextPhotoScene.slice(0, 400);
+      contextPhotoScene = contextPhotoScene.slice(0, 1200);
       window.heartmatePendingPhotoContext = recentContext.slice(0, 1800);
     }
 
