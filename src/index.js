@@ -1918,12 +1918,18 @@ Instructions:
           "If the request mentions nudity or undressing, depict a tasteful robe, towel or fully covering opaque outfit instead. " +
           "No nudity, exposed intimate areas, transparent clothing, sexual activity, text or watermark.";
 
-        const apiBase = String(env.REALVISXL_API_URL).replace(/\/+$/, "");
+        const apiBase = String(env.REALVISXL_API_URL).trim().replace(/\/+$/, "");
+        // API keys must be a single-line HTTP header value. Remove accidental
+        // whitespace/control characters introduced when copying the secret.
+        const apiKey = String(env.REALVISXL_API_KEY).replace(/[\s\u0000-\u001F\u007F]+/g, "");
+        if (!apiKey) {
+          throw new Error("REALVISXL_API_KEY is empty after trimming whitespace. Re-save the Cloudflare secret.");
+        }
         const upstream = await fetch(apiBase + "/generate", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-API-Key": env.REALVISXL_API_KEY
+            "X-API-Key": apiKey
           },
           body: JSON.stringify({
             prompt: safePrompt,
