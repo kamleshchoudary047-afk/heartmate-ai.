@@ -1918,7 +1918,18 @@ Instructions:
           "If the request mentions nudity or undressing, depict a tasteful robe, towel or fully covering opaque outfit instead. " +
           "No nudity, exposed intimate areas, transparent clothing, sexual activity, text or watermark.";
 
-        const apiBase = String(env.REALVISXL_API_URL).replace(/\/+$/, "");
+        const poseReference = body.poseReference;
+        if (poseReference !== undefined && poseReference !== null) {
+          if (!poseReference || !["image/jpeg", "image/png"].includes(poseReference.mimeType) ||
+              typeof poseReference.data !== "string" ||
+              poseReference.data.length < 100 ||
+              poseReference.data.length > 6 * 1024 * 1024 ||
+              !/^[A-Za-z0-9+/]+={0,2}$/.test(poseReference.data)) {
+            return json({ error: "Pose reference must be a JPEG or PNG image up to 4 MB." }, 400);
+          }
+        }
+
+const apiBase = String(env.REALVISXL_API_URL).replace(/\/+$/, "");
         const upstream = await fetch(apiBase + "/generate", {
           method: "POST",
           headers: {
@@ -1927,7 +1938,11 @@ Instructions:
           },
           body: JSON.stringify({
             prompt: safePrompt,
-            style: "photorealistic"
+            style: "photorealistic",
+            ...(poseReference ? {
+              pose_reference: poseReference.data,
+              pose_reference_mime_type: poseReference.mimeType
+            } : {})
           })
         });
 
@@ -1943,6 +1958,12 @@ Instructions:
           return json({
             error: "RealVisXL could not generate the image. Check that the Kaggle session and tunnel are running."
           }, 502);
+        }
+
+        if (poseReference && result.pose_applied !== true) {
+          return json({
+            error: "Pose-reference support is not enabled in the Kaggle RealVisXL API yet. The image was not generated. Keep this reference selected after the Kaggle ControlNet update."
+          }, 501);
         }
 
         if (result.image.length > 24 * 1024 * 1024 ||

@@ -1544,6 +1544,12 @@ body>#typing{flex-shrink:0}
     </label>
     <p class="customizer-note" style="margin:0 0 10px">RealVisXL needs your Kaggle notebook and Cloudflare Tunnel to stay running. It currently generates from text prompts and does not use the companion portrait as an identity reference.</p>
     <textarea id="sceneInput" placeholder="Add optional details…"></textarea>
+    <div id="poseReferenceControl" hidden style="margin:0 0 12px;padding:12px;border:1px solid #c88ab755;border-radius:14px;background:#ffffff08">
+      <label for="poseReferenceInput" style="display:block;font-size:12px;font-weight:700;margin-bottom:6px">🧍 Pose reference (RealVisXL only)</label>
+      <input id="poseReferenceInput" type="file" accept="image/jpeg,image/png" style="display:block;width:100%;font-size:12px">
+      <p style="margin:7px 0 0;color:#c5b5d5;font-size:11px;line-height:1.45">Upload a clear pose reference photo (JPEG or PNG, up to 4 MB). It guides body position and camera orientation; the generated character, outfit and scene come from your prompt. Use images of adults and only images you have permission to use.</p>
+      <div id="poseReferenceStatus" aria-live="polite" style="margin-top:6px;color:#f5cce5;font-size:11px"></div>
+    </div>
     <div class="modal-actions">
       <button class="cancel" onclick="closeMedia()">Cancel</button>
       <button id="createMediaButton">Create</button>
@@ -1599,7 +1605,42 @@ if (imageModelSelector) {
   imageModelSelector.value = selectedImageProvider();
   imageModelSelector.addEventListener("change", () => {
     localStorage.setItem(imageModelPreferenceKey, imageModelSelector.value);
+    const poseControl = $("poseReferenceControl");
+    if (poseControl) poseControl.hidden = imageModelSelector.value !== "realvisxl";
   });
+}
+const poseReferenceInput = $("poseReferenceInput");
+const poseReferenceControl = $("poseReferenceControl");
+if (poseReferenceControl) poseReferenceControl.hidden = selectedImageProvider() !== "realvisxl";
+if (poseReferenceInput) {
+  poseReferenceInput.addEventListener("change", () => {
+    const file = poseReferenceInput.files && poseReferenceInput.files[0];
+    const status = $("poseReferenceStatus");
+    if (!file) { status.textContent = ""; return; }
+    if (!["image/jpeg","image/png"].includes(file.type)) {
+      poseReferenceInput.value = "";
+      status.textContent = "Please choose a JPEG or PNG image.";
+      return;
+    }
+    if (file.size > 4 * 1024 * 1024) {
+      poseReferenceInput.value = "";
+      status.textContent = "The image is larger than 4 MB. Choose a smaller reference.";
+      return;
+    }
+    status.textContent = "Selected: " + file.name + " (" + (file.size / 1024 / 1024).toFixed(1) + " MB)";
+  });
+}
+async function readPoseReference() {
+  if (selectedImageProvider() !== "realvisxl" || !poseReferenceInput?.files?.[0]) return null;
+  const file = poseReferenceInput.files[0];
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("Could not read the pose reference image."));
+    reader.readAsDataURL(file);
+  });
+  const encoded = String(dataUrl).split(",")[1] || "";
+  return { mimeType: file.type, data: encoded };
 }
 $("girlName").textContent = girlName;
 $("typingName").textContent = girlName;
@@ -2415,6 +2456,9 @@ function openMedia(type) {
   $("sceneInput").placeholder = outfitMode ? "Optional details (colour, accessories, hairstyle)…" :
     midnightMode ? "Optional romantic details…" : transitionMode ? "Optional fashion details…" : "Describe your scene…";
   $("sceneInput").value = "";
+  if (poseReferenceInput) poseReferenceInput.value = "";
+  if ($("poseReferenceStatus")) $("poseReferenceStatus").textContent = "";
+  if (poseReferenceControl) poseReferenceControl.hidden = selectedImageProvider() !== "realvisxl";
   $("mediaModal").classList.add("open");
 }
 
@@ -2614,7 +2658,12 @@ $("createMediaButton").addEventListener("click", async () => {
     if (!confirm("Video generation may use paid credits. Continue?")) return;
     await generateVideo(scene);
   } else {
-    await generateImage(scene);
+    try {
+      const poseReference = await readPoseReference();
+      await generateImage(scene, "", poseReference);
+    } catch (error) {
+      addMessage("Image creation failed: " + error.message, "bot");
+    }
   }
 });
 
@@ -2678,7 +2727,7 @@ async function createOutfitRequest(index) {
   await generateImage(scene);
 }
 
-async function generateImage(scene, context = "") {
+async function generateImage(scene, context = "", poseReference = null) {
   if (busy) return;
   busy = true;
   status.textContent = "Creating your image…";
@@ -2694,7 +2743,12 @@ async function generateImage(scene, context = "") {
         "Content-Type":"application/json",
         Authorization:"Bearer " + token
       },
-      body:JSON.stringify({character, scene, context})
+      body:JSON.stringify({
+        character, scene, context,
+        ...(imageEndpoint === "/api/image/realvisxl" && poseReference
+          ? { poseReference }
+          : {})
+      })
     });
 
     if (!response.ok) {
