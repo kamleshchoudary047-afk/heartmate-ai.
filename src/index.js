@@ -1887,21 +1887,23 @@ Instructions:
         if (usageError) return usageError;
 
         const conversationContext = cleanText(body.context, 1800);
+        const requestText = scene + " " + conversationContext;
+        const kneelingRequested = /\\b(kneel(?:ing)?|on (?:her|both) knees|both knees (?:on|resting on))\\b/i.test(requestText);
+        const rearFacingRequested = /\\b(facing away|back[- ]facing|back view|from behind|over[- ]the[- ]shoulder)\\b/i.test(requestText);
+        const poseGuidance = kneelingRequested
+          ? "POSE GEOMETRY — KNEELING: show her lower body clearly supported by the bed. Both knees make visible contact with the mattress; both shins rest along the mattress; her feet extend behind her; her hips are positioned above her heels. Keep the knees bent and the body weight visibly supported by the knees and shins. " +
+            (rearFacingRequested
+              ? "CAMERA AND ORIENTATION: place the camera behind her; her back and rear-facing body orientation face the camera, while she turns her head over her shoulder to look toward the camera. Keep the full body visible when requested. "
+              : "")
+          : "POSE PRIORITY: reproduce the user's explicitly requested body position and action as written. Preserve the requested body orientation, camera viewpoint, framing and full-body visibility. Do not replace the requested action with a generic pose. ";
         const safePrompt =
           "Create a highly photorealistic image of " + profile.name +
           ", a clearly adult fictional woman aged 25 or older. " +
           "USER'S IMAGE REQUEST — FOLLOW THIS FIRST AND LITERALLY: " + scene + ". " +
-          "The user's requested pose, action, body orientation, camera viewpoint and framing are mandatory scene details. " +
-          "Reproduce the requested pose literally; do not substitute a standing pose, front-facing portrait or generic fashion pose. " +
-          "This applies to kneeling, sitting, crouching, squatting, reclining, lying down, leaning, walking, standing, " +
-          "back-facing, side-profile and over-the-shoulder poses whenever requested. " +
-          "If a back view is requested, place the camera behind the subject and keep her back facing the camera. " +
-          "If a side view or profile is requested, use a true side angle. If full body is requested, show the entire figure. " +
+          poseGuidance +
           (conversationContext
-            ? "RECENT CHAT CONTEXT FOR RESOLVING THE REQUEST: " + conversationContext + ". " +
-              "Use the latest explicit user instruction in this context to identify the requested pose, action, outfit and viewpoint. " +
-              "User instructions take priority over generic assistant wording or defaults. " +
-              "Do not infer a standing pose when the user requested another pose. "
+            ? "RECENT CHAT CONTEXT FOR RESOLVING UNSPECIFIED DETAILS: " + conversationContext + ". " +
+              "Use this context only to clarify details that the current image request does not specify. The current image request takes priority. "
             : "") +
           "Photographic realism: lifelike facial structure, realistic skin pores and texture, natural hair " +
           "strands, believable anatomy and hands, physically plausible posture, detailed fabric texture, " +
