@@ -1931,6 +1931,11 @@ Instructions:
           "Keep the character clearly an adult (25+). " +
           "No text, watermark, logo or signature.";
 
+        const selectedModel = cleanText(body.model || "juggernaut", 30).toLowerCase();
+        if (!["juggernaut", "realvisxl"].includes(selectedModel)) {
+          return json({ error: "Unsupported image model." }, 400);
+        }
+
         const configuredApiUrl = String(env.REALVISXL_API_URL).trim().replace(/\/+$/, "");
         // Accept either the tunnel base URL or a URL already ending in /generate.
         const generateUrl = configuredApiUrl.endsWith("/generate")
@@ -1951,6 +1956,7 @@ Instructions:
           body: JSON.stringify({
             prompt: safePrompt,
             negative_prompt: "low quality, blurry, distorted anatomy, extra fingers, malformed hands, text, watermark",
+            model: selectedModel,
             width: 768,
             height: 1024,
             steps: 20,
