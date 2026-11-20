@@ -1951,8 +1951,14 @@ Instructions:
             details: upstreamError.slice(0, 2000)
           });
 
+          const safeDetails = upstreamError
+            .replace(/(api[_-]?key|authorization|token|secret)\s*[:=]\s*[^\s,;]+/gi, "$1=[redacted]")
+            .replace(/Bearer\s+[^\s]+/gi, "Bearer [redacted]")
+            .slice(0, 1000);
+
           return json({
-            error: "RealVisXL generation failed. Check Cloudflare logs for the upstream error.",
+            error: "RealVisXL upstream HTTP " + upstream.status +
+              (safeDetails ? ": " + safeDetails : " (" + upstream.statusText + ")"),
             upstreamStatus: upstream.status
           }, 502);
         }
