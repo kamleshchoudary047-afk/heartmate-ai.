@@ -1999,7 +1999,7 @@ Instructions:
           return json({ error: "Character not found." }, 404);
         }
 
-        const scene = cleanText(body.scene || body.prompt, 1200);
+        const scene = cleanText(body.scene || body.prompt, 400);
         if (!scene) {
           return json({ error: "Please describe the picture." }, 400);
         }
