@@ -1539,7 +1539,8 @@ body>#typing{flex-shrink:0}
     <label class="customizer-field" style="display:block;margin:0 0 10px">Image model
       <select id="imageModelSelector">
         <option value="flux">FLUX · Existing generator</option>
-        <option value="realvisxl">RealVisXL · Kaggle GPU</option>
+        <option value="juggernaut">Juggernaut XL v9 · Kaggle GPU</option>
+        <option value="realvisxl">RealVisXL V5.0 · Kaggle GPU</option>
       </select>
     </label>
     <label class="customizer-field" style="display:block;margin:0 0 10px">RealVisXL pose
@@ -1553,7 +1554,7 @@ body>#typing{flex-shrink:0}
         <option value="kneeling">Kneeling · Editorial portrait pose</option>
       </select>
     </label>
-    <p class="customizer-note" style="margin:0 0 10px">RealVisXL needs your Kaggle notebook and Cloudflare Tunnel to stay running. Pose presets guide the composition; full OpenPose reference control requires the matching Kaggle API update.</p>
+    <p class="customizer-note" style="margin:0 0 10px">Juggernaut XL and RealVisXL need your Kaggle notebook and Cloudflare Tunnel to stay running. Pose presets guide the composition; full OpenPose reference control requires the matching Kaggle API update.</p>
     <textarea id="sceneInput" placeholder="Add optional details…"></textarea>
     <div class="modal-actions">
       <button class="cancel" onclick="closeMedia()">Cancel</button>
@@ -1601,9 +1602,8 @@ try {
 const $ = id => document.getElementById(id);
 const imageModelPreferenceKey = "heartmate-image-provider";
 function selectedImageProvider() {
-  return localStorage.getItem(imageModelPreferenceKey) === "realvisxl"
-    ? "realvisxl"
-    : "flux";
+  const saved = localStorage.getItem(imageModelPreferenceKey);
+  return ["flux", "juggernaut", "realvisxl"].includes(saved) ? saved : "flux";
 }
 const imageModelSelector = $("imageModelSelector");
 if (imageModelSelector) {
@@ -2696,9 +2696,10 @@ async function generateImage(scene, context = "") {
 
   try {
     const token = await authToken();
-    const imageEndpoint = selectedImageProvider() === "realvisxl"
-      ? "/api/image/realvisxl"
-      : "/api/image";
+    const selectedModel = selectedImageProvider();
+    const imageEndpoint = selectedModel === "flux"
+      ? "/api/image"
+      : "/api/image/realvisxl";
     const response = await fetch(imageEndpoint, {
       method:"POST",
       headers:{
@@ -2709,6 +2710,9 @@ async function generateImage(scene, context = "") {
         character,
         scene,
         context,
+        model: selectedModel === "juggernaut" || selectedModel === "realvisxl"
+          ? selectedModel
+          : "juggernaut",
         pose: $("realvisxlPoseSelector")?.value || "auto"
       })
     });
