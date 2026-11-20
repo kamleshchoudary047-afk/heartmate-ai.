@@ -1918,7 +1918,7 @@ Instructions:
           "If the request mentions nudity or undressing, depict a tasteful robe, towel or fully covering opaque outfit instead. " +
           "No nudity, exposed intimate areas, transparent clothing, sexual activity, text or watermark.";
 
-                const poseReference = body.poseReference;
+        const poseReference = body.poseReference;
         if (poseReference !== undefined && poseReference !== null) {
           if (!poseReference || !["image/jpeg", "image/png"].includes(poseReference.mimeType) ||
               typeof poseReference.data !== "string" ||
@@ -1953,17 +1953,17 @@ const apiBase = String(env.REALVISXL_API_URL).replace(/\/+$/, "");
           return json({ error: "RealVisXL returned an invalid response." }, 502);
         }
 
-        if (poseReference && result.pose_applied !== true) {
-          return json({
-            error: "Pose-reference support is not enabled in the Kaggle RealVisXL API yet. The image was not generated. Keep this reference selected after the Kaggle ControlNet update."
-          }, 501);
-        }
-
         if (!upstream.ok || typeof result.image !== "string") {
           console.error("RealVisXL upstream error:", upstream.status);
           return json({
             error: "RealVisXL could not generate the image. Check that the Kaggle session and tunnel are running."
           }, 502);
+        }
+
+        if (poseReference && result.pose_applied !== true) {
+          return json({
+            error: "Pose-reference support is not enabled in the Kaggle RealVisXL API yet. The image was not generated. Keep this reference selected after the Kaggle ControlNet update."
+          }, 501);
         }
 
         if (result.image.length > 24 * 1024 * 1024 ||
