@@ -1878,7 +1878,7 @@ Instructions:
           return json({ error: "Character not found." }, 404);
         }
 
-        const scene = cleanText(body.scene || body.prompt, 400);
+        const scene = cleanText(body.scene || body.prompt, 1200);
         if (!scene) {
           return json({ error: "Please describe the picture." }, 400);
         }
@@ -1891,16 +1891,17 @@ Instructions:
           "Create a highly photorealistic image of " + profile.name +
           ", a clearly adult fictional woman aged 25 or older. " +
           "USER'S IMAGE REQUEST — FOLLOW THIS FIRST AND LITERALLY: " + scene + ". " +
-          "Preserve every explicit instruction in the user's request, especially the requested viewpoint, " +
-          "body orientation, pose, action, camera position, framing, outfit, setting and composition. " +
-          "Do not replace a specific requested pose or viewpoint with a generic front-facing portrait. " +
-          "If the request says back view, show the subject from behind with her back facing the camera " +
-          "and the camera positioned behind her; do not turn her toward the camera unless requested. " +
-          "If it says side view or profile, show a true side angle. If it says full body, include the entire " +
-          "figure from head to feet. If it specifies close-up, waist-up, sitting, standing, walking or looking " +
-          "over a shoulder, reproduce that exact framing and pose. " +
+          "The user's requested pose, action, body orientation, camera viewpoint and framing are mandatory scene details. " +
+          "Reproduce the requested pose literally; do not substitute a standing pose, front-facing portrait or generic fashion pose. " +
+          "This applies to kneeling, sitting, crouching, squatting, reclining, lying down, leaning, walking, standing, " +
+          "back-facing, side-profile and over-the-shoulder poses whenever requested. " +
+          "If a back view is requested, place the camera behind the subject and keep her back facing the camera. " +
+          "If a side view or profile is requested, use a true side angle. If full body is requested, show the entire figure. " +
           (conversationContext
-            ? "OPTIONAL CONVERSATION CONTEXT (secondary to the user's explicit image request): " + conversationContext + ". "
+            ? "RECENT CHAT CONTEXT FOR RESOLVING THE REQUEST: " + conversationContext + ". " +
+              "Use the latest explicit user instruction in this context to identify the requested pose, action, outfit and viewpoint. " +
+              "User instructions take priority over generic assistant wording or defaults. " +
+              "Do not infer a standing pose when the user requested another pose. "
             : "") +
           "Photographic realism: lifelike facial structure, realistic skin pores and texture, natural hair " +
           "strands, believable anatomy and hands, physically plausible posture, detailed fabric texture, " +
