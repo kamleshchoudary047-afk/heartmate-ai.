@@ -1893,7 +1893,9 @@ Instructions:
           throw new Error("FACEID_API_KEY is empty. Re-save the Cloudflare secret.");
         }
 
-        const upstream = await fetch(generateUrl, {
+        const upstreamUrl = new URL(generateUrl);
+        upstreamUrl.searchParams.set("use_faceid", useFaceId ? "true" : "false");
+        const upstream = await fetch(upstreamUrl.toString(), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1908,8 +1910,7 @@ Instructions:
             guidance_scale: typeof body.guidance_scale === "number" && body.guidance_scale >= 1 && body.guidance_scale <= 10
               ? body.guidance_scale
               : 5.0,
-            seed: Number.isInteger(body.seed) && body.seed >= -1 ? body.seed : -1,
-            use_faceid: useFaceId
+            seed: Number.isInteger(body.seed) && body.seed >= -1 ? body.seed : -1
           })
         });
 
