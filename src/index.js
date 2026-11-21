@@ -1885,10 +1885,10 @@ Instructions:
           return json({ error: "Please describe the picture." }, 400);
         }
 
-        const requestedModel = typeof body.model === "string" ? body.model.toLowerCase() : "realvisxl";
-        const allowedModels = new Set(["realvisxl", "juggernaut", "cyberrealistic_pony"]);
+        const requestedModel = typeof body.model === "string" ? body.model.toLowerCase() : "cyberrealistic";
+        const allowedModels = new Set(["lustify", "cyberrealistic"]);
         if (!allowedModels.has(requestedModel)) {
-          return json({ error: "Unsupported image model. Choose RealVisXL, Juggernaut XL, or CyberRealistic Pony." }, 400);
+          return json({ error: "Unsupported image model. Choose Lustify APEX V8 or CyberRealistic XL." }, 400);
         }
         const selectedModel = requestedModel;
 
@@ -1934,7 +1934,7 @@ Instructions:
             width: Number.isInteger(body.width) ? body.width : 768,
             height: Number.isInteger(body.height) ? body.height : 1024,
             steps: Number.isInteger(body.steps) ? body.steps : 20,
-            cfg: typeof body.cfg === "number" ? body.cfg : 6,
+            guidance_scale: typeof body.guidance_scale === "number" ? body.guidance_scale : 5.5,
             seed: Number.isInteger(body.seed) ? body.seed : -1
           })
         });
@@ -1960,7 +1960,7 @@ Instructions:
             .slice(0, 1000);
 
           return json({
-            error: (selectedModel === "cyberrealistic_pony" ? "CyberRealistic Pony" : selectedModel === "juggernaut" ? "Juggernaut XL v9" : "RealVisXL") + " upstream HTTP " + upstream.status +
+            error: (selectedModel === "lustify" ? "Lustify APEX V8" : "CyberRealistic XL") + " upstream HTTP " + upstream.status +
               (safeDetails ? ": " + safeDetails : " (" + upstream.statusText + ")"),
             upstreamStatus: upstream.status,
             ...(upstream.status === 401
