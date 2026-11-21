@@ -2443,6 +2443,29 @@ function closeMedia() {
 }
 
 let directRealVisMode = false;
+function directModelName(model) {
+  return model === "cyberrealistic_pony" ? "CyberRealistic Pony" : "RealVisXL V5.0";
+}
+function refreshDirectPromptLabels() {
+  const model = $("imageModelSelector")?.value || "realvisxl";
+  const name = directModelName(model);
+  $("toggleDirectRealVis").textContent = directRealVisMode
+    ? "✓ Direct " + name + " Prompt enabled · Switch to Studio"
+    : "⚡ Use Direct Model Prompt";
+  $("directRealVisHelp").textContent = directRealVisMode
+    ? "Your prompt is sent exactly as typed to " + name + " on your Kaggle GPU. Studio builders, character details and chat context are bypassed."
+    : "Send your own prompt directly to a Kaggle image model. Studio presets will be skipped.";
+  $("sceneInput").placeholder = directRealVisMode
+    ? "Type your exact prompt for " + name + "…"
+    : "Describe your scene…";
+  $("modalTitle").textContent = directRealVisMode
+    ? "⚡ Direct " + name + " Prompt"
+    : "Create an image 📸";
+  $("modalDescription").textContent = directRealVisMode
+    ? "Your exact prompt goes from this website to your selected Kaggle-hosted model."
+    : "Describe the scene you want for " + girlName + ".";
+  $("createMediaButton").textContent = directRealVisMode ? "Generate with " + name : "Create";
+}
 function setDirectRealVisMode(enabled) {
   directRealVisMode = Boolean(enabled);
   mediaType = directRealVisMode ? "direct" : studioMediaType;
@@ -2453,20 +2476,6 @@ function setDirectRealVisMode(enabled) {
   const poseLabel = $("realvisxlPoseSelector")?.closest("label");
   if (modelLabel) modelLabel.hidden = !directRealVisMode;
   if (poseLabel) poseLabel.hidden = directRealVisMode;
-  $("toggleDirectRealVis").textContent = directRealVisMode
-    ? "✓ Direct RealVisXL Prompt enabled · Switch to Studio"
-    : "⚡ Use Direct RealVisXL Prompt";
-  $("directRealVisHelp").textContent = directRealVisMode
-    ? "Your prompt text is sent as entered to the RealVisXL V5.0 Kaggle endpoint. Studio prompt builders are bypassed; the model may interpret prompts differently."
-    : "Send your own prompt straight to RealVisXL V5.0 on Kaggle. Studio presets will be skipped.";
-  $("sceneInput").placeholder = directRealVisMode
-    ? "Type your exact prompt for RealVisXL…"
-    : "Describe your scene…";
-  $("modalTitle").textContent = directRealVisMode ? "⚡ Direct RealVisXL Prompt" : "Create an image 📸";
-  $("modalDescription").textContent = directRealVisMode
-    ? "Your prompt goes directly to your Kaggle-hosted RealVisXL V5.0 model."
-    : "Describe the scene you want for " + girlName + ".";
-  $("createMediaButton").textContent = directRealVisMode ? "Generate with RealVisXL" : "Create";
   const modelSelector = $("imageModelSelector");
   if (modelSelector) {
     Array.from(modelSelector.options).forEach(option => {
@@ -2475,18 +2484,9 @@ function setDirectRealVisMode(enabled) {
     if (directRealVisMode && !["realvisxl", "cyberrealistic_pony"].includes(modelSelector.value)) {
       modelSelector.value = "realvisxl";
     }
-    if (directRealVisMode) {
-      localStorage.setItem(imageModelPreferenceKey, modelSelector.value);
-      $("createMediaButton").textContent = "Generate with " +
-        (modelSelector.value === "cyberrealistic_pony" ? "CyberRealistic Pony" : "RealVisXL");
-      $("modalTitle").textContent = modelSelector.value === "cyberrealistic_pony"
-        ? "Direct CyberRealistic Pony Prompt"
-        : "⚡ Direct RealVisXL Prompt";
-      $("directRealVisHelp").textContent = modelSelector.value === "cyberrealistic_pony"
-        ? "Your exact prompt is sent to CyberRealistic Pony on Kaggle. Use the model’s recommended prompt tags if desired."
-        : "Your prompt text is sent as entered to RealVisXL V5.0 on Kaggle.";
-    }
+    if (directRealVisMode) localStorage.setItem(imageModelPreferenceKey, modelSelector.value);
   }
+  refreshDirectPromptLabels();
 }
 $("toggleDirectRealVis").addEventListener("click", () => {
   setDirectRealVisMode(!directRealVisMode);
@@ -2494,14 +2494,7 @@ $("toggleDirectRealVis").addEventListener("click", () => {
 $("imageModelSelector").addEventListener("change", () => {
   if (!directRealVisMode) return;
   localStorage.setItem(imageModelPreferenceKey, $("imageModelSelector").value);
-  $("createMediaButton").textContent = "Generate with " +
-    ($("imageModelSelector").value === "cyberrealistic_pony" ? "CyberRealistic Pony" : "RealVisXL");
-  $("modalTitle").textContent = $("imageModelSelector").value === "cyberrealistic_pony"
-    ? "Direct CyberRealistic Pony Prompt"
-    : "⚡ Direct RealVisXL Prompt";
-  $("directRealVisHelp").textContent = $("imageModelSelector").value === "cyberrealistic_pony"
-    ? "Your exact prompt is sent to CyberRealistic Pony on Kaggle. Use the model’s recommended prompt tags if desired."
-    : "Your prompt text is sent as entered to RealVisXL V5.0 on Kaggle.";
+  refreshDirectPromptLabels();
 });
 
 let selectedStudioMode = "standard";
@@ -2769,8 +2762,10 @@ async function generateImage(scene, context = "") {
   }
 
   busy = true;
-  const generationModel = directRealVisMode && selectedImageProvider() === "cyberrealistic_pony" ? "cyberrealistic_pony" : "realvisxl";
-  status.textContent = "Sending your exact prompt to " + (generationModel === "cyberrealistic_pony" ? "CyberRealistic Pony" : "RealVisXL") + "…";
+  const generationModel = directRealVisMode && ["realvisxl", "cyberrealistic_pony"].includes($("imageModelSelector").value)
+    ? $("imageModelSelector").value
+    : "realvisxl";
+  status.textContent = "Sending your exact prompt to " + directModelName(generationModel) + "…";
 
   try {
     const token = await authToken();
