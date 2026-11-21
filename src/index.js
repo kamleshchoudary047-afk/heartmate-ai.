@@ -1872,124 +1872,29 @@ Instructions:
           return json({ error: "Invalid JSON request." }, 400);
         }
 
-        const characterId = cleanText(body.character, 40).toLowerCase();
-        const profile = characters[characterId];
-        if (!profile) {
-          return json({ error: "Character not found." }, 404);
-        }
+        // Pass the user's prompt through unchanged. Only check that it is a
+        // non-empty string; do not trim, rewrite, append character/context text,
+        // or run pose/prompt enhancement here.
+        const exactPrompt = typeof body.scene === "string"
+          ? body.scene
+          : typeof body.prompt === "string"
+            ? body.prompt
+            : "";
 
-        const scene = cleanText(body.scene || body.prompt, 1200);
-        if (!scene) {
+        if (!exactPrompt.trim()) {
           return json({ error: "Please describe the picture." }, 400);
         }
 
         const usageError = await consumeUsage(env, user.uid, "realvisxl-image", null, 2);
         if (usageError) return usageError;
 
-        const conversationContext = cleanText(body.context, 1800);
-        // Parse pose and camera instructions from the current image request first.
-        // Chat context is only a fallback when the current request omits that detail.
-        const sceneText = scene.toLowerCase();
-        const contextText = conversationContext.toLowerCase();
+        // RealVisXL receives only the user's exact prompt. No hidden negative
+        // prompt is added; an explicitly supplied negative prompt is passed as-is.
+        const exactNegativePrompt = typeof body.negative_prompt === "string"
+          ? body.negative_prompt
+          : "";
 
-        function latestIntent(text, rules) {
-          let selected = null;
-          let selectedIndex = -1;
-          for (const rule of rules) {
-            for (const pattern of rule.patterns) {
-              const flags = pattern.flags.includes("g") ? pattern.flags : pattern.flags + "g";
-              const matches = text.matchAll(new RegExp(pattern.source, flags));
-              for (const match of matches) {
-                if (match.index >= selectedIndex) {
-                  selected = rule;
-                  selectedIndex = match.index;
-                }
-              }
-            }
-          }
-          return selected;
-        }
-
-        const poseRules = [
-          { name: "hands-and-knees", patterns: [/\bon (?:her |their )?hands and knees\b/i, /\bon all fours\b/i],
-            instruction: "POSE: place the subject on both hands and both knees, with hands and knees visibly supporting the body. This is a stable hands-and-knees pose, not standing, sitting or lying flat." },
-          { name: "kneeling", patterns: [/\bkneel(?:ing)?\b/i, /\bon (?:one|both) knees\b/i],
-            instruction: "POSE: the subject is kneeling; show the knees bent and supporting the body, with a balanced, anatomically plausible posture." },
-          { name: "standing", patterns: [/\bstand(?:ing)?\b/i, /\bon (?:her|their) feet\b/i, /\bupright\b/i],
-            instruction: "POSE: the subject is standing upright on both feet. Show a vertical body posture, legs supporting the body and feet grounded. Do not depict sitting, kneeling, lying down or sleeping." },
-          { name: "sitting", patterns: [/\bsit(?:ting)?\b/i, /\bseated\b/i, /\bon a chair\b/i],
-            instruction: "POSE: the subject is sitting, with the hips supported by the chair or seat and a natural seated leg position. Do not depict standing or sleeping." },
-          { name: "lying", patterns: [/\bly(?:ing)? down\b/i, /\b(?:lying|laying) on (?:the )?(?:bed|sofa|floor)\b/i, /\bleaning on (?:her|their) side\b/i, /\breclining\b/i],
-            instruction: "POSE: the subject is intentionally lying or reclining on the stated surface, with the body supported naturally." },
-          { name: "walking", patterns: [/\bwalk(?:ing)?\b/i, /\bmid[- ]step\b/i],
-            instruction: "POSE: capture the subject walking mid-step, with believable weight transfer and natural arm and leg movement." },
-          { name: "running", patterns: [/\brun(?:ning)?\b/i, /\bsprint(?:ing)?\b/i],
-            instruction: "POSE: capture the subject running, with a believable dynamic stride and balanced body mechanics." },
-          { name: "squatting", patterns: [/\bsquat(?:ting)?\b/i, /\bcrouch(?:ing)?\b/i],
-            instruction: "POSE: the subject is in a balanced squat or crouch, with bent knees and feet supporting the body." }
-        ];
-
-        const cameraRules = [
-          { name: "back", patterns: [/\bback view\b/i, /\brear view\b/i, /\bfrom behind\b/i, /\bfacing away\b/i, /\bback[- ]facing\b/i],
-            instruction: "CAMERA: use a rear view, with the camera positioned behind the subject so the back of the subject is visible." },
-          { name: "front", patterns: [/\bfront view\b/i, /\bfrom the front\b/i, /\bfacing (?:the )?camera\b/i, /\bfront[- ]facing\b/i],
-            instruction: "CAMERA: use a front view, with the camera facing the subject and the front of the body visible." },
-          { name: "side", patterns: [/\bside view\b/i, /\bside profile\b/i, /\bin profile\b/i, /\bprofile view\b/i],
-            instruction: "CAMERA: use a clear side-profile view, with the subject seen from the side." },
-          { name: "three-quarter", patterns: [/\bthree[- ]quarter view\b/i, /\bthree[- ]quarter angle\b/i],
-            instruction: "CAMERA: use a three-quarter view, showing the subject turned diagonally toward or away from the camera." }
-        ];
-
-        const framingRules = [
-          { name: "full-body", patterns: [/\bfull[- ]body\b/i, /\bhead to toe\b/i],
-            instruction: "FRAMING: show the complete subject from head to toe; do not crop off the feet or top of the head." },
-          { name: "close-up", patterns: [/\bclose[- ]up\b/i, /\bcloseup\b/i],
-            instruction: "FRAMING: use a close-up composition focused on the requested subject details." },
-          { name: "waist-up", patterns: [/\bwaist[- ]up\b/i, /\bupper body portrait\b/i],
-            instruction: "FRAMING: use a waist-up portrait composition." }
-        ];
-
-        const overShoulderRequested = /\bover (?:her|their )?shoulder\b|\blooking back\b/i.test(sceneText);
-        const chosenPose = latestIntent(sceneText, poseRules) || latestIntent(contextText, poseRules);
-        const chosenCamera = latestIntent(sceneText, cameraRules) || latestIntent(contextText, cameraRules);
-        const chosenFraming = latestIntent(sceneText, framingRules) || latestIntent(contextText, framingRules);
-        const explicitSleep = /\b(sleep(?:ing)?|asleep|napping)\b/i.test(sceneText);
-        const twoSubjects = /\b(two|couple|man and woman|woman and man|two people|two adults|both people|both adults|pair of adults)\b/i.test(sceneText);
-
-        const poseGuidance = [
-          chosenPose?.instruction || "POSE: infer a natural pose from the scene description. Never turn the subject into a sleeping or lying-down pose unless the user explicitly requests it.",
-          chosenCamera?.instruction || "",
-          overShoulderRequested ? "HEAD DIRECTION: turn the head over the shoulder as requested while keeping the neck and spine natural." : "",
-          chosenFraming?.instruction || "",
-          twoSubjects ? "SUBJECT COUNT: include exactly two distinct adult people when two are requested; keep their bodies separate and anatomically coherent." : "",
-          explicitSleep ? "SLEEP STATE: depict sleep only because the user explicitly requested it." : "ALERTNESS: keep the subject awake and responsive; do not depict sleeping."
-        ].filter(Boolean).join(" ");
-
-        // === UPDATED PROMPT (allows explicit adult content) ===
-        const safePrompt =
-          "Create a highly photorealistic image of " + profile.name +
-          ", a clearly adult fictional woman aged 25 or older. " +
-          "USER'S IMAGE REQUEST — FOLLOW THIS FIRST AND LITERALLY: " + scene + ". " +
-          poseGuidance +
-          (conversationContext
-            ? "RECENT CHAT CONTEXT FOR RESOLVING UNSPECIFIED DETAILS: " + conversationContext + ". " +
-              "Use this context only to clarify details that the current image request does not specify. The current image request takes priority. "
-            : "") +
-          "PHOTOGRAPHIC STYLE: create the result as a convincing real photograph, not an illustration, " +
-          "painting, 3D render or beauty-filtered synthetic image. Use natural human proportions and " +
-          "anatomically coherent joints, hands, fingers and facial features. Preserve fine skin microtexture, " +
-          "subtle pores, natural tonal variation, realistic hair strands and individual fabric fibers. " +
-          "Use physically consistent light and shadows, realistic highlight roll-off, true-to-life color, " +
-          "and the depth and perspective of a real camera lens. " +
-          "Match the requested scene exactly, including clothing, nudity, body position, sexual acts, " +
-          "camera angle and composition when the user asks for them. " +
-          "Keep the character clearly an adult (25+). " +
-          "No text, watermark, logo or signature.";
-
-        const selectedModel = cleanText(body.model || "juggernaut", 30).toLowerCase();
-        if (!["juggernaut", "realvisxl"].includes(selectedModel)) {
-          return json({ error: "Unsupported image model." }, 400);
-        }
+        const selectedModel = "realvisxl";
 
         const configuredApiUrl = String(env.REALVISXL_API_URL).trim().replace(/\/+$/, "");
         // Accept either the tunnel base URL or a URL already ending in /generate.
@@ -2009,14 +1914,14 @@ Instructions:
             "X-API-Key": apiKey
           },
           body: JSON.stringify({
-            prompt: safePrompt,
-            negative_prompt: "low quality, blurry, distorted anatomy, extra fingers, malformed hands, text, watermark",
+            prompt: exactPrompt,
+            negative_prompt: exactNegativePrompt,
             model: selectedModel,
-            width: 768,
-            height: 1024,
-            steps: 20,
-            cfg: 6,
-            seed: -1
+            width: Number.isInteger(body.width) ? body.width : 768,
+            height: Number.isInteger(body.height) ? body.height : 1024,
+            steps: Number.isInteger(body.steps) ? body.steps : 20,
+            cfg: typeof body.cfg === "number" ? body.cfg : 6,
+            seed: Number.isInteger(body.seed) ? body.seed : -1
           })
         });
 
