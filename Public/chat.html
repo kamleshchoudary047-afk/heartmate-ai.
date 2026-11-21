@@ -986,6 +986,10 @@ body>#typing{flex-shrink:0}
     <div class="studio-modal-topbar"><button type="button" class="studio-back-button" onclick="closeMedia()" aria-label="Back to chat">‹ Back to chat</button><span>Heartmate Studio</span></div>
     <h3 id="modalTitle">Create something lovely ✨</h3>
     <p id="modalDescription">Describe what you want to create.</p>
+    <div class="direct-prompt-switch" style="margin:0 0 14px;padding:12px;border:1px solid #b69aff55;border-radius:14px;background:#b69aff12">
+      <button type="button" id="toggleDirectRealVis" class="small-button" style="width:100%;text-align:left">⚡ Use Direct RealVisXL Prompt</button>
+      <p id="directRealVisHelp" class="customizer-note" style="margin:8px 0 0">Send your own prompt straight to RealVisXL V5.0 on Kaggle. Studio presets will be skipped.</p>
+    </div>
     <div id="outfitControls" hidden>
       <div class="customizer-grid">
         <label class="customizer-field">Outfit
@@ -2420,6 +2424,7 @@ function openMedia(type) {
       : transitionMode
         ? "Create one image with two coordinated fashion looks, side by side."
         : "Describe the scene you want for " + girlName + ".";
+  setDirectRealVisMode(false);
   $("outfitControls").hidden = !outfitMode;
   $("midnightControls").hidden = !midnightMode;
   $("transitionControls").hidden = !transitionMode;
@@ -2432,6 +2437,40 @@ function openMedia(type) {
 function closeMedia() {
   $("mediaModal").classList.remove("open");
 }
+
+let directRealVisMode = false;
+function setDirectRealVisMode(enabled) {
+  directRealVisMode = Boolean(enabled);
+  mediaType = directRealVisMode ? "direct" : "image";
+  $("outfitControls").hidden = true;
+  $("midnightControls").hidden = true;
+  $("transitionControls").hidden = true;
+  const modelLabel = $("imageModelSelector")?.closest("label");
+  const poseLabel = $("realvisxlPoseSelector")?.closest("label");
+  if (modelLabel) modelLabel.hidden = directRealVisMode;
+  if (poseLabel) poseLabel.hidden = directRealVisMode;
+  $("toggleDirectRealVis").textContent = directRealVisMode
+    ? "✓ Direct RealVisXL Prompt enabled · Switch to Studio"
+    : "⚡ Use Direct RealVisXL Prompt";
+  $("directRealVisHelp").textContent = directRealVisMode
+    ? "Your prompt text is sent as entered to the RealVisXL V5.0 Kaggle endpoint. Studio prompt builders are bypassed; the model may interpret prompts differently."
+    : "Send your own prompt straight to RealVisXL V5.0 on Kaggle. Studio presets will be skipped.";
+  $("sceneInput").placeholder = directRealVisMode
+    ? "Type your exact prompt for RealVisXL…"
+    : "Describe your scene…";
+  $("modalTitle").textContent = directRealVisMode ? "⚡ Direct RealVisXL Prompt" : "Create an image 📸";
+  $("modalDescription").textContent = directRealVisMode
+    ? "Your prompt goes directly to your Kaggle-hosted RealVisXL V5.0 model."
+    : "Describe the scene you want for " + girlName + ".";
+  $("createMediaButton").textContent = directRealVisMode ? "Generate with RealVisXL" : "Create";
+  if (directRealVisMode) {
+    $("imageModelSelector").value = "realvisxl";
+    localStorage.setItem(imageModelPreferenceKey, "realvisxl");
+  }
+}
+$("toggleDirectRealVis").addEventListener("click", () => {
+  setDirectRealVisMode(!directRealVisMode);
+});
 
 let selectedStudioMode = "standard";
 function buildOutfitStudioLayout() {
@@ -2530,10 +2569,11 @@ document.querySelectorAll("[data-studio]").forEach(button => {
 });
 
 $("createMediaButton").addEventListener("click", async () => {
-  let scene = $("sceneInput").value.trim();
+  const enteredScene = $("sceneInput").value;
+  let scene = directRealVisMode ? enteredScene : enteredScene.trim();
   if (busy) return;
 
-  if (mediaType === "transition") {
+  if (!directRealVisMode && mediaType === "transition") {
     const dress = $("transitionDress").value;
     const dressColor = $("transitionDressColor").value;
     const bikini = $("transitionBikini").value;
@@ -2554,7 +2594,7 @@ $("createMediaButton").addEventListener("click", async () => {
     if ($("sceneInput").value.trim()) scene += " Additional fashion direction: " + $("sceneInput").value.trim();
   }
 
-  if (mediaType === "midnight") {
+  if (!directRealVisMode && mediaType === "midnight") {
     const room = $("midnightRoom").value;
     const decor = $("midnightDecor").value;
     const outfit = $("midnightOutfit").value;
@@ -2579,7 +2619,7 @@ $("createMediaButton").addEventListener("click", async () => {
     if ($("sceneInput").value.trim()) scene += " Additional scene direction: " + $("sceneInput").value.trim();
   }
 
-  if (mediaType === "outfit") {
+  if (!directRealVisMode && mediaType === "outfit") {
     const outfit = $("outfitChoice").value;
     const indianDress = $("outfitIndianDress").value;
     const partyDress = $("outfitPartyDress").value;
@@ -2613,7 +2653,7 @@ $("createMediaButton").addEventListener("click", async () => {
       ". Premium tasteful adult fashion editorial, fictional adult woman aged 25 or older, realistic anatomy, garments must remain opaque or fully lined with full intimate coverage, no nudity, no transparent exposure, no exposed genitals, non-explicit.";
     if ($("sceneInput").value.trim()) scene += " Additional styling: " + $("sceneInput").value.trim();
   }
-  if (!scene) {
+  if (!scene.trim()) {
     $("sceneInput").focus();
     return;
   }
