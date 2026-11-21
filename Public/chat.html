@@ -2691,29 +2691,27 @@ async function createOutfitRequest(index) {
 
 async function generateImage(scene, context = "") {
   if (busy) return;
+  if (typeof scene !== "string" || !scene.trim()) {
+    addMessage("Please enter an image prompt first.", "bot");
+    return;
+  }
+
   busy = true;
-  status.textContent = "Creating your image…";
+  status.textContent = "Sending your exact prompt to RealVisXL…";
 
   try {
     const token = await authToken();
-    const selectedModel = selectedImageProvider();
-    const imageEndpoint = selectedModel === "flux"
-      ? "/api/image"
-      : "/api/image/realvisxl";
-    const response = await fetch(imageEndpoint, {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        Authorization:"Bearer " + token
+    const response = await fetch("/api/image/realvisxl", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
       },
-      body:JSON.stringify({
-        character,
-        scene,
-        context,
-        model: selectedModel === "juggernaut" || selectedModel === "realvisxl"
-          ? selectedModel
-          : "juggernaut",
-        pose: $("realvisxlPoseSelector")?.value || "auto"
+      // Keep the prompt string exactly as supplied to this function.
+      // Do not append chat context, character details, pose presets or model text.
+      body: JSON.stringify({
+        scene: scene,
+        model: "realvisxl"
       })
     });
 
@@ -2722,9 +2720,10 @@ async function generateImage(scene, context = "") {
       throw new Error(data.error || "Image creation failed.");
     }
 
+    // Display and save the exact image bytes returned by the RealVisXL API.
     const blob = await response.blob();
     if (!blob.type.startsWith("image/")) {
-      throw new Error("The server did not return an image.");
+      throw new Error("RealVisXL did not return an image.");
     }
 
     addImage(URL.createObjectURL(blob));
