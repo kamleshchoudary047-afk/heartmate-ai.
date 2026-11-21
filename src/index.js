@@ -1843,7 +1843,7 @@ Instructions:
       }
     }
 
-    // Authenticated RealVisXL image generation through the private Kaggle API.
+    // Authenticated SDXL image generation (RealVisXL or Pony) through the private Kaggle API.
     if (url.pathname === "/api/image/realvisxl") {
       if (request.method !== "POST") {
         return json({ error: "Method not allowed." }, 405);
@@ -1885,21 +1885,20 @@ Instructions:
           return json({ error: "Please describe the picture." }, 400);
         }
 
-        const usageError = await consumeUsage(env, user.uid, requestedModel + "-image", null, 2);
-        if (usageError) return usageError;
-
-        // RealVisXL receives only the user's exact prompt. No hidden negative
-        // prompt is added; an explicitly supplied negative prompt is passed as-is.
-        const exactNegativePrompt = typeof body.negative_prompt === "string"
-          ? body.negative_prompt
-          : "";
-
         const requestedModel = typeof body.model === "string" ? body.model.toLowerCase() : "realvisxl";
         const allowedModels = new Set(["realvisxl", "pony"]);
         if (!allowedModels.has(requestedModel)) {
           return json({ error: "Unsupported image model. Choose RealVisXL or Pony Diffusion V6 XL." }, 400);
         }
         const selectedModel = requestedModel;
+
+        const usageError = await consumeUsage(env, user.uid, "realvisxl-image", null, 2);
+        if (usageError) return usageError;
+
+        // Pass the user's exact prompt and any explicitly supplied negative prompt.
+        const exactNegativePrompt = typeof body.negative_prompt === "string"
+          ? body.negative_prompt
+          : "";
 
         const configuredApiUrl = String(env.REALVISXL_API_URL).trim().replace(/\/+$/, "");
         // Accept either the tunnel base URL or a URL already ending in /generate.
@@ -1951,7 +1950,7 @@ Instructions:
             .slice(0, 1000);
 
           return json({
-            error: "RealVisXL upstream HTTP " + upstream.status +
+            error: (selectedModel === "pony" ? "Pony Diffusion V6 XL" : "RealVisXL") + " upstream HTTP " + upstream.status +
               (safeDetails ? ": " + safeDetails : " (" + upstream.statusText + ")"),
             upstreamStatus: upstream.status
           }, 502);
@@ -1960,7 +1959,7 @@ Instructions:
         const contentType = upstream.headers.get("content-type") || "";
         if (!contentType.toLowerCase().startsWith("image/")) {
           console.error("RealVisXL returned unexpected content type:", contentType);
-          return json({ error: "RealVisXL returned an invalid image response." }, 502);
+          return json({ error: "The selected image model returned an invalid image response." }, 502);
         }
 
         const imageBytes = await upstream.arrayBuffer();
