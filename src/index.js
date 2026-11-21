@@ -1911,6 +1911,16 @@ Instructions:
         if (!apiKey) {
           throw new Error("REALVISXL_API_KEY is empty after trimming whitespace. Re-save the Cloudflare secret.");
         }
+        // Log only a one-way fingerprint and length for safe secret-mismatch diagnosis.
+        const keyDigest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(apiKey));
+        const keyFingerprint = Array.from(new Uint8Array(keyDigest))
+          .slice(0, 8)
+          .map((byte) => byte.toString(16).padStart(2, "0"))
+          .join("");
+        console.log("RealVisXL credential diagnostic:", {
+          keyLength: apiKey.length,
+          keyFingerprint
+        });
         const upstream = await fetch(generateUrl, {
           method: "POST",
           headers: {
