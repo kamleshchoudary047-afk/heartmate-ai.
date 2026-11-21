@@ -1740,6 +1740,32 @@ function addMessage(text, sender) {
   messages.scrollTop = messages.scrollHeight;
 }
 
+async function saveImageToPhone(source, filename) {
+  let blob;
+  if (source instanceof Blob) {
+    blob = source;
+  } else {
+    const response = await fetch(source);
+    if (!response.ok) throw new Error("Could not prepare this image for saving.");
+    blob = await response.blob();
+  }
+  const extension = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
+  const safeName = (filename || "heartmate-image").replace(/[^a-z0-9_-]/gi, "-") + "." + extension;
+  const file = new File([blob], safeName, {type:blob.type || "image/jpeg"});
+  if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})) {
+    await navigator.share({files:[file], title:"Heartmate image"});
+    return;
+  }
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = objectUrl;
+  link.download = safeName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+}
+
 function addImage(url, prompt = "", model = "") {
   const box = document.createElement("div");
   box.className = "media";
@@ -1747,6 +1773,18 @@ function addImage(url, prompt = "", model = "") {
   img.src = url;
   img.alt = girlName + " generated image";
   box.appendChild(img);
+  const saveButton = document.createElement("button");
+  saveButton.type = "button";
+  saveButton.className = "message-voice";
+  saveButton.textContent = "↓ Save to phone";
+  saveButton.addEventListener("click", async () => {
+    try {
+      await saveImageToPhone(url, "heartmate-" + character + "-" + Date.now());
+    } catch (error) {
+      if (error?.name !== "AbortError") alert("Could not save this image. Please try again or use My Gallery.");
+    }
+  });
+  box.appendChild(saveButton);
   if (prompt) {
     const promptCard = document.createElement("div");
     promptCard.className = "image-prompt";
@@ -2037,7 +2075,7 @@ async function openGallery() {
         openGallery();
       });
       const download = document.createElement("button");
-      download.textContent = "↓ Save";
+      download.textContent = "↓ Download";
       download.addEventListener("click", () => {
         const link = document.createElement("a");
         link.href = photo.uploaded ? photo.url : URL.createObjectURL(photo.blob);
@@ -2045,6 +2083,18 @@ async function openGallery() {
         document.body.appendChild(link);
         link.click();
         link.remove();
+      });
+      const saveToPhone = document.createElement("button");
+      saveToPhone.textContent = "📱 Save to phone";
+      saveToPhone.addEventListener("click", async () => {
+        try {
+          await saveImageToPhone(
+            photo.uploaded ? photo.url : photo.blob,
+            "heartmate-" + character + "-" + (photo.createdAt || Date.now())
+          );
+        } catch (error) {
+          if (error?.name !== "AbortError") alert("Could not save this image. Please try again using Download.");
+        }
       });
       const remove = document.createElement("button");
       remove.textContent = "🗑";
@@ -2055,7 +2105,7 @@ async function openGallery() {
           openGallery();
         }
       });
-      actions.append(favourite, download, remove);
+      actions.append(favourite, download, saveToPhone, remove);
       card.appendChild(actions);
       grid.appendChild(card);
     });
