@@ -986,7 +986,7 @@ body>#typing{flex-shrink:0}
     <div class="studio-modal-topbar"><button type="button" class="studio-back-button" onclick="closeMedia()" aria-label="Back to chat">‹ Back to chat</button><span>Heartmate Studio</span></div>
     <h3 id="modalTitle">Create something lovely ✨</h3>
     <p id="modalDescription">Describe what you want to create.</p>
-    <div class="direct-prompt-switch" style="margin:0 0 14px;padding:12px;border:1px solid #b69aff55;border-radius:14px;background:#b69aff12">
+    <div id="directPromptSwitch" class="direct-prompt-switch" style="margin:0 0 14px;padding:12px;border:1px solid #b69aff55;border-radius:14px;background:#b69aff12">
       <button type="button" id="toggleDirectRealVis" class="small-button" style="width:100%;text-align:left">⚡ Use Direct RealVisXL Prompt</button>
       <p id="directRealVisHelp" class="customizer-note" style="margin:8px 0 0">Send your own prompt straight to RealVisXL V5.0 on Kaggle. Studio presets will be skipped.</p>
     </div>
@@ -2408,8 +2408,10 @@ input.addEventListener("keydown", event => {
 
 /* IMAGE AND VIDEO */
 
+let studioMediaType = "image";
 function openMedia(type) {
   mediaType = type;
+  studioMediaType = type;
   const outfitMode = type === "outfit";
   const midnightMode = type === "midnight";
   const transitionMode = type === "transition";
@@ -2424,6 +2426,7 @@ function openMedia(type) {
       : transitionMode
         ? "Create one image with two coordinated fashion looks, side by side."
         : "Describe the scene you want for " + girlName + ".";
+  $("directPromptSwitch").hidden = type !== "image";
   setDirectRealVisMode(false);
   $("outfitControls").hidden = !outfitMode;
   $("midnightControls").hidden = !midnightMode;
@@ -2441,7 +2444,7 @@ function closeMedia() {
 let directRealVisMode = false;
 function setDirectRealVisMode(enabled) {
   directRealVisMode = Boolean(enabled);
-  mediaType = directRealVisMode ? "direct" : "image";
+  mediaType = directRealVisMode ? "direct" : studioMediaType;
   $("outfitControls").hidden = true;
   $("midnightControls").hidden = true;
   $("transitionControls").hidden = true;
