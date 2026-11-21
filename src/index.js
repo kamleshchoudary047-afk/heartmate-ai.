@@ -1911,50 +1911,50 @@ Instructions:
         }
 
         const poseRules = [
-          { name: "hands-and-knees", patterns: [/\\bon (?:her |their )?hands and knees\\b/i, /\\bon all fours\\b/i],
+          { name: "hands-and-knees", patterns: [/\bon (?:her |their )?hands and knees\b/i, /\bon all fours\b/i],
             instruction: "POSE: place the subject on both hands and both knees, with hands and knees visibly supporting the body. This is a stable hands-and-knees pose, not standing, sitting or lying flat." },
-          { name: "kneeling", patterns: [/\\bkneel(?:ing)?\\b/i, /\\bon (?:one|both) knees\\b/i],
+          { name: "kneeling", patterns: [/\bkneel(?:ing)?\b/i, /\bon (?:one|both) knees\b/i],
             instruction: "POSE: the subject is kneeling; show the knees bent and supporting the body, with a balanced, anatomically plausible posture." },
-          { name: "standing", patterns: [/\\bstand(?:ing)?\\b/i, /\\bon (?:her|their) feet\\b/i, /\\bupright\\b/i],
+          { name: "standing", patterns: [/\bstand(?:ing)?\b/i, /\bon (?:her|their) feet\b/i, /\bupright\b/i],
             instruction: "POSE: the subject is standing upright on both feet. Show a vertical body posture, legs supporting the body and feet grounded. Do not depict sitting, kneeling, lying down or sleeping." },
-          { name: "sitting", patterns: [/\\bsit(?:ting)?\\b/i, /\\bseated\\b/i, /\\bon a chair\\b/i],
+          { name: "sitting", patterns: [/\bsit(?:ting)?\b/i, /\bseated\b/i, /\bon a chair\b/i],
             instruction: "POSE: the subject is sitting, with the hips supported by the chair or seat and a natural seated leg position. Do not depict standing or sleeping." },
-          { name: "lying", patterns: [/\\bly(?:ing)? down\\b/i, /\\bleaning on (?:her|their) side\\b/i, /\\bon the bed\\b/i, /\\breclining\\b/i],
+          { name: "lying", patterns: [/\bly(?:ing)? down\b/i, /\bleaning on (?:her|their) side\b/i, /\bon the bed\b/i, /\breclining\b/i],
             instruction: "POSE: the subject is intentionally lying or reclining on the stated surface, with the body supported naturally." },
-          { name: "walking", patterns: [/\\bwalk(?:ing)?\\b/i, /\\bmid[- ]step\\b/i],
+          { name: "walking", patterns: [/\bwalk(?:ing)?\b/i, /\bmid[- ]step\b/i],
             instruction: "POSE: capture the subject walking mid-step, with believable weight transfer and natural arm and leg movement." },
-          { name: "running", patterns: [/\\brun(?:ning)?\\b/i, /\\bsprint(?:ing)?\\b/i],
+          { name: "running", patterns: [/\brun(?:ning)?\b/i, /\bsprint(?:ing)?\b/i],
             instruction: "POSE: capture the subject running, with a believable dynamic stride and balanced body mechanics." },
-          { name: "squatting", patterns: [/\\bsquat(?:ting)?\\b/i, /\\bcrouch(?:ing)?\\b/i],
+          { name: "squatting", patterns: [/\bsquat(?:ting)?\b/i, /\bcrouch(?:ing)?\b/i],
             instruction: "POSE: the subject is in a balanced squat or crouch, with bent knees and feet supporting the body." }
         ];
 
         const cameraRules = [
-          { name: "back", patterns: [/\\bback view\\b/i, /\\brear view\\b/i, /\\bfrom behind\\b/i, /\\bfacing away\\b/i, /\\bback[- ]facing\\b/i],
+          { name: "back", patterns: [/\bback view\b/i, /\brear view\b/i, /\bfrom behind\b/i, /\bfacing away\b/i, /\bback[- ]facing\b/i],
             instruction: "CAMERA: use a rear view, with the camera positioned behind the subject so the back of the subject is visible." },
-          { name: "front", patterns: [/\\bfront view\\b/i, /\\bfrom the front\\b/i, /\\bfacing (?:the )?camera\\b/i, /\\bfront[- ]facing\\b/i],
+          { name: "front", patterns: [/\bfront view\b/i, /\bfrom the front\b/i, /\bfacing (?:the )?camera\b/i, /\bfront[- ]facing\b/i],
             instruction: "CAMERA: use a front view, with the camera facing the subject and the front of the body visible." },
-          { name: "side", patterns: [/\\bside view\\b/i, /\\bside profile\\b/i, /\\bin profile\\b/i, /\\bprofile view\\b/i],
+          { name: "side", patterns: [/\bside view\b/i, /\bside profile\b/i, /\bin profile\b/i, /\bprofile view\b/i],
             instruction: "CAMERA: use a clear side-profile view, with the subject seen from the side." },
-          { name: "three-quarter", patterns: [/\\bthree[- ]quarter view\\b/i, /\\bthree[- ]quarter angle\\b/i],
+          { name: "three-quarter", patterns: [/\bthree[- ]quarter view\b/i, /\bthree[- ]quarter angle\b/i],
             instruction: "CAMERA: use a three-quarter view, showing the subject turned diagonally toward or away from the camera." }
         ];
 
         const framingRules = [
-          { name: "full-body", patterns: [/\\bfull[- ]body\\b/i, /\\bhead to toe\\b/i],
+          { name: "full-body", patterns: [/\bfull[- ]body\b/i, /\bhead to toe\b/i],
             instruction: "FRAMING: show the complete subject from head to toe; do not crop off the feet or top of the head." },
-          { name: "close-up", patterns: [/\\bclose[- ]up\\b/i, /\\bcloseup\\b/i],
+          { name: "close-up", patterns: [/\bclose[- ]up\b/i, /\bcloseup\b/i],
             instruction: "FRAMING: use a close-up composition focused on the requested subject details." },
-          { name: "waist-up", patterns: [/\\bwaist[- ]up\\b/i, /\\bupper body portrait\\b/i],
+          { name: "waist-up", patterns: [/\bwaist[- ]up\b/i, /\bupper body portrait\b/i],
             instruction: "FRAMING: use a waist-up portrait composition." }
         ];
 
-        const overShoulderRequested = /\\bover (?:her|their )?shoulder\\b|\\blooking back\\b/i.test(sceneText);
+        const overShoulderRequested = /\bover (?:her|their )?shoulder\b|\blooking back\b/i.test(sceneText);
         const chosenPose = latestIntent(sceneText, poseRules) || latestIntent(contextText, poseRules);
         const chosenCamera = latestIntent(sceneText, cameraRules) || latestIntent(contextText, cameraRules);
         const chosenFraming = latestIntent(sceneText, framingRules) || latestIntent(contextText, framingRules);
-        const explicitSleep = /\\b(sleep(?:ing)?|asleep|napping)\\b/i.test(sceneText);
-        const twoSubjects = /\\b(two|both|couple|man and woman|woman and man|two people|two adults)\\b/i.test(sceneText);
+        const explicitSleep = /\b(sleep(?:ing)?|asleep|napping)\b/i.test(sceneText);
+        const twoSubjects = /\b(two|both|couple|man and woman|woman and man|two people|two adults)\b/i.test(sceneText);
 
         const poseGuidance = [
           chosenPose?.instruction || "POSE: infer a natural pose from the scene description. Never turn the subject into a sleeping or lying-down pose unless the user explicitly requests it.",
