@@ -1545,7 +1545,7 @@ body>#typing{flex-shrink:0}
         <option value="flux">FLUX · Existing generator</option>
         <option value="juggernaut">Juggernaut XL v9 · Kaggle GPU</option>
         <option value="realvisxl">RealVisXL V5.0 · Kaggle GPU</option>
-        <option value="pony">Pony Diffusion V6 XL · Kaggle GPU</option>
+        <option value="cyberrealistic_pony">CyberRealistic Pony · Kaggle GPU</option>
       </select>
     </label>
     <label class="customizer-field" style="display:block;margin:0 0 10px">RealVisXL pose
@@ -1608,7 +1608,7 @@ const $ = id => document.getElementById(id);
 const imageModelPreferenceKey = "heartmate-image-provider";
 function selectedImageProvider() {
   const saved = localStorage.getItem(imageModelPreferenceKey);
-  return ["flux", "juggernaut", "realvisxl", "pony"].includes(saved) ? saved : "flux";
+  return ["flux", "juggernaut", "realvisxl", "cyberrealistic_pony"].includes(saved) ? saved : "flux";
 }
 const imageModelSelector = $("imageModelSelector");
 if (imageModelSelector) {
@@ -2470,20 +2470,20 @@ function setDirectRealVisMode(enabled) {
   const modelSelector = $("imageModelSelector");
   if (modelSelector) {
     Array.from(modelSelector.options).forEach(option => {
-      option.disabled = directRealVisMode && !["realvisxl", "pony"].includes(option.value);
+      option.disabled = directRealVisMode && !["realvisxl", "cyberrealistic_pony"].includes(option.value);
     });
-    if (directRealVisMode && !["realvisxl", "pony"].includes(modelSelector.value)) {
+    if (directRealVisMode && !["realvisxl", "cyberrealistic_pony"].includes(modelSelector.value)) {
       modelSelector.value = "realvisxl";
     }
     if (directRealVisMode) {
       localStorage.setItem(imageModelPreferenceKey, modelSelector.value);
       $("createMediaButton").textContent = "Generate with " +
-        (modelSelector.value === "pony" ? "Pony Diffusion V6 XL" : "RealVisXL");
-      $("modalTitle").textContent = modelSelector.value === "pony"
-        ? "🦄 Direct Pony Diffusion V6 XL Prompt"
+        (modelSelector.value === "cyberrealistic_pony" ? "CyberRealistic Pony" : "RealVisXL");
+      $("modalTitle").textContent = modelSelector.value === "cyberrealistic_pony"
+        ? "Direct CyberRealistic Pony Prompt"
         : "⚡ Direct RealVisXL Prompt";
-      $("directRealVisHelp").textContent = modelSelector.value === "pony"
-        ? "Your exact prompt is sent to Pony Diffusion V6 XL on Kaggle. Add Pony quality tags if desired."
+      $("directRealVisHelp").textContent = modelSelector.value === "cyberrealistic_pony"
+        ? "Your exact prompt is sent to CyberRealistic Pony on Kaggle. Use the model’s recommended prompt tags if desired."
         : "Your prompt text is sent as entered to RealVisXL V5.0 on Kaggle.";
     }
   }
@@ -2495,12 +2495,12 @@ $("imageModelSelector").addEventListener("change", () => {
   if (!directRealVisMode) return;
   localStorage.setItem(imageModelPreferenceKey, $("imageModelSelector").value);
   $("createMediaButton").textContent = "Generate with " +
-    ($("imageModelSelector").value === "pony" ? "Pony Diffusion V6 XL" : "RealVisXL");
-  $("modalTitle").textContent = $("imageModelSelector").value === "pony"
-    ? "🦄 Direct Pony Diffusion V6 XL Prompt"
+    ($("imageModelSelector").value === "cyberrealistic_pony" ? "CyberRealistic Pony" : "RealVisXL");
+  $("modalTitle").textContent = $("imageModelSelector").value === "cyberrealistic_pony"
+    ? "Direct CyberRealistic Pony Prompt"
     : "⚡ Direct RealVisXL Prompt";
-  $("directRealVisHelp").textContent = $("imageModelSelector").value === "pony"
-    ? "Your exact prompt is sent to Pony Diffusion V6 XL on Kaggle. Add Pony quality tags if desired."
+  $("directRealVisHelp").textContent = $("imageModelSelector").value === "cyberrealistic_pony"
+    ? "Your exact prompt is sent to CyberRealistic Pony on Kaggle. Use the model’s recommended prompt tags if desired."
     : "Your prompt text is sent as entered to RealVisXL V5.0 on Kaggle.";
 });
 
@@ -2769,8 +2769,8 @@ async function generateImage(scene, context = "") {
   }
 
   busy = true;
-  const generationModel = directRealVisMode && selectedImageProvider() === "pony" ? "pony" : "realvisxl";
-  status.textContent = "Sending your exact prompt to " + (generationModel === "pony" ? "Pony Diffusion V6 XL" : "RealVisXL") + "…";
+  const generationModel = directRealVisMode && selectedImageProvider() === "cyberrealistic_pony" ? "cyberrealistic_pony" : "realvisxl";
+  status.textContent = "Sending your exact prompt to " + (generationModel === "cyberrealistic_pony" ? "CyberRealistic Pony" : "RealVisXL") + "…";
 
   try {
     const token = await authToken();
