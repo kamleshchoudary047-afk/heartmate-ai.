@@ -1549,6 +1549,13 @@ body>#typing{flex-shrink:0}
         <option value="faceid">CyberRealistic XL V10 · FaceID identity · Kaggle GPU</option>
       </select>
     </label>
+    <div id="faceReferenceUpload" style="display:none;margin:0 0 12px;padding:13px;border:1px solid #f39bc566;border-radius:14px;background:#ffffff08">
+      <label for="faceReferenceFile" style="display:block;margin-bottom:8px;color:#ffe4f0;font-size:12px;font-weight:800">📷 Upload FaceID reference photo</label>
+      <input id="faceReferenceFile" type="file" accept="image/jpeg,image/png,image/webp" style="display:block;width:100%;color:#f8eaf2;font-size:12px">
+      <img id="faceReferencePreview" alt="Reference photo preview" hidden style="display:block;max-width:120px;max-height:140px;object-fit:cover;margin-top:10px;border-radius:12px">
+      <button id="clearFaceReference" type="button" class="small-button" style="display:none;margin-top:8px">Remove photo</button>
+      <p style="margin:8px 0 0;color:#c5b5d5;font-size:10px;line-height:1.5">Used only when FaceID is selected. Choose a clear, front-facing photo of an adult who has agreed to its use. JPG, PNG or WebP, up to 8 MB.</p>
+    </div>
     <label class="customizer-field" style="display:block;margin:0 0 10px">Model pose
       <select id="realvisxlPoseSelector">
         <option value="auto">Automatic · Follow my scene description</option>
@@ -1611,12 +1618,56 @@ function selectedImageProvider() {
   const saved = localStorage.getItem(imageModelPreferenceKey);
   return ["flux", "lustify", "cyberrealistic", "faceid"].includes(saved) ? saved : "flux";
 }
+const faceReferenceFile = $("faceReferenceFile");
+const faceReferencePreview = $("faceReferencePreview");
+const faceReferenceUpload = $("faceReferenceUpload");
+const clearFaceReference = $("clearFaceReference");
+let faceReferenceDataUrl = "";
+function refreshFaceReferenceUpload() {
+  if (faceReferenceUpload) faceReferenceUpload.style.display =
+    imageModelSelector?.value === "faceid" ? "block" : "none";
+}
+if (faceReferenceFile) {
+  faceReferenceFile.addEventListener("change", () => {
+    const file = faceReferenceFile.files?.[0];
+    faceReferenceDataUrl = "";
+    if (!file) {
+      if (faceReferencePreview) faceReferencePreview.hidden = true;
+      if (clearFaceReference) clearFaceReference.style.display = "none";
+      return;
+    }
+    if (!["image/jpeg","image/png","image/webp"].includes(file.type) || file.size > 8 * 1024 * 1024) {
+      faceReferenceFile.value = "";
+      addMessage("Choose a JPG, PNG or WebP image smaller than 8 MB.", "bot");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      faceReferenceDataUrl = typeof reader.result === "string" ? reader.result : "";
+      if (faceReferencePreview) {
+        faceReferencePreview.src = faceReferenceDataUrl;
+        faceReferencePreview.hidden = !faceReferenceDataUrl;
+      }
+      if (clearFaceReference) clearFaceReference.style.display = faceReferenceDataUrl ? "inline-block" : "none";
+    };
+    reader.onerror = () => addMessage("Could not read that reference photo. Please choose it again.", "bot");
+    reader.readAsDataURL(file);
+  });
+}
+if (clearFaceReference) clearFaceReference.addEventListener("click", () => {
+  faceReferenceFile.value = "";
+  faceReferenceDataUrl = "";
+  if (faceReferencePreview) { faceReferencePreview.removeAttribute("src"); faceReferencePreview.hidden = true; }
+  clearFaceReference.style.display = "none";
+});
 const imageModelSelector = $("imageModelSelector");
 if (imageModelSelector) {
   imageModelSelector.value = selectedImageProvider();
   imageModelSelector.addEventListener("change", () => {
     localStorage.setItem(imageModelPreferenceKey, imageModelSelector.value);
+    refreshFaceReferenceUpload();
   });
+  refreshFaceReferenceUpload();
 }
 $("girlName").textContent = girlName;
 $("typingName").textContent = girlName;
@@ -2862,6 +2913,9 @@ async function generateImage(scene, context = "") {
     const imageRequestBody = !directRealVisMode
       ? { character, scene, context }
       : { scene: scene };
+    if (generationModel === "faceid" && faceReferenceDataUrl) {
+      imageRequestBody.reference_image_data_url = faceReferenceDataUrl;
+    }
     const response = await fetch(imageEndpoint, {
       method: "POST",
       headers: {
