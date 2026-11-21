@@ -1962,7 +1962,10 @@ Instructions:
           return json({
             error: (selectedModel === "cyberrealistic_pony" ? "CyberRealistic Pony" : selectedModel === "juggernaut" ? "Juggernaut XL v9" : "RealVisXL") + " upstream HTTP " + upstream.status +
               (safeDetails ? ": " + safeDetails : " (" + upstream.statusText + ")"),
-            upstreamStatus: upstream.status
+            upstreamStatus: upstream.status,
+            ...(upstream.status === 401
+              ? { credentialDiagnostic: { keyLength: apiKey.length, keyFingerprint } }
+              : {})
           }, 502);
         }
 
