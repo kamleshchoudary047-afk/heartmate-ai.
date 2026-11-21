@@ -2837,27 +2837,37 @@ async function generateImage(scene, context = "") {
   }
 
   busy = true;
-  const generationModel = directRealVisMode && ["lustify", "cyberrealistic", "faceid"].includes($("imageModelSelector").value)
-    ? $("imageModelSelector").value
-    : "cyberrealistic";
-  status.textContent = "Sending your exact prompt to " + directModelName(generationModel) + "…";
+  // Studio mode uses the existing Cloudflare FLUX generator. Direct mode
+  // uses one of the explicitly selected Kaggle-hosted models.
+  const generationModel = directRealVisMode
+    ? (["lustify", "cyberrealistic", "faceid"].includes($("imageModelSelector").value)
+        ? $("imageModelSelector").value
+        : "cyberrealistic")
+    : "flux";
+  status.textContent = directRealVisMode
+    ? "Sending your exact prompt to " + directModelName(generationModel) + "…"
+    : "Generating with the existing FLUX image model…";
 
   try {
     const token = await authToken();
-    const imageEndpoint = generationModel === "faceid"
-      ? "/api/image/faceid"
-      : "/api/image/realvisxl";
-    const imageRequestBody = generationModel === "faceid"
-      ? { scene: scene }
-      : { scene: scene, model: generationModel };
+    const imageEndpoint = !directRealVisMode
+      ? "/api/image"
+      : generationModel === "faceid"
+        ? "/api/image/faceid"
+        : "/api/image/realvisxl";
+    const imageRequestBody = !directRealVisMode
+      ? { character, scene, context }
+      : generationModel === "faceid"
+        ? { scene: scene }
+        : { scene: scene, model: generationModel };
     const response = await fetch(imageEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + token
       },
-      // Keep the prompt string exactly as supplied to this function.
-      // Do not append chat context, character details, pose presets or model text.
+      // Studio mode sends its character and context to the existing FLUX route.
+      // Direct mode sends only the exact prompt to the selected Kaggle model.
       body: JSON.stringify(imageRequestBody)
     });
 
