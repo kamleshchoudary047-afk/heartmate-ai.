@@ -1885,7 +1885,7 @@ Instructions:
           return json({ error: "Please describe the picture." }, 400);
         }
 
-        const usageError = await consumeUsage(env, user.uid, "realvisxl-image", null, 2);
+        const usageError = await consumeUsage(env, user.uid, requestedModel + "-image", null, 2);
         if (usageError) return usageError;
 
         // RealVisXL receives only the user's exact prompt. No hidden negative
@@ -1894,7 +1894,12 @@ Instructions:
           ? body.negative_prompt
           : "";
 
-        const selectedModel = "realvisxl";
+        const requestedModel = typeof body.model === "string" ? body.model.toLowerCase() : "realvisxl";
+        const allowedModels = new Set(["realvisxl", "pony"]);
+        if (!allowedModels.has(requestedModel)) {
+          return json({ error: "Unsupported image model. Choose RealVisXL or Pony Diffusion V6 XL." }, 400);
+        }
+        const selectedModel = requestedModel;
 
         const configuredApiUrl = String(env.REALVISXL_API_URL).trim().replace(/\/+$/, "");
         // Accept either the tunnel base URL or a URL already ending in /generate.
