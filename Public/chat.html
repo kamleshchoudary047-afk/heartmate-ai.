@@ -987,7 +987,7 @@ body>#typing{flex-shrink:0}
     <h3 id="modalTitle">Create something lovely ✨</h3>
     <p id="modalDescription">Describe what you want to create.</p>
     <div id="directPromptSwitch" class="direct-prompt-switch" style="margin:0 0 14px;padding:12px;border:1px solid #b69aff55;border-radius:14px;background:#b69aff12">
-      <button type="button" id="toggleDirectRealVis" class="small-button" style="width:100%;text-align:left">⚡ Use Direct RealVisXL Prompt</button>
+      <button type="button" id="toggleDirectRealVis" class="small-button" style="width:100%;text-align:left">⚡ Use Direct Model Prompt</button>
       <p id="directRealVisHelp" class="customizer-note" style="margin:8px 0 0">Send your own prompt straight to RealVisXL V5.0 on Kaggle. Studio presets will be skipped.</p>
     </div>
     <div id="outfitControls" hidden>
@@ -1543,12 +1543,11 @@ body>#typing{flex-shrink:0}
     <label class="customizer-field" style="display:block;margin:0 0 10px">Image model
       <select id="imageModelSelector">
         <option value="flux">FLUX · Existing generator</option>
-        <option value="juggernaut">Juggernaut XL v9 · Kaggle GPU</option>
-        <option value="realvisxl">RealVisXL V5.0 · Kaggle GPU</option>
-        <option value="cyberrealistic_pony">CyberRealistic Pony · Kaggle GPU</option>
+        <option value="lustify">Lustify APEX V8 · Kaggle GPU</option>
+        <option value="cyberrealistic">CyberRealistic XL V10 · Kaggle GPU</option>
       </select>
     </label>
-    <label class="customizer-field" style="display:block;margin:0 0 10px">RealVisXL pose
+    <label class="customizer-field" style="display:block;margin:0 0 10px">Model pose
       <select id="realvisxlPoseSelector">
         <option value="auto">Automatic · Follow my scene description</option>
         <option value="standing">Standing · Natural full-body pose</option>
@@ -1559,7 +1558,7 @@ body>#typing{flex-shrink:0}
         <option value="kneeling">Kneeling · Editorial portrait pose</option>
       </select>
     </label>
-    <p class="customizer-note" style="margin:0 0 10px">Juggernaut XL and RealVisXL need your Kaggle notebook and Cloudflare Tunnel to stay running. Pose presets guide the composition; full OpenPose reference control requires the matching Kaggle API update.</p>
+    <p class="customizer-note" style="margin:0 0 10px">Lustify APEX V8 and CyberRealistic XL need your Kaggle notebook and Cloudflare Tunnel to stay running. Pose presets guide the composition; full OpenPose reference control requires the matching Kaggle API update.</p>
     <textarea id="sceneInput" placeholder="Add optional details…"></textarea>
     <div class="modal-actions">
       <button class="cancel" onclick="closeMedia()">Cancel</button>
@@ -1608,7 +1607,7 @@ const $ = id => document.getElementById(id);
 const imageModelPreferenceKey = "heartmate-image-provider";
 function selectedImageProvider() {
   const saved = localStorage.getItem(imageModelPreferenceKey);
-  return ["flux", "juggernaut", "realvisxl", "cyberrealistic_pony"].includes(saved) ? saved : "flux";
+  return ["flux", "lustify", "cyberrealistic"].includes(saved) ? saved : "flux";
 }
 const imageModelSelector = $("imageModelSelector");
 if (imageModelSelector) {
@@ -2444,12 +2443,11 @@ function closeMedia() {
 
 let directRealVisMode = false;
 function directModelName(model) {
-  if (model === "cyberrealistic_pony") return "CyberRealistic Pony";
-  if (model === "juggernaut") return "Juggernaut XL v9";
-  return "RealVisXL V5.0";
+  if (model === "lustify") return "Lustify APEX V8";
+  return "CyberRealistic XL V10";
 }
 function refreshDirectPromptLabels() {
-  const model = $("imageModelSelector")?.value || "realvisxl";
+  const model = $("imageModelSelector")?.value || "cyberrealistic";
   const name = directModelName(model);
   $("toggleDirectRealVis").textContent = directRealVisMode
     ? "✓ Direct " + name + " Prompt enabled · Switch to Studio"
@@ -2481,10 +2479,10 @@ function setDirectRealVisMode(enabled) {
   const modelSelector = $("imageModelSelector");
   if (modelSelector) {
     Array.from(modelSelector.options).forEach(option => {
-      option.disabled = directRealVisMode && !["realvisxl", "juggernaut", "cyberrealistic_pony"].includes(option.value);
+      option.disabled = directRealVisMode && !["lustify", "cyberrealistic"].includes(option.value);
     });
-    if (directRealVisMode && !["realvisxl", "juggernaut", "cyberrealistic_pony"].includes(modelSelector.value)) {
-      modelSelector.value = "realvisxl";
+    if (directRealVisMode && !["lustify", "cyberrealistic"].includes(modelSelector.value)) {
+      modelSelector.value = "cyberrealistic";
     }
     if (directRealVisMode) localStorage.setItem(imageModelPreferenceKey, modelSelector.value);
   }
@@ -2764,9 +2762,9 @@ async function generateImage(scene, context = "") {
   }
 
   busy = true;
-  const generationModel = directRealVisMode && ["realvisxl", "juggernaut", "cyberrealistic_pony"].includes($("imageModelSelector").value)
+  const generationModel = directRealVisMode && ["lustify", "cyberrealistic"].includes($("imageModelSelector").value)
     ? $("imageModelSelector").value
-    : "realvisxl";
+    : "cyberrealistic";
   status.textContent = "Sending your exact prompt to " + directModelName(generationModel) + "…";
 
   try {
