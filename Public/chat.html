@@ -1546,6 +1546,7 @@ body>#typing{flex-shrink:0}
         <option value="flux">FLUX · Existing generator</option>
         <option value="lustify">Lustify APEX V8 · Kaggle GPU</option>
         <option value="cyberrealistic">CyberRealistic XL V10 · Kaggle GPU</option>
+        <option value="faceid">CyberRealistic XL V10 · FaceID identity · Kaggle GPU</option>
       </select>
     </label>
     <label class="customizer-field" style="display:block;margin:0 0 10px">Model pose
@@ -1559,7 +1560,7 @@ body>#typing{flex-shrink:0}
         <option value="kneeling">Kneeling · Editorial portrait pose</option>
       </select>
     </label>
-    <p class="customizer-note" style="margin:0 0 10px">Lustify APEX V8 and CyberRealistic XL need your Kaggle notebook and Cloudflare Tunnel to stay running. Pose presets guide the composition; full OpenPose reference control requires the matching Kaggle API update.</p>
+    <p class="customizer-note" style="margin:0 0 10px">Lustify APEX V8, CyberRealistic XL and FaceID need your Kaggle notebook and Cloudflare Tunnel to stay running. Pose presets guide the composition; full OpenPose reference control requires the matching Kaggle API update.</p>
     <textarea id="sceneInput" placeholder="Add optional details…"></textarea>
     <div class="modal-actions">
       <button class="cancel" onclick="closeMedia()">Cancel</button>
@@ -1608,7 +1609,7 @@ const $ = id => document.getElementById(id);
 const imageModelPreferenceKey = "heartmate-image-provider";
 function selectedImageProvider() {
   const saved = localStorage.getItem(imageModelPreferenceKey);
-  return ["flux", "lustify", "cyberrealistic"].includes(saved) ? saved : "flux";
+  return ["flux", "lustify", "cyberrealistic", "faceid"].includes(saved) ? saved : "flux";
 }
 const imageModelSelector = $("imageModelSelector");
 if (imageModelSelector) {
@@ -2517,6 +2518,7 @@ function closeMedia() {
 let directRealVisMode = false;
 function directModelName(model) {
   if (model === "lustify") return "Lustify APEX V8";
+  if (model === "faceid") return "CyberRealistic XL V10 FaceID";
   return "CyberRealistic XL V10";
 }
 function refreshDirectPromptLabels() {
@@ -2552,9 +2554,9 @@ function setDirectRealVisMode(enabled) {
   const modelSelector = $("imageModelSelector");
   if (modelSelector) {
     Array.from(modelSelector.options).forEach(option => {
-      option.disabled = directRealVisMode && !["lustify", "cyberrealistic"].includes(option.value);
+      option.disabled = directRealVisMode && !["lustify", "cyberrealistic", "faceid"].includes(option.value);
     });
-    if (directRealVisMode && !["lustify", "cyberrealistic"].includes(modelSelector.value)) {
+    if (directRealVisMode && !["lustify", "cyberrealistic", "faceid"].includes(modelSelector.value)) {
       modelSelector.value = "cyberrealistic";
     }
     if (directRealVisMode) localStorage.setItem(imageModelPreferenceKey, modelSelector.value);
@@ -2835,14 +2837,20 @@ async function generateImage(scene, context = "") {
   }
 
   busy = true;
-  const generationModel = directRealVisMode && ["lustify", "cyberrealistic"].includes($("imageModelSelector").value)
+  const generationModel = directRealVisMode && ["lustify", "cyberrealistic", "faceid"].includes($("imageModelSelector").value)
     ? $("imageModelSelector").value
     : "cyberrealistic";
   status.textContent = "Sending your exact prompt to " + directModelName(generationModel) + "…";
 
   try {
     const token = await authToken();
-    const response = await fetch("/api/image/realvisxl", {
+    const imageEndpoint = generationModel === "faceid"
+      ? "/api/image/faceid"
+      : "/api/image/realvisxl";
+    const imageRequestBody = generationModel === "faceid"
+      ? { scene: scene }
+      : { scene: scene, model: generationModel };
+    const response = await fetch(imageEndpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -2850,10 +2858,7 @@ async function generateImage(scene, context = "") {
       },
       // Keep the prompt string exactly as supplied to this function.
       // Do not append chat context, character details, pose presets or model text.
-      body: JSON.stringify({
-        scene: scene,
-        model: generationModel
-      })
+      body: JSON.stringify(imageRequestBody)
     });
 
     if (!response.ok) {
