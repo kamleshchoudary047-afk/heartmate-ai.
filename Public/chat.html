@@ -164,6 +164,7 @@ button {
   max-width:320px;
   border-radius:12px;
 }
+.image-prompt{max-width:320px;margin-top:8px;padding:9px 11px;border:1px solid #f08caf35;border-radius:11px;background:#10070e88;color:#ead5df;font-size:11px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.image-prompt strong{display:block;margin-bottom:4px;color:#ffc0d6;font-size:10px}.gallery-prompt{margin:7px 0;padding:9px;border:1px solid #f08caf30;border-radius:10px;background:#10070e88;color:#ead5df;font-size:11px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.gallery-prompt strong{display:block;margin-bottom:4px;color:#ffc0d6;font-size:10px}
 #typing {
   display:none;
   align-items:center;
@@ -1739,13 +1740,23 @@ function addMessage(text, sender) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-function addImage(url) {
+function addImage(url, prompt = "", model = "") {
   const box = document.createElement("div");
   box.className = "media";
   const img = document.createElement("img");
   img.src = url;
   img.alt = girlName + " generated image";
   box.appendChild(img);
+  if (prompt) {
+    const promptCard = document.createElement("div");
+    promptCard.className = "image-prompt";
+    const heading = document.createElement("strong");
+    heading.textContent = "📝 Image prompt" + (model ? " · " + directModelName(model) : "");
+    const promptText = document.createElement("span");
+    promptText.textContent = prompt;
+    promptCard.append(heading, promptText);
+    box.appendChild(promptCard);
+  }
   messages.appendChild(box);
   messages.scrollTop = messages.scrollHeight;
 }
@@ -1758,7 +1769,7 @@ async function loadChatImages() {
     const created = photos
       .filter(photo => !photo.uploaded && photo.blob instanceof Blob)
       .sort((a, b) => a.createdAt - b.createdAt);
-    created.forEach(photo => addImage(URL.createObjectURL(photo.blob)));
+    created.forEach(photo => addImage(URL.createObjectURL(photo.blob), photo.prompt || "", photo.model || ""));
   } catch (error) {
     console.warn("Could not restore chat photos:", error?.message || error);
   }
@@ -1785,7 +1796,7 @@ function openGalleryDB() {
   });
 }
 
-async function saveGalleryPhoto(blob) {
+async function saveGalleryPhoto(blob, prompt = "", model = "") {
   const userId = window.heartmateUser?.uid;
   if (!userId) return;
   const db = await openGalleryDB();
@@ -1796,7 +1807,9 @@ async function saveGalleryPhoto(blob) {
       userId,
       character,
       createdAt:Date.now(),
-      blob
+      blob,
+      prompt:String(prompt || "").slice(0, 4000),
+      model:String(model || "").slice(0, 40)
     });
     tx.oncomplete = resolve;
     tx.onerror = () => reject(tx.error);
@@ -1982,6 +1995,16 @@ async function openGallery() {
       date.className = "memory-date";
       date.textContent = photo.createdAt ? new Date(photo.createdAt).toLocaleString() : "Heartmate collection";
       card.appendChild(date);
+      if (photo.prompt) {
+        const promptCard = document.createElement("div");
+        promptCard.className = "gallery-prompt";
+        const promptHeading = document.createElement("strong");
+        promptHeading.textContent = "📝 Prompt" + (photo.model ? " · " + directModelName(photo.model) : "");
+        const promptText = document.createElement("span");
+        promptText.textContent = photo.prompt;
+        promptCard.append(promptHeading, promptText);
+        card.appendChild(promptCard);
+      }
       const caption = document.createElement("input");
       caption.className = "memory-caption";
       caption.type = "text";
@@ -2794,9 +2817,9 @@ async function generateImage(scene, context = "") {
       throw new Error("The selected image model did not return an image.");
     }
 
-    addImage(URL.createObjectURL(blob));
+    addImage(URL.createObjectURL(blob), scene, generationModel);
     try {
-      await saveGalleryPhoto(blob);
+      await saveGalleryPhoto(blob, scene, generationModel);
     } catch (saveError) {
       addMessage("This photo was created, but couldn't be saved to your My Gallery on this device.", "bot");
     }
