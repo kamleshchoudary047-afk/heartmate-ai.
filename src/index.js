@@ -1843,7 +1843,7 @@ Instructions:
       }
     }
 
-    // Authenticated SDXL image generation (RealVisXL or Pony) through the private Kaggle API.
+    // Authenticated SDXL image generation (RealVisXL or CyberRealistic Pony) through the private Kaggle API.
     if (url.pathname === "/api/image/realvisxl") {
       if (request.method !== "POST") {
         return json({ error: "Method not allowed." }, 405);
@@ -1886,9 +1886,9 @@ Instructions:
         }
 
         const requestedModel = typeof body.model === "string" ? body.model.toLowerCase() : "realvisxl";
-        const allowedModels = new Set(["realvisxl", "pony"]);
+        const allowedModels = new Set(["realvisxl", "cyberrealistic_pony"]);
         if (!allowedModels.has(requestedModel)) {
-          return json({ error: "Unsupported image model. Choose RealVisXL or Pony Diffusion V6 XL." }, 400);
+          return json({ error: "Unsupported image model. Choose RealVisXL or CyberRealistic Pony." }, 400);
         }
         const selectedModel = requestedModel;
 
@@ -1950,7 +1950,7 @@ Instructions:
             .slice(0, 1000);
 
           return json({
-            error: (selectedModel === "pony" ? "Pony Diffusion V6 XL" : "RealVisXL") + " upstream HTTP " + upstream.status +
+            error: (selectedModel === "cyberrealistic_pony" ? "CyberRealistic Pony" : "RealVisXL") + " upstream HTTP " + upstream.status +
               (safeDetails ? ": " + safeDetails : " (" + upstream.statusText + ")"),
             upstreamStatus: upstream.status
           }, 502);
