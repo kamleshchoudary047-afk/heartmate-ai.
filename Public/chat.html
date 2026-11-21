@@ -2451,7 +2451,7 @@ function setDirectRealVisMode(enabled) {
   $("transitionControls").hidden = true;
   const modelLabel = $("imageModelSelector")?.closest("label");
   const poseLabel = $("realvisxlPoseSelector")?.closest("label");
-  if (modelLabel) modelLabel.hidden = false;
+  if (modelLabel) modelLabel.hidden = !directRealVisMode;
   if (poseLabel) poseLabel.hidden = directRealVisMode;
   $("toggleDirectRealVis").textContent = directRealVisMode
     ? "✓ Direct RealVisXL Prompt enabled · Switch to Studio"
@@ -2479,6 +2479,12 @@ function setDirectRealVisMode(enabled) {
       localStorage.setItem(imageModelPreferenceKey, modelSelector.value);
       $("createMediaButton").textContent = "Generate with " +
         (modelSelector.value === "pony" ? "Pony Diffusion V6 XL" : "RealVisXL");
+      $("modalTitle").textContent = modelSelector.value === "pony"
+        ? "🦄 Direct Pony Diffusion V6 XL Prompt"
+        : "⚡ Direct RealVisXL Prompt";
+      $("directRealVisHelp").textContent = modelSelector.value === "pony"
+        ? "Your exact prompt is sent to Pony Diffusion V6 XL on Kaggle. Add Pony quality tags if desired."
+        : "Your prompt text is sent as entered to RealVisXL V5.0 on Kaggle.";
     }
   }
 }
