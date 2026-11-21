@@ -1845,8 +1845,9 @@ Instructions:
 
     // Authenticated CyberRealistic XL FaceID generation through its dedicated Kaggle API.
     // This is a separate route so the existing FLUX and RealVisXL options remain unchanged.
-    if (url.pathname === "/api/image/faceid" || url.pathname === "/api/image/cyberrealistic") {
+    if (url.pathname === "/api/image/faceid" || url.pathname === "/api/image/cyberrealistic" || url.pathname === "/api/image/lustify") {
       const useFaceId = url.pathname === "/api/image/faceid";
+      const selectedModel = url.pathname === "/api/image/lustify" ? "lustify" : "cyberrealistic";
       if (request.method !== "POST") {
         return json({ error: "Method not allowed." }, 405);
       }
@@ -1895,6 +1896,7 @@ Instructions:
 
         const upstreamUrl = new URL(generateUrl);
         upstreamUrl.searchParams.set("use_faceid", useFaceId ? "true" : "false");
+        upstreamUrl.searchParams.set("model", selectedModel);
         const upstream = await fetch(upstreamUrl.toString(), {
           method: "POST",
           headers: {
