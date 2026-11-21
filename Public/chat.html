@@ -2850,16 +2850,20 @@ async function generateImage(scene, context = "") {
 
   try {
     const token = await authToken();
+    if (directRealVisMode && generationModel === "lustify") {
+      throw new Error("Lustify APEX V8 is not installed on the Kaggle GPU yet. CyberRealistic and FaceID are available.");
+    }
+
     const imageEndpoint = !directRealVisMode
       ? "/api/image"
       : generationModel === "faceid"
         ? "/api/image/faceid"
-        : "/api/image/realvisxl";
+        : generationModel === "cyberrealistic"
+          ? "/api/image/cyberrealistic"
+          : "/api/image/realvisxl";
     const imageRequestBody = !directRealVisMode
       ? { character, scene, context }
-      : generationModel === "faceid"
-        ? { scene: scene }
-        : { scene: scene, model: generationModel };
+      : { scene: scene };
     const response = await fetch(imageEndpoint, {
       method: "POST",
       headers: {
