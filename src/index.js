@@ -1899,7 +1899,7 @@ Instructions:
         upstreamUrl.searchParams.set("model", selectedModel);
         let referenceImage = null;
         if (useFaceId && typeof body.reference_image_data_url === "string" && body.reference_image_data_url) {
-          const match = body.reference_image_data_url.match(/^data:(image\\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/);
+          const match = body.reference_image_data_url.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/);
           if (!match) {
             return json({ error: "Reference photo must be a valid JPG, PNG or WebP image." }, 400);
           }
