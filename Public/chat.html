@@ -1545,6 +1545,7 @@ body>#typing{flex-shrink:0}
         <option value="flux">FLUX · Existing generator</option>
         <option value="juggernaut">Juggernaut XL v9 · Kaggle GPU</option>
         <option value="realvisxl">RealVisXL V5.0 · Kaggle GPU</option>
+        <option value="pony">Pony Diffusion V6 XL · Kaggle GPU</option>
       </select>
     </label>
     <label class="customizer-field" style="display:block;margin:0 0 10px">RealVisXL pose
@@ -1607,7 +1608,7 @@ const $ = id => document.getElementById(id);
 const imageModelPreferenceKey = "heartmate-image-provider";
 function selectedImageProvider() {
   const saved = localStorage.getItem(imageModelPreferenceKey);
-  return ["flux", "juggernaut", "realvisxl"].includes(saved) ? saved : "flux";
+  return ["flux", "juggernaut", "realvisxl", "pony"].includes(saved) ? saved : "flux";
 }
 const imageModelSelector = $("imageModelSelector");
 if (imageModelSelector) {
@@ -2450,7 +2451,7 @@ function setDirectRealVisMode(enabled) {
   $("transitionControls").hidden = true;
   const modelLabel = $("imageModelSelector")?.closest("label");
   const poseLabel = $("realvisxlPoseSelector")?.closest("label");
-  if (modelLabel) modelLabel.hidden = directRealVisMode;
+  if (modelLabel) modelLabel.hidden = false;
   if (poseLabel) poseLabel.hidden = directRealVisMode;
   $("toggleDirectRealVis").textContent = directRealVisMode
     ? "✓ Direct RealVisXL Prompt enabled · Switch to Studio"
@@ -2466,13 +2467,35 @@ function setDirectRealVisMode(enabled) {
     ? "Your prompt goes directly to your Kaggle-hosted RealVisXL V5.0 model."
     : "Describe the scene you want for " + girlName + ".";
   $("createMediaButton").textContent = directRealVisMode ? "Generate with RealVisXL" : "Create";
-  if (directRealVisMode) {
-    $("imageModelSelector").value = "realvisxl";
-    localStorage.setItem(imageModelPreferenceKey, "realvisxl");
+  const modelSelector = $("imageModelSelector");
+  if (modelSelector) {
+    Array.from(modelSelector.options).forEach(option => {
+      option.disabled = directRealVisMode && !["realvisxl", "pony"].includes(option.value);
+    });
+    if (directRealVisMode && !["realvisxl", "pony"].includes(modelSelector.value)) {
+      modelSelector.value = "realvisxl";
+    }
+    if (directRealVisMode) {
+      localStorage.setItem(imageModelPreferenceKey, modelSelector.value);
+      $("createMediaButton").textContent = "Generate with " +
+        (modelSelector.value === "pony" ? "Pony Diffusion V6 XL" : "RealVisXL");
+    }
   }
 }
 $("toggleDirectRealVis").addEventListener("click", () => {
   setDirectRealVisMode(!directRealVisMode);
+});
+$("imageModelSelector").addEventListener("change", () => {
+  if (!directRealVisMode) return;
+  localStorage.setItem(imageModelPreferenceKey, $("imageModelSelector").value);
+  $("createMediaButton").textContent = "Generate with " +
+    ($("imageModelSelector").value === "pony" ? "Pony Diffusion V6 XL" : "RealVisXL");
+  $("modalTitle").textContent = $("imageModelSelector").value === "pony"
+    ? "🦄 Direct Pony Diffusion V6 XL Prompt"
+    : "⚡ Direct RealVisXL Prompt";
+  $("directRealVisHelp").textContent = $("imageModelSelector").value === "pony"
+    ? "Your exact prompt is sent to Pony Diffusion V6 XL on Kaggle. Add Pony quality tags if desired."
+    : "Your prompt text is sent as entered to RealVisXL V5.0 on Kaggle.";
 });
 
 let selectedStudioMode = "standard";
@@ -2740,7 +2763,8 @@ async function generateImage(scene, context = "") {
   }
 
   busy = true;
-  status.textContent = "Sending your exact prompt to RealVisXL…";
+  const generationModel = directRealVisMode && selectedImageProvider() === "pony" ? "pony" : "realvisxl";
+  status.textContent = "Sending your exact prompt to " + (generationModel === "pony" ? "Pony Diffusion V6 XL" : "RealVisXL") + "…";
 
   try {
     const token = await authToken();
@@ -2754,7 +2778,7 @@ async function generateImage(scene, context = "") {
       // Do not append chat context, character details, pose presets or model text.
       body: JSON.stringify({
         scene: scene,
-        model: "realvisxl"
+        model: generationModel
       })
     });
 
@@ -2763,10 +2787,10 @@ async function generateImage(scene, context = "") {
       throw new Error(data.error || "Image creation failed.");
     }
 
-    // Display and save the exact image bytes returned by the RealVisXL API.
+    // Display and save the exact image bytes returned by the selected Kaggle model.
     const blob = await response.blob();
     if (!blob.type.startsWith("image/")) {
-      throw new Error("RealVisXL did not return an image.");
+      throw new Error("The selected image model did not return an image.");
     }
 
     addImage(URL.createObjectURL(blob));
