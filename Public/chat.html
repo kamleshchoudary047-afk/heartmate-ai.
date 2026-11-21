@@ -2444,7 +2444,9 @@ function closeMedia() {
 
 let directRealVisMode = false;
 function directModelName(model) {
-  return model === "cyberrealistic_pony" ? "CyberRealistic Pony" : "RealVisXL V5.0";
+  if (model === "cyberrealistic_pony") return "CyberRealistic Pony";
+  if (model === "juggernaut") return "Juggernaut XL v9";
+  return "RealVisXL V5.0";
 }
 function refreshDirectPromptLabels() {
   const model = $("imageModelSelector")?.value || "realvisxl";
@@ -2479,9 +2481,9 @@ function setDirectRealVisMode(enabled) {
   const modelSelector = $("imageModelSelector");
   if (modelSelector) {
     Array.from(modelSelector.options).forEach(option => {
-      option.disabled = directRealVisMode && !["realvisxl", "cyberrealistic_pony"].includes(option.value);
+      option.disabled = directRealVisMode && !["realvisxl", "juggernaut", "cyberrealistic_pony"].includes(option.value);
     });
-    if (directRealVisMode && !["realvisxl", "cyberrealistic_pony"].includes(modelSelector.value)) {
+    if (directRealVisMode && !["realvisxl", "juggernaut", "cyberrealistic_pony"].includes(modelSelector.value)) {
       modelSelector.value = "realvisxl";
     }
     if (directRealVisMode) localStorage.setItem(imageModelPreferenceKey, modelSelector.value);
@@ -2762,7 +2764,7 @@ async function generateImage(scene, context = "") {
   }
 
   busy = true;
-  const generationModel = directRealVisMode && ["realvisxl", "cyberrealistic_pony"].includes($("imageModelSelector").value)
+  const generationModel = directRealVisMode && ["realvisxl", "juggernaut", "cyberrealistic_pony"].includes($("imageModelSelector").value)
     ? $("imageModelSelector").value
     : "realvisxl";
   status.textContent = "Sending your exact prompt to " + directModelName(generationModel) + "…";
