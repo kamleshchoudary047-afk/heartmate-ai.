@@ -1897,6 +1897,21 @@ Instructions:
         const upstreamUrl = new URL(generateUrl);
         upstreamUrl.searchParams.set("use_faceid", useFaceId ? "true" : "false");
         upstreamUrl.searchParams.set("model", selectedModel);
+        let referenceImage = null;
+        if (useFaceId && typeof body.reference_image_data_url === "string" && body.reference_image_data_url) {
+          const match = body.reference_image_data_url.match(/^data:(image\\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/);
+          if (!match) {
+            return json({ error: "Reference photo must be a valid JPG, PNG or WebP image." }, 400);
+          }
+          if (match[2].length > 11 * 1024 * 1024) {
+            return json({ error: "Reference photo is too large. Please use an image under 8 MB." }, 413);
+          }
+          referenceImage = {
+            mime_type: match[1],
+            image_base64: match[2]
+          };
+        }
+
         const upstream = await fetch(upstreamUrl.toString(), {
           method: "POST",
           headers: {
@@ -1912,7 +1927,9 @@ Instructions:
             guidance_scale: typeof body.guidance_scale === "number" && body.guidance_scale >= 1 && body.guidance_scale <= 10
               ? body.guidance_scale
               : 5.0,
-            seed: Number.isInteger(body.seed) && body.seed >= -1 ? body.seed : -1
+            seed: Number.isInteger(body.seed) && body.seed >= -1 ? body.seed : -1,
+            reference_image_base64: referenceImage?.image_base64 || null,
+            reference_image_mime_type: referenceImage?.mime_type || null
           })
         });
 
