@@ -1843,6 +1843,134 @@ Instructions:
       }
     }
 
+    // Authenticated CyberRealistic XL FaceID generation through its dedicated Kaggle API.
+    // This is a separate route so the existing FLUX and RealVisXL options remain unchanged.
+    if (url.pathname === "/api/image/faceid") {
+      if (request.method !== "POST") {
+        return json({ error: "Method not allowed." }, 405);
+      }
+
+      try {
+        if (!env.DB || !env.FIREBASE_PROJECT_ID) {
+          return json({ error: "Image service is not configured." }, 503);
+        }
+        if (!env.FACEID_API_URL || !env.FACEID_API_KEY) {
+          return json({
+            error: "FaceID is not configured. Add FACEID_API_URL and the FACEID_API_KEY secret in Cloudflare."
+          }, 503);
+        }
+
+        const user = await verifyFirebaseToken(request, env.FIREBASE_PROJECT_ID);
+        await saveVisitor(env, user);
+
+        let body;
+        try {
+          body = await request.json();
+        } catch {
+          return json({ error: "Invalid JSON request." }, 400);
+        }
+
+        const exactPrompt = typeof body.scene === "string"
+          ? body.scene
+          : typeof body.prompt === "string"
+            ? body.prompt
+            : "";
+
+        if (!exactPrompt.trim()) {
+          return json({ error: "Please describe the picture." }, 400);
+        }
+
+        const usageError = await consumeUsage(env, user.uid, "realvisxl-image", null, 2);
+        if (usageError) return usageError;
+
+        const configuredApiUrl = String(env.FACEID_API_URL).trim().replace(/\/+$/, "");
+        const generateUrl = configuredApiUrl.endsWith("/generate")
+          ? configuredApiUrl
+          : configuredApiUrl + "/generate";
+        const apiKey = String(env.FACEID_API_KEY).replace(/[\s\u0000-\u001F\u007F]+/g, "");
+        if (!apiKey) {
+          throw new Error("FACEID_API_KEY is empty. Re-save the Cloudflare secret.");
+        }
+
+        const upstream = await fetch(generateUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": apiKey
+          },
+          body: JSON.stringify({
+            prompt: exactPrompt,
+            negative_prompt: typeof body.negative_prompt === "string" ? body.negative_prompt : "",
+            width: Number.isInteger(body.width) && body.width >= 512 && body.width <= 1024 ? body.width : 768,
+            height: Number.isInteger(body.height) && body.height >= 512 && body.height <= 1280 ? body.height : 1024,
+            steps: Number.isInteger(body.steps) && body.steps >= 15 && body.steps <= 40 ? body.steps : 35,
+            guidance_scale: typeof body.guidance_scale === "number" && body.guidance_scale >= 1 && body.guidance_scale <= 10
+              ? body.guidance_scale
+              : 5.0,
+            seed: Number.isInteger(body.seed) && body.seed >= -1 ? body.seed : -1
+          })
+        });
+
+        if (!upstream.ok) {
+          const upstreamError = await upstream.text().catch(() => "");
+          const safeDetails = upstreamError
+            .replace(/(api[_-]?key|authorization|token|secret)\s*[:=]\s*[^\s,;]+/gi, "$1=[redacted]")
+            .replace(/Bearer\s+[^\s]+/gi, "Bearer [redacted]")
+            .slice(0, 800);
+          console.error("FaceID upstream failure:", {
+            status: upstream.status,
+            details: safeDetails
+          });
+          return json({
+            error: "FaceID upstream HTTP " + upstream.status +
+              (safeDetails ? ": " + safeDetails : "")
+          }, 502);
+        }
+
+        const result = await upstream.json().catch(() => null);
+        if (!result || result.success !== true || typeof result.image_base64 !== "string") {
+          return json({ error: "FaceID returned an invalid image response." }, 502);
+        }
+
+        let binary;
+        try {
+          binary = atob(result.image_base64);
+        } catch {
+          return json({ error: "FaceID returned invalid image data." }, 502);
+        }
+
+        if (!binary.length || binary.length > 20 * 1024 * 1024) {
+          return json({ error: "FaceID returned an empty or oversized image." }, 502);
+        }
+
+        const imageBytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+          imageBytes[i] = binary.charCodeAt(i);
+        }
+
+        return new Response(imageBytes, {
+          status: 200,
+          headers: {
+            "content-type": result.mime_type === "image/png" ? "image/png" : "image/png",
+            "cache-control": "no-store",
+            "x-content-type-options": "nosniff"
+          }
+        });
+      } catch (error) {
+        const rawError = String(error?.message || error || "Unknown error");
+        const safeError = rawError
+          .replace(/(api[_-]?key|authorization|token|secret)\s*[:=]\s*[^\s,;]+/gi, "$1=[redacted]")
+          .replace(/Bearer\s+[^\s]+/gi, "Bearer [redacted]")
+          .slice(0, 800);
+        console.error("FaceID image API exception:", safeError);
+
+        if (isAuthError(error)) {
+          return json({ error: error.message }, 401);
+        }
+        return json({ error: "FaceID internal error: " + safeError }, 502);
+      }
+    }
+
     // Authenticated SDXL image generation (RealVisXL, Juggernaut XL, or CyberRealistic Pony) through the private Kaggle API.
     if (url.pathname === "/api/image/realvisxl") {
       if (request.method !== "POST") {
