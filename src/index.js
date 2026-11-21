@@ -1919,7 +1919,7 @@ Instructions:
             instruction: "POSE: the subject is standing upright on both feet. Show a vertical body posture, legs supporting the body and feet grounded. Do not depict sitting, kneeling, lying down or sleeping." },
           { name: "sitting", patterns: [/\bsit(?:ting)?\b/i, /\bseated\b/i, /\bon a chair\b/i],
             instruction: "POSE: the subject is sitting, with the hips supported by the chair or seat and a natural seated leg position. Do not depict standing or sleeping." },
-          { name: "lying", patterns: [/\bly(?:ing)? down\b/i, /\bleaning on (?:her|their) side\b/i, /\bon the bed\b/i, /\breclining\b/i],
+          { name: "lying", patterns: [/\bly(?:ing)? down\b/i, /\b(?:lying|laying) on (?:the )?(?:bed|sofa|floor)\b/i, /\bleaning on (?:her|their) side\b/i, /\breclining\b/i],
             instruction: "POSE: the subject is intentionally lying or reclining on the stated surface, with the body supported naturally." },
           { name: "walking", patterns: [/\bwalk(?:ing)?\b/i, /\bmid[- ]step\b/i],
             instruction: "POSE: capture the subject walking mid-step, with believable weight transfer and natural arm and leg movement." },
@@ -1954,7 +1954,7 @@ Instructions:
         const chosenCamera = latestIntent(sceneText, cameraRules) || latestIntent(contextText, cameraRules);
         const chosenFraming = latestIntent(sceneText, framingRules) || latestIntent(contextText, framingRules);
         const explicitSleep = /\b(sleep(?:ing)?|asleep|napping)\b/i.test(sceneText);
-        const twoSubjects = /\b(two|both|couple|man and woman|woman and man|two people|two adults)\b/i.test(sceneText);
+        const twoSubjects = /\b(two|couple|man and woman|woman and man|two people|two adults|both people|both adults|pair of adults)\b/i.test(sceneText);
 
         const poseGuidance = [
           chosenPose?.instruction || "POSE: infer a natural pose from the scene description. Never turn the subject into a sleeping or lying-down pose unless the user explicitly requests it.",
