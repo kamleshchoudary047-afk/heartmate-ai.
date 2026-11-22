@@ -1547,6 +1547,7 @@ body>#typing{flex-shrink:0}
         <option value="lustify">Lustify APEX V8 · Kaggle GPU</option>
         <option value="cyberrealistic">CyberRealistic XL V10 · Kaggle GPU</option>
         <option value="faceid">CyberRealistic XL V10 · FaceID identity · Kaggle GPU</option>
+        <option value="lustify-faceid">Lustify APEX V8 · FaceID identity · Kaggle GPU</option>
       </select>
     </label>
     <div id="faceReferenceUpload" style="display:none;margin:0 0 12px;padding:13px;border:1px solid #f39bc566;border-radius:14px;background:#ffffff08">
@@ -1616,7 +1617,7 @@ const $ = id => document.getElementById(id);
 const imageModelPreferenceKey = "heartmate-image-provider";
 function selectedImageProvider() {
   const saved = localStorage.getItem(imageModelPreferenceKey);
-  return ["flux", "lustify", "cyberrealistic", "faceid"].includes(saved) ? saved : "flux";
+  return ["flux", "lustify", "cyberrealistic", "faceid", "lustify-faceid"].includes(saved) ? saved : "flux";
 }
 const faceReferenceFile = $("faceReferenceFile");
 const faceReferencePreview = $("faceReferencePreview");
@@ -1625,7 +1626,7 @@ const clearFaceReference = $("clearFaceReference");
 let faceReferenceDataUrl = "";
 function refreshFaceReferenceUpload() {
   if (faceReferenceUpload) faceReferenceUpload.style.display =
-    imageModelSelector?.value === "faceid" ? "block" : "none";
+    ["faceid", "lustify-faceid"].includes(imageModelSelector?.value) ? "block" : "none";
 }
 if (faceReferenceFile) {
   faceReferenceFile.addEventListener("change", () => {
@@ -2570,6 +2571,7 @@ let directRealVisMode = false;
 function directModelName(model) {
   if (model === "lustify") return "Lustify APEX V8";
   if (model === "faceid") return "CyberRealistic XL V10 FaceID";
+  if (model === "lustify-faceid") return "Lustify APEX V8 FaceID";
   return "CyberRealistic XL V10";
 }
 function refreshDirectPromptLabels() {
@@ -2605,9 +2607,9 @@ function setDirectRealVisMode(enabled) {
   const modelSelector = $("imageModelSelector");
   if (modelSelector) {
     Array.from(modelSelector.options).forEach(option => {
-      option.disabled = directRealVisMode && !["lustify", "cyberrealistic", "faceid"].includes(option.value);
+      option.disabled = directRealVisMode && !["lustify", "cyberrealistic", "faceid", "lustify-faceid"].includes(option.value);
     });
-    if (directRealVisMode && !["lustify", "cyberrealistic", "faceid"].includes(modelSelector.value)) {
+    if (directRealVisMode && !["lustify", "cyberrealistic", "faceid", "lustify-faceid"].includes(modelSelector.value)) {
       modelSelector.value = "cyberrealistic";
     }
     if (directRealVisMode) localStorage.setItem(imageModelPreferenceKey, modelSelector.value);
@@ -2891,7 +2893,7 @@ async function generateImage(scene, context = "") {
   // Studio mode uses the existing Cloudflare FLUX generator. Direct mode
   // uses one of the explicitly selected Kaggle-hosted models.
   const generationModel = directRealVisMode
-    ? (["lustify", "cyberrealistic", "faceid"].includes($("imageModelSelector").value)
+    ? (["lustify", "cyberrealistic", "faceid", "lustify-faceid"].includes($("imageModelSelector").value)
         ? $("imageModelSelector").value
         : "cyberrealistic")
     : "flux";
@@ -2905,6 +2907,8 @@ async function generateImage(scene, context = "") {
       ? "/api/image"
       : generationModel === "faceid"
         ? "/api/image/faceid"
+        : generationModel === "lustify-faceid"
+          ? "/api/image/lustify-faceid"
         : generationModel === "cyberrealistic"
           ? "/api/image/cyberrealistic"
           : generationModel === "lustify"
@@ -2913,7 +2917,7 @@ async function generateImage(scene, context = "") {
     const imageRequestBody = !directRealVisMode
       ? { character, scene, context }
       : { scene: scene };
-    if (generationModel === "faceid" && faceReferenceDataUrl) {
+    if (["faceid", "lustify-faceid"].includes(generationModel) && faceReferenceDataUrl) {
       imageRequestBody.reference_image_data_url = faceReferenceDataUrl;
     }
     const response = await fetch(imageEndpoint, {
