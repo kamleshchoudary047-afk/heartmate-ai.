@@ -13,7 +13,7 @@
   },
   "vars": {
     "FIREBASE_PROJECT_ID": "heartmate-ai-bd441",
-    "REALVISXL_API_URL": "https://develop-bailey-suggesting-install.trycloudflare.com/",
+    "REALVISXL_API_URL": "https://what-warcraft-asking-tower.trycloudflare.com/",
     "FACEID_API_URL": "https://cio-earned-survive-occurrence.trycloudflare.com/"
   },
   "d1_databases": [
