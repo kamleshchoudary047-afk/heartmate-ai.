@@ -1845,7 +1845,7 @@ Instructions:
 
     // Authenticated CyberRealistic XL FaceID generation through its dedicated Kaggle API.
     // This is a separate route so the existing FLUX and RealVisXL options remain unchanged.
-    if (url.pathname === "/api/image/faceid" || url.pathname === "/api/image/lustify-faceid" || url.pathname === "/api/image/cyberrealistic" || url.pathname === "/api/image/lustify") {
+    if (url.pathname === "/api/image/faceid" || url.pathname === "/api/image/lustify-faceid") {
       const useFaceId = url.pathname === "/api/image/faceid" || url.pathname === "/api/image/lustify-faceid";
       const selectedModel = url.pathname === "/api/image/lustify" || url.pathname === "/api/image/lustify-faceid" ? "lustify" : "cyberrealistic";
       if (request.method !== "POST") {
@@ -1994,7 +1994,7 @@ Instructions:
     }
 
     // Authenticated SDXL image generation (RealVisXL, Juggernaut XL, or CyberRealistic Pony) through the private Kaggle API.
-    if (url.pathname === "/api/image/realvisxl") {
+    if (url.pathname === "/api/image/realvisxl" || url.pathname === "/api/image/cyberrealistic" || url.pathname === "/api/image/lustify") {
       if (request.method !== "POST") {
         return json({ error: "Method not allowed." }, 405);
       }
@@ -2035,7 +2035,7 @@ Instructions:
           return json({ error: "Please describe the picture." }, 400);
         }
 
-        const requestedModel = typeof body.model === "string" ? body.model.toLowerCase() : "cyberrealistic";
+        const requestedModel = url.pathname === "/api/image/lustify" ? "lustify" : url.pathname === "/api/image/cyberrealistic" ? "cyberrealistic" : typeof body.model === "string" ? body.model.toLowerCase() : "cyberrealistic";
         const allowedModels = new Set(["lustify", "cyberrealistic"]);
         if (!allowedModels.has(requestedModel)) {
           return json({ error: "Unsupported image model. Choose Lustify APEX V8 or CyberRealistic XL." }, 400);
