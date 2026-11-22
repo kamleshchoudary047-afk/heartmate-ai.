@@ -1923,7 +1923,7 @@ Instructions:
             negative_prompt: typeof body.negative_prompt === "string" ? body.negative_prompt : "",
             width: Number.isInteger(body.width) && body.width >= 512 && body.width <= 1024 ? body.width : 768,
             height: Number.isInteger(body.height) && body.height >= 512 && body.height <= 1280 ? body.height : 1024,
-            steps: Number.isInteger(body.steps) && body.steps >= 15 && body.steps <= 40 ? body.steps : 35,
+            steps: Number.isInteger(body.steps) && body.steps >= 15 && body.steps <= 40 ? body.steps : 15,
             guidance_scale: typeof body.guidance_scale === "number" && body.guidance_scale >= 1 && body.guidance_scale <= 10
               ? body.guidance_scale
               : 5.0,
