@@ -13,8 +13,8 @@
   },
   "vars": {
     "FIREBASE_PROJECT_ID": "heartmate-ai-bd441",
-    "REALVISXL_API_URL": "https://dicke-category-plc-wave.trycloudflare.com",
-    "FACEID_API_URL": "https://don-ringtone-wins-petite.trycloudflare.com/"
+    "REALVISXL_API_URL": "https://develop-bailey-suggesting-install.trycloudflare.com/",
+    "FACEID_API_URL": "https://cio-earned-survive-occurrence.trycloudflare.com/"
   },
   "d1_databases": [
     {
