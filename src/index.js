@@ -1273,6 +1273,106 @@ export default {
       });
     }
 
+    // Private endpoint used by the Kaggle recovery notebook to publish its
+    // current Quick Tunnel URL. The URL is verified before being stored in D1.
+    if (url.pathname === "/api/internal/tunnel-url") {
+      if (request.method !== "POST") {
+        return json({ error: "Method not allowed." }, 405);
+      }
+      if (!env.TUNNEL_UPDATE_SECRET || !env.DB) {
+        return json({ error: "Tunnel URL updater is not configured." }, 503);
+      }
+
+      const authorization = request.headers.get("Authorization") || "";
+      const expected = "Bearer " + String(env.TUNNEL_UPDATE_SECRET);
+      let mismatch = authorization.length ^ expected.length;
+      const compareLength = Math.max(authorization.length, expected.length);
+      for (let i = 0; i < compareLength; i++) {
+        mismatch |= (authorization.charCodeAt(i) || 0) ^ (expected.charCodeAt(i) || 0);
+      }
+      if (mismatch !== 0) {
+        return json({ error: "Unauthorized." }, 401);
+      }
+
+      let updateBody;
+      try {
+        updateBody = await request.json();
+      } catch {
+        return json({ error: "Invalid JSON request." }, 400);
+      }
+
+      let candidateUrl;
+      try {
+        candidateUrl = new URL(String(updateBody?.url || ""));
+      } catch {
+        return json({ error: "Invalid tunnel URL." }, 400);
+      }
+
+      if (
+        candidateUrl.protocol !== "https:" ||
+        !/^[a-z0-9-]+\.trycloudflare\.com$/i.test(candidateUrl.hostname) ||
+        (candidateUrl.pathname !== "/" && candidateUrl.pathname !== "") ||
+        candidateUrl.search ||
+        candidateUrl.hash ||
+        candidateUrl.username ||
+        candidateUrl.password
+      ) {
+        return json({ error: "Only a valid HTTPS Cloudflare Quick Tunnel URL is accepted." }, 400);
+      }
+
+      const candidateBase = candidateUrl.origin;
+      let tunnelHealth;
+      try {
+        const healthResponse = await fetch(candidateBase + "/health", {
+          method: "GET",
+          headers: { "Accept": "application/json" }
+        });
+        if (!healthResponse.ok) {
+          return json({ error: "The new tunnel health check failed." }, 502);
+        }
+        tunnelHealth = await healthResponse.json();
+      } catch (error) {
+        console.error("Tunnel health verification failed:", String(error?.message || error).slice(0, 300));
+        return json({ error: "Could not verify the new tunnel." }, 502);
+      }
+
+      if (
+        tunnelHealth?.status !== "online" ||
+        tunnelHealth?.project !== "Heartmate" ||
+        tunnelHealth?.models?.cyberrealistic !== "ready" ||
+        tunnelHealth?.models?.lustify !== "ready"
+      ) {
+        return json({ error: "The tunnel is reachable but the expected Heartmate models are not ready." }, 502);
+      }
+
+      try {
+        await env.DB.prepare(`
+          CREATE TABLE IF NOT EXISTS heartmate_runtime_config (
+            config_key TEXT PRIMARY KEY,
+            config_value TEXT NOT NULL,
+            updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+          )
+        `).run();
+
+        await env.DB.prepare(`
+          INSERT INTO heartmate_runtime_config (config_key, config_value, updated_at)
+          VALUES (?, ?, CURRENT_TIMESTAMP)
+          ON CONFLICT(config_key) DO UPDATE SET
+            config_value = excluded.config_value,
+            updated_at = CURRENT_TIMESTAMP
+        `).bind("REALVISXL_API_URL", candidateBase).run();
+
+        return json({
+          ok: true,
+          message: "Heartmate image API tunnel URL updated.",
+          health: "verified"
+        });
+      } catch (error) {
+        console.error("Tunnel URL persistence failed:", String(error?.message || error).slice(0, 500));
+        return json({ error: "Could not save the verified tunnel URL." }, 500);
+      }
+    }
+
     // Authenticated feature routes.
     const featureRoutes = [
       "/api/profile",
@@ -2003,9 +2103,9 @@ Instructions:
         if (!env.DB || !env.FIREBASE_PROJECT_ID) {
           return json({ error: "Image service is not configured." }, 503);
         }
-        if (!env.REALVISXL_API_URL || !env.REALVISXL_API_KEY) {
+        if (!env.REALVISXL_API_KEY) {
           return json({
-            error: "RealVisXL is not configured. Add the Cloudflare RealVisXL API URL and API key."
+            error: "RealVisXL API key is not configured in Cloudflare Worker secrets."
           }, 503);
         }
 
@@ -2050,7 +2150,24 @@ Instructions:
           ? body.negative_prompt
           : "";
 
-        const configuredApiUrl = String(env.REALVISXL_API_URL).trim().replace(/\/+$/, "");
+        // Prefer the latest verified tunnel URL stored by the private recovery endpoint.
+        // Fall back to the Wrangler variable for backwards compatibility.
+        let runtimeApiUrl = String(env.REALVISXL_API_URL || "").trim();
+        try {
+          const runtimeConfig = await env.DB.prepare(
+            "SELECT config_value FROM heartmate_runtime_config WHERE config_key = ? LIMIT 1"
+          ).bind("REALVISXL_API_URL").first();
+          if (runtimeConfig?.config_value) {
+            runtimeApiUrl = String(runtimeConfig.config_value).trim();
+          }
+        } catch (error) {
+          // The runtime table is created by the first successful tunnel update.
+          console.warn("Using configured image API URL; runtime URL not yet stored.");
+        }
+        if (!runtimeApiUrl) {
+          return json({ error: "Image generation tunnel URL is not configured." }, 503);
+        }
+        const configuredApiUrl = runtimeApiUrl.replace(/\/+$/, "");
         // Accept either the tunnel base URL or a URL already ending in /generate.
         const generateUrl = configuredApiUrl.endsWith("/generate")
           ? configuredApiUrl
