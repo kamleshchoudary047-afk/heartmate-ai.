@@ -30,7 +30,7 @@
         "database_id": "e2047989-57d8-42b7-93e7-287c0ba6ce40"
       }
     ]
-  ],
+  },
   "observability": {
     "enabled": true,
     "logs": {
