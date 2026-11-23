@@ -13,7 +13,7 @@
   },
   "vars": {
     "FIREBASE_PROJECT_ID": "heartmate-ai-bd441",
-    "REALVISXL_API_URL": "https://wins-theaters-favour-barbara.trycloudflare.com/",
+    "REALVISXL_API_URL": "https://branches-authentic-prospect-selection.trycloudflare.com/",
     "FACEID_API_URL": "https://cio-earned-survive-occurrence.trycloudflare.com/"
   },
   "d1_databases": [
@@ -30,7 +30,7 @@
         "database_id": "e2047989-57d8-42b7-93e7-287c0ba6ce40"
       }
     ]
-  },
+  ],
   "observability": {
     "enabled": true,
     "logs": {
